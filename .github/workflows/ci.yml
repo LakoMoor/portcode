@@ -4,6 +4,9 @@ jobs:
   test:
     strategy: { matrix: { os: [ubuntu-latest, macos-latest] } }
     runs-on: ${{ matrix.os }}
+    # GitHub's macOS arm64 runners are often unavailable; that must not turn the whole run red.
+    continue-on-error: ${{ matrix.os == 'macos-latest' }}
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
