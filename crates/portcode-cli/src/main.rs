@@ -1,6 +1,7 @@
 //! `portcode` — open-source coding and reverse-engineering agent for local and self-hosted LLMs.
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
 mod cmds;
+mod remote;
 mod term;
 mod tui;
 
@@ -33,6 +34,19 @@ struct Cli {
     /// Clean-room mode (default): observe the original from outside only
     #[arg(long, global = true)]
     clean_room: bool,
+}
+
+#[derive(Subcommand)]
+enum RemoteCmd {
+    /// Create a pairing key (shown once): scope `full` (default) or `view`
+    New {
+        #[arg(long, default_value = "full")]
+        scope: String,
+    },
+    /// List keys (ids and scopes only)
+    List,
+    /// Revoke a key
+    Revoke { id: String },
 }
 
 #[derive(Subcommand)]
@@ -108,6 +122,19 @@ enum Cmd {
     Completions { shell: clap_complete::Shell },
     /// List agents
     Agents,
+    /// Run a session you can drive from the browser (remote control); see docs/REMOTE.md
+    Serve {
+        /// Address to listen on; keep 127.0.0.1 and use a TLS tunnel for remote access
+        #[arg(long, default_value = "127.0.0.1")]
+        bind: String,
+        #[arg(long, default_value_t = 7777)]
+        port: u16,
+    },
+    /// Manage remote-control keys
+    Remote {
+        #[command(subcommand)]
+        sub: RemoteCmd,
+    },
     /// Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path
     Engines {
         #[command(subcommand)]
@@ -247,6 +274,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
         }
         Ok::<_, String>(c)
     };
+    let serve_opts = tui_opts(&cli, false);
     match cli.cmd {
         None => {
             let tty = std::io::IsTerminal::is_terminal(&std::io::stdin())
@@ -374,6 +402,15 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             }
             Ok(0)
         }
+        Some(Cmd::Serve { bind, port }) => {
+            let ip: std::net::IpAddr = bind.parse().map_err(|_| format!("bad --bind '{bind}'"))?;
+            tui::serve(cfg()?, serve_opts, (ip, port).into()).await
+        }
+        Some(Cmd::Remote { sub }) => cmds::remote_keys(match sub {
+            RemoteCmd::New { scope } => ("new".into(), scope),
+            RemoteCmd::List => ("list".into(), String::new()),
+            RemoteCmd::Revoke { id } => ("revoke".into(), id),
+        }),
         Some(Cmd::Engines { sub }) => match sub {
             EnginesCmd::List => cmds::engines_list(),
             EnginesCmd::Path => {

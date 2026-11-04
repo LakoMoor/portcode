@@ -667,3 +667,43 @@ pub fn engines_install(ids: &[String]) -> Result<i32, String> {
     engines::write_helpers()?;
     Ok(if failed == 0 { 0 } else { 1 })
 }
+
+pub fn remote_keys((op, arg): (String, String)) -> Result<i32, String> {
+    use crate::remote::keys;
+    match op.as_str() {
+        "new" => {
+            let k = keys::create(&arg)?;
+            println!(
+                "{} key {} created. Shown once; keep it private:\n\n  {}\n",
+                k.scope,
+                k.id,
+                keys::pairing(&k)
+            );
+            println!(
+                "Open {}/portcode/remote/ and paste it. Revoke with: portcode remote revoke {}",
+                crate::remote::PAGES_ORIGIN,
+                k.id
+            );
+        }
+        "list" => {
+            let all = keys::load();
+            if all.is_empty() {
+                println!("no keys. Create one: portcode remote new");
+            }
+            for k in all {
+                println!("{}  {:<5}  created {}", k.id, k.scope, k.created);
+            }
+        }
+        _ => {
+            println!(
+                "{}",
+                if keys::revoke(&arg)? {
+                    "revoked"
+                } else {
+                    "no such key"
+                }
+            );
+        }
+    }
+    Ok(0)
+}

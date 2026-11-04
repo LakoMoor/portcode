@@ -113,7 +113,14 @@ async fn start(
     cfg: Config,
     o: &Opts,
     gate_auto: bool,
-) -> Result<(App, mpsc::UnboundedReceiver<Msg>), String> {
+) -> Result<
+    (
+        App,
+        mpsc::UnboundedReceiver<Msg>,
+        mpsc::UnboundedSender<Msg>,
+    ),
+    String,
+> {
     let root = crate::root()?;
     let (mtx, mrx) = mpsc::unbounded_channel();
     let (ctx_tx, ctx_rx) = mpsc::unbounded_channel();
@@ -153,8 +160,125 @@ async fn start(
     app.show_reasoning = o.show_reasoning;
     app.auto_allow = gate_auto;
     app.refresh_ledger();
-    tokio::spawn(runner_task(runner, ctx_rx, mtx));
-    Ok((app, mrx))
+    tokio::spawn(runner_task(runner, ctx_rx, mtx.clone()));
+    Ok((app, mrx, mtx))
+}
+
+/// Remote-control state owned by the event loop.
+#[derive(Default)]
+struct Remote {
+    hub: Option<crate::remote::Hub>,
+    last_state: String,
+}
+
+impl Remote {
+    /// `/remote`, `/remote key [view|full]`.
+    async fn command(&mut self, app: &mut App, mtx: &mpsc::UnboundedSender<Msg>, arg: &str) {
+        let mut words = arg.split_whitespace();
+        match words.next() {
+            Some("key") => {
+                match crate::remote::keys::create(words.next().unwrap_or("full")) {
+                    Ok(k) => app.items.push(app::Item::Info(format!(
+                        "new {} key (shown once, keep it private): {}",
+                        k.scope,
+                        crate::remote::keys::pairing(&k)
+                    ))),
+                    Err(e) => app.items.push(app::Item::Error(e)),
+                }
+                return;
+            }
+            Some(other) => {
+                app.items.push(app::Item::Error(format!(
+                    "unknown /remote argument '{other}'. Use /remote or /remote key [view|full]"
+                )));
+                return;
+            }
+            None => {}
+        }
+        if self.hub.is_some() {
+            app.items.push(app::Item::Info(format!(
+                "remote control is on: {}",
+                app.remote_addr.clone().unwrap_or_default()
+            )));
+            return;
+        }
+        let addr: std::net::SocketAddr = ([127, 0, 0, 1], 7777).into();
+        match crate::remote::serve(addr, mtx.clone()).await {
+            Ok((hub, bound)) => {
+                self.hub = Some(hub);
+                app.remote_on = true;
+                app.remote_addr = Some(format!("ws://{bound}"));
+                let mut text = format!(
+                    "remote control on ws://{bound} (this machine only). Open {}/portcode/remote/ and paste a key; to reach it from elsewhere use a tunnel (docs/REMOTE.md).",
+                    crate::remote::PAGES_ORIGIN
+                );
+                if crate::remote::keys::load().is_empty() {
+                    if let Ok(k) = crate::remote::keys::create("full") {
+                        text += &format!(
+                            " Your key (shown once): {}",
+                            crate::remote::keys::pairing(&k)
+                        );
+                    }
+                } else {
+                    text += " Keys exist; make another with /remote key.";
+                }
+                app.items.push(app::Item::Info(text));
+            }
+            Err(e) => app.items.push(app::Item::Error(e)),
+        }
+    }
+
+    /// Copy what changed in the app to connected clients.
+    fn publish(&mut self, app: &mut App) {
+        let Some(h) = &self.hub else {
+            app.outbox.clear();
+            return;
+        };
+        for v in app.outbox.drain(..) {
+            h.publish(&v);
+        }
+        let st = app.state_json().to_string();
+        if st != self.last_state {
+            h.publish(&serde_json::json!({"type":"state","state":app.state_json()}));
+            self.last_state = st;
+        }
+    }
+}
+
+/// `portcode serve`: the same session as the full-screen UI, without a terminal. Drive it from the web page.
+pub async fn serve(cfg: Config, o: Opts, bind: std::net::SocketAddr) -> Result<i32, String> {
+    let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
+    if crate::remote::keys::load().is_empty() {
+        let k = crate::remote::keys::create("full")?;
+        println!(
+            "created a key (shown once, keep it private):\n  {}",
+            crate::remote::keys::pairing(&k)
+        );
+    }
+    let (hub, bound) = crate::remote::serve(bind, mtx).await?;
+    app.remote_on = true;
+    app.remote_addr = Some(format!("ws://{bound}"));
+    println!("portcode remote control listening on ws://{bound}");
+    println!(
+        "open {}/portcode/remote/ and paste a key. Ctrl+C to stop.",
+        crate::remote::PAGES_ORIGIN
+    );
+    if !bound.ip().is_loopback() {
+        println!("warning: {bound} is reachable by others and ws:// is not encrypted. Put it behind a TLS tunnel (docs/REMOTE.md) or bind 127.0.0.1.");
+    }
+    let mut remote = Remote {
+        hub: Some(hub),
+        last_state: String::new(),
+    };
+    loop {
+        tokio::select! {
+            m = rx.recv() => match m { Some(m) => app.on_msg(m), None => break },
+            _ = tokio::time::sleep(Duration::from_millis(80)) => {}
+            _ = tokio::signal::ctrl_c() => break,
+        }
+        remote.publish(&mut app);
+    }
+    Ok(0)
 }
 
 struct Guard;
@@ -171,7 +295,8 @@ impl Drop for Guard {
 }
 
 pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
-    let (mut app, mut rx) = start(cfg, &o, false).await?;
+    let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
+    let mut remote = Remote::default();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |i| {
         let _ = disable_raw_mode();
@@ -206,6 +331,10 @@ pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
         while let Ok(m) = rx.try_recv() {
             app.on_msg(m);
         }
+        if let Some(arg) = app.remote_req.take() {
+            remote.command(&mut app, &mtx, &arg).await;
+        }
+        remote.publish(&mut app);
         app.tick();
         if app.quit {
             break;
@@ -225,7 +354,7 @@ pub struct Snap {
 
 /// Headless render of the real UI into an SVG file (no terminal needed). Drives the real runner if `prompt` is set.
 pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
-    let (mut app, mut rx) = start(cfg, &o, !s.until_permission).await?;
+    let (mut app, mut rx, _mtx) = start(cfg, &o, !s.until_permission).await?;
     if let Some(p) = &s.prompt {
         app.input = p.clone();
         app.cursor = p.chars().count();

@@ -43,6 +43,9 @@ Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bas
 ## Finishing 1:1
 The `port` agent cannot stop early. When it tries to, PortCode checks three things: every behaviour of the original is a todo item, every todo is completed, and the last `parity` run passed on the final code (an edit after parity re-opens it). If not, the agent is sent back with the open items, and it gets extra steps when the budget runs out unfinished. The only way out is `blocked`, for a decision only you can make. Parity still compares against goldens captured from the original, so "done" means "proven", not "claimed".
 
+## Remote control
+`portcode serve` (or `/remote` in the UI) lets you drive the session from a browser or phone at [lakomoor.github.io/portcode/remote](https://lakomoor.github.io/portcode/remote/): watch, send prompts, answer permission asks, interrupt, switch agent or mode. GitHub Pages only hosts the static page; the browser connects **directly** to your machine through a tunnel you choose (Tailscale, cloudflared, SSH), authenticated with a key you create (`portcode remote new`). The secret never travels: the page answers a random challenge with an HMAC. No relay, nothing stored on GitHub. Details and the threat model: [docs/REMOTE.md](docs/REMOTE.md).
+
 ## Clean-room and deep mode
 | | clean-room (default) | deep |
 |---|---|---|

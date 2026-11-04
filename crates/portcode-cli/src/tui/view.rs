@@ -504,6 +504,12 @@ fn footer(f: &mut Frame, app: &App, area: Rect) {
             Style::new().fg(if *ok { GREEN } else { RED }),
         ));
     }
+    if let Some(a) = &app.remote_addr {
+        left.push(Span::styled(
+            format!("  ● remote {a}"),
+            Style::new().fg(CYAN),
+        ));
+    }
     let used: usize = left.iter().map(|s| s.content.chars().count()).sum();
     let right = format!("{hints}  ");
     let gap = (area.width as usize).saturating_sub(used + right.chars().count());

@@ -187,32 +187,36 @@ impl Gate for TermGate {
     }
 }
 
+/// One UI event as JSON (used by `--json` and by remote control).
+pub fn event_json(e: &UiEvent) -> serde_json::Value {
+    match e {
+        UiEvent::Text(t) => serde_json::json!({"type":"text","text":t}),
+        UiEvent::Reasoning(t) => serde_json::json!({"type":"reasoning","text":t}),
+        UiEvent::ToolStart(n) => serde_json::json!({"type":"tool_start","name":n}),
+        UiEvent::ToolCall { name, args } => {
+            serde_json::json!({"type":"tool_call","name":name,"args":args})
+        }
+        UiEvent::ToolResult {
+            name,
+            title,
+            ok,
+            text,
+        } => {
+            serde_json::json!({"type":"tool_result","name":name,"title":title,"ok":ok,"text":text})
+        }
+        UiEvent::Todos(t) => serde_json::json!({"type":"todos","items":t}),
+        UiEvent::Compacted => serde_json::json!({"type":"compacted"}),
+        UiEvent::Info(s) => serde_json::json!({"type":"info","text":s}),
+        UiEvent::Usage(u) => {
+            serde_json::json!({"type":"usage","prompt_tokens":u.prompt_tokens,"completion_tokens":u.completion_tokens})
+        }
+    }
+}
+
 /// `--json`: one event per line.
 pub struct JsonUi;
 impl Ui for JsonUi {
     fn event(&self, e: UiEvent) {
-        let v = match e {
-            UiEvent::Text(t) => serde_json::json!({"type":"text","text":t}),
-            UiEvent::Reasoning(t) => serde_json::json!({"type":"reasoning","text":t}),
-            UiEvent::ToolStart(n) => serde_json::json!({"type":"tool_start","name":n}),
-            UiEvent::ToolCall { name, args } => {
-                serde_json::json!({"type":"tool_call","name":name,"args":args})
-            }
-            UiEvent::ToolResult {
-                name,
-                title,
-                ok,
-                text,
-            } => {
-                serde_json::json!({"type":"tool_result","name":name,"title":title,"ok":ok,"text":text})
-            }
-            UiEvent::Todos(t) => serde_json::json!({"type":"todos","items":t}),
-            UiEvent::Compacted => serde_json::json!({"type":"compacted"}),
-            UiEvent::Info(s) => serde_json::json!({"type":"info","text":s}),
-            UiEvent::Usage(u) => {
-                serde_json::json!({"type":"usage","prompt_tokens":u.prompt_tokens,"completion_tokens":u.completion_tokens})
-            }
-        };
-        println!("{v}");
+        println!("{}", event_json(&e));
     }
 }

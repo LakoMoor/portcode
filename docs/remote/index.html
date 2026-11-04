@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Remote control — PortCode</title>
+<style>
+:root{--bg:#0a0a0a;--panel:#141414;--panel2:#1e1e1e;--rule:#2e2e2e;--text:#eee;--muted:#808080;--accent:#fab283;--green:#7fd88f;--red:#e06c75;--amber:#f5a742;--teal:#70c8aa;--blue:#5c9cf5;--purple:#9d7cd8;--cyan:#56b6c2}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;display:flex;flex-direction:column}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+header b{color:var(--accent)} .dim{color:var(--muted)}
+.chip{padding:1px 8px;border-radius:3px;font-size:13px}
+.chip.clean{color:var(--teal)} .chip.deep{background:var(--amber);color:var(--bg);font-weight:700}
+.chip.busy{color:var(--amber)} .chip.off{color:var(--red)}
+#connect{max-width:640px;margin:8vh auto;padding:0 18px}
+#connect h1{font-size:22px;margin:0 0 4px} #connect p{color:var(--muted);margin:6px 0 18px}
+label{display:block;margin:14px 0 4px;color:var(--muted);font-size:13px}
+input,select,textarea{width:100%;background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:9px 10px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{background:var(--accent);color:var(--bg);border:0;border-radius:4px;padding:9px 16px;font-weight:700;cursor:pointer}
+button.ghost{background:none;color:var(--text);border:1px solid var(--rule);font-weight:400}
+button.red{background:var(--red)} button.green{background:var(--green)}
+#err{color:var(--red);min-height:1.5em;margin-top:10px}
+#app{display:none;flex:1;min-height:0;flex-direction:column}
+#main{flex:1;min-height:0;display:flex}
+#log{flex:1;overflow:auto;padding:14px 18px 24px}
+#side{width:260px;border-left:1px solid var(--rule);background:var(--panel);padding:14px;overflow:auto;font-size:13px}
+@media(max-width:820px){#side{display:none}}
+#side h3{margin:16px 0 6px;font-size:13px;display:flex;gap:8px;align-items:center}
+#side h3::after{content:"";flex:1;height:1px;background:var(--rule)}
+#side h3:first-child{margin-top:0}
+.user{background:var(--panel);border-left:3px solid var(--blue);padding:8px 12px;margin:14px 0;white-space:pre-wrap}
+.asst{margin:12px 0;white-space:pre-wrap;word-break:break-word}
+.think{color:var(--muted);font-style:italic;margin:6px 0}
+.tool{margin:8px 0}
+.tool .h{display:flex;gap:8px}.tool .n{font-weight:700}.tool .a{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tool pre{margin:2px 0 0 4px;padding-left:12px;border-left:1px solid var(--rule);color:var(--muted);white-space:pre-wrap;word-break:break-word;max-height:9.5em;overflow:auto;font:inherit}
+.info{color:var(--muted)} .err{color:var(--red)} .foot{color:var(--muted);margin:10px 0}
+#perm{display:none;margin:10px 14px;border:1px solid var(--amber);border-radius:6px;background:var(--panel);padding:12px 14px}
+#perm .t{color:var(--amber);font-weight:700}
+#perm code{display:block;background:var(--panel2);padding:6px 8px;margin:8px 0;white-space:pre-wrap;word-break:break-all}
+#perm .row{display:flex;gap:8px;flex-wrap:wrap}
+form{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--rule);background:var(--panel)}
+form textarea{resize:none;height:44px;flex:1}
+.bar{display:inline-block;height:8px;border-radius:2px}
+</style></head><body>
+<section id="connect">
+  <h1>PortCode remote control</h1>
+  <p>This page only talks to <em>your</em> PortCode, directly from this browser. GitHub Pages hosts the file; it never sees your key or your session. The key stays in this browser, and only a one-time proof of it goes over the connection.</p>
+  <label for="url">Server address</label>
+  <input id="url" placeholder="wss://my-machine.tailnet.ts.net  or  ws://127.0.0.1:7777" autocomplete="off" spellcheck="false">
+  <label for="key">Key (from <code>portcode remote new</code> or <code>/remote</code>)</label>
+  <input id="key" type="password" placeholder="pc1.xxxxxxxx.…" autocomplete="off" spellcheck="false">
+  <p style="margin-top:16px"><button id="go">Connect</button> <button class="ghost" id="forget">Forget saved</button></p>
+  <div id="err" role="alert"></div>
+  <p>Not set up yet? Run <code>portcode serve</code> on your machine and read <a href="../guide/REMOTE.html">how to reach it safely</a> (Tailscale, cloudflared or an SSH tunnel). Plain <code>ws://</code> only works for <code>127.0.0.1</code>; anything else must be <code>wss://</code>.</p>
+</section>
+<section id="app">
+  <header>
+    <b>portcode</b><span id="title" class="dim"></span>
+    <span id="mode" class="chip"></span><span id="busy" class="chip"></span>
+    <span style="flex:1"></span>
+    <select id="agent" aria-label="Agent" style="width:auto"></select>
+    <button class="ghost" id="deep"></button>
+    <button class="ghost" id="stop">Stop</button>
+    <button class="ghost" id="bye">Disconnect</button>
+  </header>
+  <div id="main">
+    <div id="log" aria-live="polite"></div>
+    <aside id="side"></aside>
+  </div>
+  <div id="perm" role="alertdialog" aria-label="Permission required"></div>
+  <form id="f"><textarea id="in" placeholder="Ask anything…  (Enter sends, Shift+Enter for a new line)" aria-label="Prompt"></textarea><button>Send</button></form>
+</section>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const store=window.localStorage;
+let ws=null, scope="view", state={}, snapshot=null, retry=0, wantOpen=false;
+
+// pairing link: #url=wss://…&key=pc1.… is moved into storage and removed from the address bar
+(function(){const h=new URLSearchParams(location.hash.slice(1));
+  if(h.get("url"))store.pcUrl=h.get("url"); if(h.get("key"))store.pcKey=h.get("key");
+  if(location.hash)history.replaceState(null,"",location.pathname+location.search);
+  $("url").value=store.pcUrl||""; $("key").value=store.pcKey||"";})();
+
+const enc=new TextEncoder();
+async function hmac(secret,msg){
+  const k=await crypto.subtle.importKey("raw",enc.encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+  const s=await crypto.subtle.sign("HMAC",k,enc.encode(msg));
+  return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function fail(m){$("err").textContent=m}
+
+function validUrl(u){
+  try{const x=new URL(u);
+    if(x.protocol==="wss:")return true;
+    if(x.protocol==="ws:"&&(x.hostname==="127.0.0.1"||x.hostname==="localhost"))return true;
+  }catch(e){} return false;
+}
+
+async function connect(){
+  fail(""); const url=$("url").value.trim(), pair=$("key").value.trim();
+  const m=/^pc1\.([0-9a-f]{8})\.([0-9a-f]{64})$/.exec(pair);
+  if(!validUrl(url))return fail("Use wss://… (or ws://127.0.0.1:PORT for this machine).");
+  if(!m)return fail("That is not a PortCode key. It looks like pc1.<8 hex>.<64 hex>.");
+  store.pcUrl=url; store.pcKey=pair; wantOpen=true;
+  open(url,m[1],m[2]);
+}
+function open(url,id,secret){
+  if(ws){try{ws.close()}catch(e){}}
+  ws=new WebSocket(url);
+  ws.onmessage=async ev=>{
+    const v=JSON.parse(ev.data);
+    if(v.t==="hello"){ws.send(JSON.stringify({t:"auth",id,mac:await hmac(secret,v.nonce)}))}
+    else if(v.t==="ready"){retry=0;scope=v.scope;snapshot=v.snapshot;showApp();render(v.snapshot)}
+    else if(v.t==="resync"){render(v.snapshot)}
+    else if(v.t==="error"){if(!snapshot)fail(v.msg);else add("err",esc(v.msg))}
+    else if(v.t==="state"||v.type==="state"){state=v.state;head()}
+    else live(v);
+  };
+  ws.onclose=()=>{ if(!wantOpen)return; $("busy").className="chip off";$("busy").textContent="disconnected";
+    if(snapshot&&retry<8){setTimeout(()=>wantOpen&&open(url,id,secret),Math.min(1000*2**retry++,15000))}
+    else if(!snapshot){fail("Could not connect. Is `portcode serve` running and reachable at that address?")} };
+  ws.onerror=()=>{};
+}
+function showApp(){$("connect").style.display="none";$("app").style.display="flex";
+  $("in").disabled=scope!=="full";$("f").style.opacity=scope==="full"?1:.5;$("stop").disabled=$("deep").disabled=$("agent").disabled=scope!=="full"}
+function add(cls,html){const d=document.createElement("div");d.className=cls;d.innerHTML=html;$("log").appendChild(d);scroll();return d}
+function scroll(){const l=$("log");l.scrollTop=l.scrollHeight}
+function head(){
+  const s=state; $("title").textContent=(s.title||"New session")+" · "+(s.model||"");
+  $("mode").className="chip "+(s.deep?"deep":"clean"); $("mode").textContent=s.deep?"◉ deep":"▣ clean-room";
+  $("busy").className="chip "+(s.busy?"busy":""); $("busy").textContent=s.busy?"working…":"idle";
+  $("deep").textContent=s.deep?"Switch to clean-room":"Allow deep";
+  if(snapshot&&snapshot.agents&&$("agent").options.length!==snapshot.agents.length){$("agent").innerHTML=snapshot.agents.map(a=>`<option>${esc(a)}</option>`).join("")}
+  $("agent").value=s.agent||"";
+  const l=s.ledger||[0,0,0], tot=Math.max(1,l[0]+l[1]+l[2]), w=i=>Math.round(l[i]*100/tot);
+  const p=s.parity;
+  $("side").innerHTML=`<h3>Context</h3><div>${s.context_pct||0}% used</div>
+   <h3>Evidence</h3><div><span class="bar" style="width:${w(0)}%;background:var(--green)"></span><span class="bar" style="width:${w(1)}%;background:var(--amber)"></span><span class="bar" style="width:${w(2)}%;background:var(--red)"></span></div>
+   <div><span style="color:var(--green)">${l[0]} seen</span> <span style="color:var(--amber)">${l[1]} inferred</span> <span style="color:var(--red)">${l[2]} open</span></div>
+   <h3>Proof</h3><div style="color:${p?(p.ok?"var(--green)":"var(--red)"):"var(--muted)"}">${p?(p.ok?"✓ ":"✗ ")+esc(p.text):"no parity run yet"}</div>
+   <h3>Project</h3><div class="dim">${esc(s.cwd||"")}</div>`;
+}
+function tool(name,args,st,title,text){
+  const col=st==="err"?"var(--red)":st==="running"?"var(--amber)":"var(--green)";
+  const nm=["disasm","emulate","decompile","hexdump"].includes(name)?"var(--amber)":"var(--text)";
+  return `<div class="h"><span style="color:${col}">${st==="err"?"✗":st==="running"?"…":"✓"}</span><span class="n" style="color:${nm}">${esc(name)}</span><span class="a">${esc(title&&title!==name?title:args)}</span></div>`+(text?`<pre>${esc(text.slice(0,4000))}</pre>`:"");
+}
+function render(s){
+  state=s.state;snapshot=s;$("log").innerHTML="";
+  for(const i of s.items){ if(i.k==="user")add("user",esc(i.text)); else if(i.k==="assistant")add("asst",esc(i.text));
+    else if(i.k==="reasoning")add("think","✻ "+esc(i.text.slice(0,300))); else if(i.k==="tool")add("tool",tool(i.name,i.args,i.state,i.title,i.text));
+    else if(i.k==="error")add("err","✗ "+esc(i.text)); else if(i.k==="footer")add("foot","▣ "+esc(i.text)); else add("info","· "+esc(i.text)); }
+  head(); perm(s.perm);
+}
+let cur=null, curTool=null;
+function live(v){
+  switch(v.type){
+    case "text": if(!cur||cur.dataset.k!=="a"){cur=add("asst","");cur.dataset.k="a";cur.raw=""} cur.raw+=v.text;cur.textContent=cur.raw;scroll();break;
+    case "reasoning": break;
+    case "tool_start": cur=null; curTool=add("tool",tool(v.name,"","running","",""));break;
+    case "tool_call": if(curTool)curTool.innerHTML=tool(v.name,v.args,"running","","");break;
+    case "tool_result": if(curTool){curTool.innerHTML=tool(v.name,"",v.ok?"ok":"err",v.title,v.text);curTool=null}scroll();break;
+    case "user": cur=null;add("user",esc(v.text));break;
+    case "info": add("info","· "+esc(v.text));break;
+    case "done": cur=null;add("foot","▣ "+esc(v.text));break;
+    case "perm": perm({tool:v.tool,target:v.target,reason:v.reason});break;
+    case "perm_done": perm(null);break;
+  }
+}
+function perm(p){const d=$("perm"); if(!p){d.style.display="none";return}
+  d.style.display="block";
+  d.innerHTML=`<div class="t">Permission required: ${esc(p.tool)}</div><code>${esc(p.target)}</code>${p.reason?`<div class="dim">${esc(p.reason)}</div>`:""}
+   <div class="row" style="margin-top:8px">${scope==="full"?`<button class="green" data-r="once">Allow once</button><button data-r="always">Always</button><button class="red" data-r="reject">Reject</button>`:`<span class="dim">view-only key: answer in the terminal</span>`}</div>`;
+  d.querySelectorAll("button").forEach(b=>b.onclick=()=>{send({t:"perm",reply:b.dataset.r});perm(null)});
+}
+function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
+
+$("go").onclick=connect;
+$("forget").onclick=()=>{delete store.pcUrl;delete store.pcKey;$("url").value=$("key").value="";fail("Saved address and key removed from this browser.")};
+$("bye").onclick=()=>{wantOpen=false;snapshot=null;if(ws)ws.close();$("app").style.display="none";$("connect").style.display="block"};
+$("stop").onclick=()=>send({t:"interrupt"});
+$("deep").onclick=()=>{ if(!state.deep&&!confirm("Deep mode lets the agent disassemble, decompile and emulate the original. Only use it on software you own or may examine."))return; send({t:"deep",on:!state.deep})};
+$("agent").onchange=e=>send({t:"agent",name:e.target.value});
+$("f").onsubmit=e=>{e.preventDefault();const t=$("in").value.trim();if(!t)return;send({t:"send",text:t});$("in").value=""};
+$("in").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("f").requestSubmit()}};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("app").style.display==="flex")send({t:"interrupt"})});
+</script></body></html>

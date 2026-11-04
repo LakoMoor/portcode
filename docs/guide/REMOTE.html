@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Remote control — PortCode</title><meta property="og:title" content="Remote control — PortCode"><link rel="stylesheet" href="../style.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../">Port<b>Code</b></a><a class="l" href="../guide/ARCHITECTURE.html">Architecture</a><a class="l" href="../guide/PROVIDERS.html">Providers</a><a class="l" href="../guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="../guide/ENGINES.html">Engines</a><a class="l" href="../guide/ROADMAP.html">Roadmap</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
+<main class="wrap" style="padding-top:30px">
+<h1>Remote control</h1>
+<p>Drive a PortCode session from a browser or phone: watch the transcript, send prompts, answer permission requests, interrupt, switch agent or mode.</p>
+<p><strong>How it works.</strong> GitHub Pages hosts only a static page (<code>/portcode/remote/</code>). Your browser connects *directly* to <code>portcode serve</code> (or <code>/remote</code> inside the full-screen UI) over a WebSocket. There is no PortCode relay: nothing between you and your machine except the tunnel you choose.</p>
+<pre><code>browser (github.io page) ── wss ──▶ your tunnel ──▶ 127.0.0.1:7777  portcode serve
+</code></pre>
+<h2>Quick start</h2>
+<pre><code>portcode serve                 # prints a key once, listens on 127.0.0.1:7777
+# or, inside the full-screen UI:  /remote
+</code></pre>
+<p>Open <code>https://lakomoor.github.io/portcode/remote/</code>, enter the address and the key. On the same machine use <code>ws://127.0.0.1:7777</code>. From elsewhere you need a tunnel, because GitHub Pages is <code>https</code> and browsers only allow <code>wss://</code> (plain <code>ws://</code> is allowed for <code>127.0.0.1</code> only):</p>
+<table><thead><tr><th>Tunnel</th><th>Command</th><th>Address to enter</th></tr></thead><tbody>
+<tr><td>Tailscale (private to your devices)</td><td><code>tailscale serve --bg --https=443 http://127.0.0.1:7777</code></td><td><code>wss://&lt;machine&gt;.&lt;tailnet&gt;.ts.net</code></td></tr>
+<tr><td>Cloudflare quick tunnel</td><td><code>cloudflared tunnel --url http://127.0.0.1:7777</code></td><td><code>wss://&lt;random&gt;.trycloudflare.com</code></td></tr>
+<tr><td>SSH (your own server)</td><td><code>ssh -N -L 7777:127.0.0.1:7777 you@server</code></td><td><code>ws://127.0.0.1:7777</code> (Safari blocks this; use another browser)</td></tr>
+</tbody></table>
+<p>Tailscale is the best default: the address is reachable only from your own devices.</p>
+<h2>Keys</h2>
+<pre><code>portcode remote new [--scope view|full]   # shown once: pc1.&lt;id&gt;.&lt;secret&gt;
+portcode remote list
+portcode remote revoke &lt;id&gt;
+</code></pre>
+<ul>
+<li><code>full</code> can send prompts, answer permission asks, interrupt, switch agent/model and enable deep mode. <code>view</code> only watches.</li>
+<li>Keys live in the config directory (<code>remote-keys.json</code>, mode 0600).</li>
+<li>The secret never travels: the server sends a random nonce and the page answers with <code>HMAC-SHA256(secret, nonce)</code>. The page keeps the key in this browser's local storage; use &quot;Forget saved&quot; on shared computers.</li>
+<li>A pairing link <code>https://lakomoor.github.io/portcode/remote/#url=wss://…&amp;key=pc1.…</code> fills the form; the page removes the fragment from the address bar. The fragment is never sent to GitHub.</li>
+</ul>
+<h2>What protects you</h2>
+<ul>
+<li>Binds <code>127.0.0.1</code> by default; <code>--bind 0.0.0.0</code> prints a warning (plain <code>ws://</code> is not encrypted).</li>
+<li>The server accepts browser connections only from <code>https://lakomoor.github.io</code> and <code>localhost</code>; add more with <code>PORTCODE_REMOTE_ORIGINS=https://my.example</code>.</li>
+<li>Wrong key: one-second delay, then disconnect. At most 4 clients, 1 MiB per message.</li>
+<li>Slash commands are not accepted remotely, so a remote client cannot quit your session; the page has explicit controls instead.</li>
+<li><strong>A `full` key is control of your agent</strong>, which can run commands once permitted. Treat it like an SSH key. Deep mode asks for confirmation in the page, and permission rules still apply: anything that would ask you in the terminal asks the remote client.</li>
+</ul>
+<h2>Protocol</h2>
+<p>JSON text frames. Server: <code>hello{nonce}</code> → (client <code>auth{id,mac}</code>) → <code>ready{scope,snapshot}</code>, then <code>text</code>, <code>tool_start</code>, <code>tool_call</code>, <code>tool_result</code>, <code>todos</code>, <code>usage</code>, <code>info</code>, <code>perm</code>, <code>perm_done</code>, <code>state</code>, <code>done</code>. Client (full): <code>send{text}</code>, <code>interrupt</code>, <code>perm{reply:once|always|reject}</code>, <code>agent{name}</code>, <code>model{ref}</code>, <code>deep{on}</code>, <code>clear</code>, <code>ping</code>.</p>
+</main>
+<footer><div class="wrap">MIT licensed · generated by <code>portcode port page</code></div></footer></body></html>

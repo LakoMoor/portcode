@@ -14,3 +14,5 @@
 
 - [x] Deep mode with Capstone, Unicorn and Ghidra tools; engines installed next to the binary
 - [ ] ImHex pattern evaluation without the GUI; angr/Frida wrappers as first-class tools; Windows engines
+- [x] Remote control: `portcode serve`, `/remote`, browser page on GitHub Pages, HMAC-authenticated keys with view/full scope
+- [ ] Optional end-to-end-encrypted relay for machines that cannot run a tunnel; push notifications for permission asks

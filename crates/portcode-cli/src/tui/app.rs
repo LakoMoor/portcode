@@ -11,6 +11,19 @@ pub enum Msg {
     Perm(PermAsk),
     Done(Result<Outcome, String>),
     Info(String),
+    Remote(Remote),
+}
+
+/// Commands from a remote client (already checked against the key's scope).
+pub enum Remote {
+    Snapshot(oneshot::Sender<serde_json::Value>),
+    Send(String),
+    Interrupt,
+    Perm(Reply),
+    Agent(String),
+    Model(String),
+    Deep(bool),
+    Clear,
 }
 pub struct PermAsk {
     pub req: Request,
@@ -65,6 +78,10 @@ pub const SLASH: &[(&str, &str)] = &[
         "clean",
         "clean-room mode: observe the original from outside only",
     ),
+    (
+        "remote",
+        "start remote control (browser / phone); /remote key to pair",
+    ),
     ("engines", "installed reverse-engineering engines"),
     ("thinking", "show / hide reasoning"),
     ("sidebar", "toggle sidebar"),
@@ -101,6 +118,12 @@ pub struct App {
     pub auto_allow: bool,
     /// Deep mode (may look inside the original); default is clean-room.
     pub deep: bool,
+    /// Remote control is active: events are copied to `outbox` for the server to publish.
+    pub remote_on: bool,
+    pub remote_addr: Option<String>,
+    /// The user asked (`/remote`) to start the server; the event loop does it.
+    pub remote_req: Option<String>,
+    pub outbox: Vec<serde_json::Value>,
     /// Last parity verdict: (passed, summary).
     pub parity: Option<(bool, String)>,
     pub cmd_tx: mpsc::UnboundedSender<Cmd>,
@@ -155,6 +178,10 @@ impl App {
             quit: false,
             auto_allow: false,
             deep,
+            remote_on: false,
+            remote_addr: None,
+            remote_req: None,
+            outbox: vec![],
             parity: None,
             cmd_tx,
             cancel,
@@ -207,7 +234,17 @@ impl App {
     }
 
     pub fn on_msg(&mut self, m: Msg) {
+        if self.remote_on {
+            match &m {
+                Msg::Ui(e) => self.outbox.push(crate::term::event_json(e)),
+                Msg::Info(s) => self
+                    .outbox
+                    .push(serde_json::json!({"type":"info","text":s})),
+                _ => {}
+            }
+        }
         match m {
+            Msg::Remote(r) => self.on_remote(r),
             Msg::Ui(e) => match e {
                 UiEvent::Text(t) => self.push_text(&t),
                 UiEvent::Reasoning(t) => {
@@ -274,6 +311,9 @@ impl App {
                 if self.auto_allow {
                     let _ = p.reply.send(Reply::Once);
                 } else {
+                    if self.remote_on {
+                        self.outbox.push(serde_json::json!({"type":"perm","tool":p.req.tool,"target":p.req.target,"reason":p.req.reason}));
+                    }
                     self.perm = Some(p);
                 }
             }
@@ -298,7 +338,70 @@ impl App {
                     ))),
                     Err(e) => self.items.push(Item::Error(e)),
                 }
+                if self.remote_on {
+                    let line = match self.items.last() {
+                        Some(Item::Footer(t)) | Some(Item::Error(t)) => t.clone(),
+                        _ => String::new(),
+                    };
+                    self.outbox
+                        .push(serde_json::json!({"type":"done","text":line}));
+                }
             }
+        }
+    }
+
+    /// Everything a newly connected remote client needs to draw the session.
+    pub fn snapshot(&self) -> serde_json::Value {
+        let items: Vec<serde_json::Value> = self.items.iter().map(|i| match i {
+            Item::User(t) => serde_json::json!({"k":"user","text":t}),
+            Item::Assistant(t) => serde_json::json!({"k":"assistant","text":t}),
+            Item::Reasoning(t) => serde_json::json!({"k":"reasoning","text":t}),
+            Item::Tool { name, args, state, title, text } => serde_json::json!({"k":"tool","name":name,"args":args,"state":match state { ToolState::Running => "running", ToolState::Ok => "ok", ToolState::Err => "err" },"title":title,"text":text}),
+            Item::Info(t) => serde_json::json!({"k":"info","text":t}),
+            Item::Error(t) => serde_json::json!({"k":"error","text":t}),
+            Item::Footer(t) => serde_json::json!({"k":"footer","text":t}),
+        }).collect();
+        serde_json::json!({
+            "state": self.state_json(),
+            "items": items,
+            "todos": self.todos,
+            "perm": self.perm.as_ref().map(|p| serde_json::json!({"tool":p.req.tool,"target":p.req.target,"reason":p.req.reason})),
+            "agents": self.agents,
+        })
+    }
+
+    pub fn state_json(&self) -> serde_json::Value {
+        serde_json::json!({"agent":self.agent,"model":self.model,"provider":self.provider,"deep":self.deep,"busy":self.busy,"cwd":self.cwd,"title":self.title,"context_pct":self.context_pct(),"ledger":self.ledger,"parity":self.parity.as_ref().map(|p| serde_json::json!({"ok":p.0,"text":p.1}))})
+    }
+
+    fn on_remote(&mut self, r: Remote) {
+        match r {
+            Remote::Snapshot(tx) => {
+                let _ = tx.send(self.snapshot());
+            }
+            Remote::Send(t) => {
+                if t.trim_start().starts_with('/') {
+                    self.outbox.push(serde_json::json!({"type":"info","text":"slash commands are not sent remotely; use the agent/model/deep controls"}));
+                } else if self.busy {
+                    self.outbox.push(serde_json::json!({"type":"info","text":"the agent is still working; interrupt it first"}));
+                } else {
+                    self.input = t;
+                    self.cursor = self.input.chars().count();
+                    self.submit();
+                    self.outbox.push(serde_json::json!({"type":"user","text":match self.items.iter().rev().find(|i| matches!(i, Item::User(_))) { Some(Item::User(t)) => t.clone(), _ => String::new() }}));
+                }
+            }
+            Remote::Interrupt => self.cancel.store(true, Ordering::Relaxed),
+            Remote::Perm(rep) => {
+                if let Some(p) = self.perm.take() {
+                    let _ = p.reply.send(rep);
+                    self.outbox.push(serde_json::json!({"type":"perm_done"}));
+                }
+            }
+            Remote::Agent(n) => self.slash(&format!("agent {n}")),
+            Remote::Model(m) => self.slash(&format!("model {m}")),
+            Remote::Deep(on) => self.slash(if on { "deep" } else { "clean" }),
+            Remote::Clear => self.slash("clear"),
         }
     }
 
@@ -363,6 +466,9 @@ impl App {
             match reply {
                 Some(r) => {
                     let _ = p.reply.send(r);
+                    if self.remote_on {
+                        self.outbox.push(serde_json::json!({"type":"perm_done"}));
+                    }
                 }
                 None => self.perm = Some(p),
             }
@@ -532,6 +638,7 @@ impl App {
                 let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
                 self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
             }
+            ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
             ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile hexdump (+ MCP)".into())),
@@ -682,5 +789,43 @@ mod tests {
             ),
             "run tests"
         );
+    }
+
+    #[test]
+    fn remote_commands_drive_the_same_state_as_the_keyboard() {
+        let mut a = app();
+        a.remote_on = true;
+        a.on_msg(Msg::Remote(Remote::Send("/exit".into())));
+        assert!(!a.quit, "slash commands must not be accepted remotely");
+        a.on_msg(Msg::Remote(Remote::Send("hello".into())));
+        assert!(a.busy && matches!(a.items.last(), Some(Item::User(t)) if t == "hello"));
+        assert!(a.outbox.iter().any(|v| v["type"] == "user"));
+        let (tx, rx) = oneshot::channel();
+        a.on_msg(Msg::Remote(Remote::Snapshot(tx)));
+        let snap = rx.blocking_recv().unwrap();
+        assert_eq!(snap["state"]["busy"], true);
+        assert_eq!(snap["items"][0]["k"], "user");
+        a.on_msg(Msg::Remote(Remote::Deep(true)));
+        assert!(a.deep);
+    }
+
+    #[test]
+    fn remote_answers_permission_asks_once() {
+        let mut a = app();
+        a.remote_on = true;
+        let (tx, mut rx) = oneshot::channel();
+        a.on_msg(Msg::Perm(PermAsk {
+            req: Request {
+                tool: "bash".into(),
+                target: "ls".into(),
+                reason: String::new(),
+            },
+            reply: tx,
+        }));
+        assert!(a.outbox.iter().any(|v| v["type"] == "perm"));
+        a.on_msg(Msg::Remote(Remote::Perm(Reply::Once)));
+        assert!(matches!(rx.try_recv(), Ok(Reply::Once)));
+        assert!(a.perm.is_none());
+        a.on_msg(Msg::Remote(Remote::Perm(Reply::Always))); // nothing pending: ignored
     }
 }
