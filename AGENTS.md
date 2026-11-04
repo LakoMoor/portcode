@@ -12,3 +12,4 @@ PortCode: Rust agent for reverse engineering and ports, built for local/self-hos
 - Before pushing: `cargo fmt --all && cargo clippy --workspace --all-targets && cargo test --workspace`; if you changed output rendering, rerun `scripts/make_screenshots.sh` and `examples/wordstat/demo.sh`.
 - UI: `crates/portcode-cli/src/tui` (App = state/update, view = render, svg = headless screenshot). Real runs and `portcode snapshot` share them; keep `App` free of terminal I/O so it stays testable.
 - Installers: `install.sh` must keep verifying sha256; test it with `PORTCODE_DOWNLOAD_URL` against a local `packaging/package.sh` archive.
+- Deep mode: tools that look inside the original (`disasm`, `emulate`, `decompile`, `hexdump`) must call `ctx.need_deep(..)`; `bash` refuses inspectors in clean-room. Engines install only under `engines::dir()`, only after `ctx.permit`, and downloads need a published sha256.

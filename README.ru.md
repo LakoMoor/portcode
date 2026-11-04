@@ -22,6 +22,8 @@ portcode -a port                               # воркфлоу rustport
 portcode -m ollama/qwen3:14b                   # локальная модель, ключ не нужен
 ```
 
+**Режимы.** `clean-room` (по умолчанию) — оригинал изучается только снаружи. `--deep` / `/deep` — можно смотреть внутрь: инструменты `disasm` (Capstone), `emulate` (Unicorn), `decompile` (Ghidra headless), `hexdump`; ImHex, Keystone, LIEF, YARA, angr, Frida и rizin/radare2/binwalk/capa/jadx подключаются тоже. Движки ставятся (с вопросом и проверкой sha256) в папку `engines/` рядом с бинарём: `portcode engines install core`. Самая строгая схема: сессия `reverse --deep` пишет `docs/SPEC.md` своими словами, сессия `port --clean-room` строит порт только по ней. Подробнее: [docs/ENGINES.md](docs/ENGINES.md).
+
 Промпты и скилл оптимизированы под открытые модели (DeepSeek, Qwen, в т. ч. «flash»/малые): короткие нумерованные правила, пример в каждом инструменте, фазы с «Done when», починка битого JSON и tool-call-ов, написанных текстом, стабильный префикс для кэша llama.cpp/vLLM. **Это не результаты бенчмарков**: запусти `portcode eval` на своей модели и подстрой профиль (`docs/PROVIDERS.md`).
 
 Пример порта с реальными данными: [examples/wordstat](examples/wordstat) · сгенерированный сайт: `docs/ports/wordstat/`.

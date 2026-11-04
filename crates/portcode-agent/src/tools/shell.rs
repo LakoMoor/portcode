@@ -148,6 +148,11 @@ impl Tool for Bash {
                 .unwrap_or(120_000)
                 .clamp(1_000, 600_000),
         );
+        if !ctx.is_deep() {
+            if let Some(w) = inspects_binaries(&cmd) {
+                return err(format!("`{w}` looks inside programs, which clean-room mode forbids. Observe the original from outside (run it, feed inputs, compare outputs) or ask the user to switch to deep mode (--deep or /deep)."));
+            }
+        }
         ctx.permit(
             "bash",
             cmd.trim(),
@@ -253,5 +258,65 @@ mod tests {
             .await
             .unwrap();
         assert!(o.text.contains("omitted") && o.text.len() < 14_000);
+    }
+}
+
+/// Commands that read the inside of a program; refused in clean-room mode.
+const INSPECTORS: &[&str] = &[
+    "objdump",
+    "otool",
+    "nm",
+    "strings",
+    "xxd",
+    "hexdump",
+    "od",
+    "readelf",
+    "gdb",
+    "lldb",
+    "r2",
+    "radare2",
+    "rizin",
+    "rz-bin",
+    "ghidra",
+    "analyzeHeadless",
+    "ghidraRun",
+    "retdec-decompiler",
+    "binwalk",
+    "jadx",
+    "wasm2wat",
+    "wasm-decompile",
+    "ilspycmd",
+    "monodis",
+    "dumpbin",
+    "llvm-objdump",
+    "llvm-nm",
+    "diec",
+    "capa",
+];
+
+fn inspects_binaries(cmd: &str) -> Option<&'static str> {
+    // the command word of each pipeline segment (after env assignments and sudo/env/time/xargs wrappers)
+    cmd.split(|c: char| ";&|\n(`".contains(c)).find_map(|seg| {
+        let w = seg.split_whitespace().find(|w| {
+            !w.contains('=')
+                && !["sudo", "env", "time", "xargs", "nice", "exec", "command"].contains(w)
+        })?;
+        let base = w.rsplit('/').next().unwrap_or(w);
+        INSPECTORS.iter().find(|i| **i == base).copied()
+    })
+}
+
+#[cfg(test)]
+mod clean_room_tests {
+    use super::inspects_binaries;
+    #[test]
+    fn flags_inspectors_only() {
+        assert_eq!(inspects_binaries("objdump -d a.out"), Some("objdump"));
+        assert_eq!(
+            inspects_binaries("cat x | /usr/bin/strings"),
+            Some("strings")
+        );
+        assert_eq!(inspects_binaries("cargo test && ./wordstat in.txt"), None);
+        assert_eq!(inspects_binaries("grep nm file"), None);
     }
 }

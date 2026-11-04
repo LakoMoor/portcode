@@ -32,6 +32,15 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 <div class="card"><h3>Permission dialog</h3><p><img src="screenshots/tui-permission.svg" alt="permission dialog" style="width:100%;border-radius:8px"></p></div>
 </div></section>
 
+<section id="deep"><h2><small>Reverse engineering</small>Clean-room by default, deep when you say so</h2>
+<p>In clean-room mode PortCode only observes the original from outside, and refuses disassemblers, decompilers and raw-byte tools. Switch to <code>deep</code> and it drives Capstone, Unicorn, Ghidra and ImHex, installed into an <code>engines/</code> folder next to the binary after you approve each one.</p>
+<figure class="shot"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></figure>
+<p class="cap">Deep mode on the wordstat example: real <code>hexdump</code>, <code>disasm</code> and <code>emulate</code> calls; the model is a scripted replay.</p>
+<pre><code>portcode engines install core          # capstone + unicorn + lief
+portcode engines install ghidra imhex
+portcode --deep -a reverse             # then: portcode --clean-room -a port</code></pre>
+</section>
+
 <section id="how"><h2><small>Workflow</small>Evidence first, code second</h2>
 <div class="grid">
 <div class="card"><h3>Study</h3><p>Pin the exact build, survey the tree, trace the main loop. Static findings are labelled <code>inference</code>; only things you ran are <code>observation</code>.</p></div>

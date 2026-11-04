@@ -11,3 +11,6 @@
 - [ ] `portcode port site --publish` GitHub Pages workflow generator for ports
 - [ ] Windows binaries + `install.ps1` (needs a portable `bash` tool; today use WSL)
 - [ ] Windows support for `bash` tool (process groups, `cmd`/PowerShell)
+
+- [x] Deep mode with Capstone, Unicorn and Ghidra tools; engines installed next to the binary
+- [ ] ImHex pattern evaluation without the GUI; angr/Frida wrappers as first-class tools; Windows engines

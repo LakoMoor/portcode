@@ -47,6 +47,12 @@ const EXPLORE: &[&str] = &[
     "evidence_list",
 ];
 const REVERSE: &[&str] = &[
+    "re_status",
+    "re_install",
+    "disasm",
+    "emulate",
+    "decompile",
+    "hexdump",
     "read",
     "ls",
     "glob",
@@ -215,6 +221,7 @@ pub fn system_prompt(
     profile: &ModelProfile,
     root: &Path,
     skills: &[Skill],
+    deep: bool,
     now_secs: u64,
 ) -> String {
     let mut s = String::from(COMMON);
@@ -250,10 +257,15 @@ pub fn system_prompt(
         s += &format!("\n# Project instructions\n{ins}");
     }
     s += &format!(
-        "\n# Environment\n- project: {}\n- platform: {}\n- agent: {}\n- date: {}\n",
+        "\n# Environment\n- project: {}\n- platform: {}\n- agent: {}\n- mode: {}\n- date: {}\n",
         root.display(),
         std::env::consts::OS,
         agent.name,
+        if deep {
+            "deep (may look inside the original with disasm/emulate/decompile/hexdump)"
+        } else {
+            "clean-room (observe the original from outside only)"
+        },
         civil_date(now_secs)
     );
     s
@@ -273,8 +285,8 @@ mod tests {
         let p = ModelProfile::default();
         let skills = vec![crate::skills::bundled()];
         let d = std::path::Path::new("/nonexistent-project");
-        let a = system_prompt(&find("port").unwrap(), &p, d, &skills, 0);
-        let b = system_prompt(&find("port").unwrap(), &p, d, &skills, 86_400 * 5);
+        let a = system_prompt(&find("port").unwrap(), &p, d, &skills, false, 0);
+        let b = system_prompt(&find("port").unwrap(), &p, d, &skills, false, 86_400 * 5);
         let cut = a.find("- date:").unwrap();
         assert_eq!(
             &a[..cut],
@@ -286,7 +298,9 @@ mod tests {
                 && a.contains("</rustport-skill>")
                 && a.contains("evidence_add")
         );
-        assert!(system_prompt(&find("build").unwrap(), &p, d, &skills, 0).contains("# Skills"));
+        assert!(
+            system_prompt(&find("build").unwrap(), &p, d, &skills, false, 0).contains("# Skills")
+        );
     }
     #[test]
     fn prompts_stay_small_enough_for_small_contexts() {
@@ -296,6 +310,7 @@ mod tests {
             &p,
             std::path::Path::new("/x"),
             &[crate::skills::bundled()],
+            false,
             0,
         );
         assert!(

@@ -27,6 +27,22 @@ struct Cli {
     /// Show the model's reasoning stream
     #[arg(long, global = true)]
     show_reasoning: bool,
+    /// Deep mode: may disassemble, decompile and emulate the original (you own it or may examine it)
+    #[arg(long, global = true, conflicts_with = "clean_room")]
+    deep: bool,
+    /// Clean-room mode (default): observe the original from outside only
+    #[arg(long, global = true)]
+    clean_room: bool,
+}
+
+#[derive(Subcommand)]
+enum EnginesCmd {
+    /// Show what is installed
+    List,
+    /// Install engines: an id (unicorn, capstone, ghidra, imhex…), `core` (capstone+unicorn+lief) or `all`
+    Install { ids: Vec<String> },
+    /// Print the engines folder
+    Path,
 }
 
 #[derive(Subcommand)]
@@ -92,6 +108,11 @@ enum Cmd {
     Completions { shell: clap_complete::Shell },
     /// List agents
     Agents,
+    /// Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path
+    Engines {
+        #[command(subcommand)]
+        sub: EnginesCmd,
+    },
     /// Skills: list, show, export
     Skill {
         #[command(subcommand)]
@@ -212,7 +233,20 @@ pub fn root() -> Result<std::path::PathBuf, String> {
 }
 
 async fn real_main(cli: Cli) -> Result<i32, String> {
-    let cfg = || Config::load(&root()?);
+    let (deep, clean) = (cli.deep, cli.clean_room);
+    let cfg = move || {
+        let mut c = Config::load(&root()?)?;
+        if let Ok(m) = std::env::var("PORTCODE_MODE") {
+            c.mode = Some(m);
+        }
+        if deep {
+            c.mode = Some("deep".into());
+        }
+        if clean {
+            c.mode = Some("clean-room".into());
+        }
+        Ok::<_, String>(c)
+    };
     match cli.cmd {
         None => {
             let tty = std::io::IsTerminal::is_terminal(&std::io::stdin())
@@ -340,6 +374,14 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             }
             Ok(0)
         }
+        Some(Cmd::Engines { sub }) => match sub {
+            EnginesCmd::List => cmds::engines_list(),
+            EnginesCmd::Path => {
+                println!("{}", portcode_agent::engines::dir().display());
+                Ok(0)
+            }
+            EnginesCmd::Install { ids } => cmds::engines_install(&ids),
+        },
         Some(Cmd::Skill { sub }) => cmds::skill(sub_skill(sub)),
         Some(Cmd::Port {
             sub:

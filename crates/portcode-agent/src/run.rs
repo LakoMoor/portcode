@@ -147,6 +147,7 @@ impl Runner {
             Rules::from_config(&cfg.permission),
         );
         ctx.readonly = agent_def.readonly.into();
+        ctx.deep = (cfg.mode.as_deref() == Some("deep")).into();
         ctx.output_limit = resolved.profile.tool_output_limit;
         ctx.allowed_dirs = cfg
             .allowed_dirs
@@ -235,6 +236,7 @@ impl Runner {
             &self.resolved.profile,
             &self.ctx.root,
             &self.skills,
+            self.ctx.is_deep(),
             portcode_evidence::now_secs(),
         ))
     }
@@ -584,6 +586,12 @@ const BUILTIN_NAMES: &[&str] = &[
     "screenshot",
     "site_build",
     "scaffold",
+    "re_status",
+    "re_install",
+    "disasm",
+    "emulate",
+    "decompile",
+    "hexdump",
 ];
 
 struct SubAgents {

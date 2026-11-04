@@ -23,6 +23,7 @@ pub enum Cmd {
     Clear,
     Resume,
     ListModels,
+    SetDeep(bool),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -56,6 +57,15 @@ pub const SLASH: &[(&str, &str)] = &[
     ("resume", "resume the latest session"),
     ("tools", "list tools"),
     ("ledger", "show the evidence ledger"),
+    (
+        "deep",
+        "deep mode: may disassemble, decompile, emulate the original",
+    ),
+    (
+        "clean",
+        "clean-room mode: observe the original from outside only",
+    ),
+    ("engines", "installed reverse-engineering engines"),
     ("thinking", "show / hide reasoning"),
     ("sidebar", "toggle sidebar"),
     ("help", "keys and commands"),
@@ -89,6 +99,10 @@ pub struct App {
     pub spinner: usize,
     pub quit: bool,
     pub auto_allow: bool,
+    /// Deep mode (may look inside the original); default is clean-room.
+    pub deep: bool,
+    /// Last parity verdict: (passed, summary).
+    pub parity: Option<(bool, String)>,
     pub cmd_tx: mpsc::UnboundedSender<Cmd>,
     pub cancel: Arc<AtomicBool>,
     cfg: Config,
@@ -108,6 +122,7 @@ impl App {
         cmd_tx: mpsc::UnboundedSender<Cmd>,
         cancel: Arc<AtomicBool>,
     ) -> Self {
+        let deep = cfg.mode.as_deref() == Some("deep");
         Self {
             items: vec![],
             input: String::new(),
@@ -139,6 +154,8 @@ impl App {
             spinner: 0,
             quit: false,
             auto_allow: false,
+            deep,
+            parity: None,
             cmd_tx,
             cancel,
             cfg,
@@ -235,7 +252,10 @@ impl App {
                     text: x,
                 } => {
                     if let Some(Item::Tool { state, title, text, .. }) = self.items.iter_mut().rev().find(|i| matches!(i, Item::Tool { name: n, state: ToolState::Running, .. } if *n == name)) {
-                        *state = if ok { ToolState::Ok } else { ToolState::Err }; *title = t; *text = x;
+                        *state = if ok { ToolState::Ok } else { ToolState::Err }; *title = t.clone(); *text = x;
+                    }
+                    if name == "parity" {
+                        self.parity = Some((ok && t.contains("PASS"), t.clone()));
                     }
                     self.refresh_ledger();
                 }
@@ -506,9 +526,15 @@ impl App {
             ("models", _) => { let _ = self.cmd_tx.send(Cmd::ListModels); }
             ("clear", _) => { self.items.clear(); self.todos.clear(); self.title = None; self.tokens_in = 0; self.tokens_out = 0; self.last_prompt = 0; let _ = self.cmd_tx.send(Cmd::Clear); }
             ("resume", _) => { let _ = self.cmd_tx.send(Cmd::Resume); }
+            ("deep", _) => { self.deep = true; let _ = self.cmd_tx.send(Cmd::SetDeep(true)); self.items.push(Item::Info("deep mode: disasm, emulate, decompile and hexdump are available. Use it only on software you own or may examine.".into())); }
+            ("clean" | "clean-room", _) => { self.deep = false; let _ = self.cmd_tx.send(Cmd::SetDeep(false)); self.items.push(Item::Info("clean-room mode: the original is observed from outside only.".into())); }
+            ("engines", _) => {
+                let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
+                self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
+            }
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
-            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold (+ MCP)".into())),
+            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile hexdump (+ MCP)".into())),
             ("ledger", _) => {
                 self.refresh_ledger();
                 let (o, i, u) = self.ledger;
@@ -528,6 +554,18 @@ pub fn summarize(name: &str, args: &str) -> String {
         let end = rest.find('"').unwrap_or(rest.len());
         Some(rest.get(..end)?.to_string())
     };
+    if matches!(name, "disasm" | "emulate" | "hexdump" | "decompile") {
+        let what = pick("file").unwrap_or_else(|| "hex bytes".into());
+        let how: Vec<String> = ["arch", "mode", "query"]
+            .iter()
+            .filter_map(|k| pick(k))
+            .collect();
+        return if how.is_empty() {
+            what
+        } else {
+            format!("{what} · {}", how.join(" "))
+        };
+    }
     let keys: &[&str] = match name {
         "bash" => &["description", "command"],
         "grep" | "glob" => &["pattern"],

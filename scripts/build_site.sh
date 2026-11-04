@@ -3,7 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 PC="$PWD/target/release/portcode"
-for p in ARCHITECTURE:Architecture PROVIDERS:"Providers, models and open-weight tuning" OPENCODE_MAPPING:"OpenCode → PortCode mapping" ROADMAP:Roadmap; do
+for p in ARCHITECTURE:Architecture PROVIDERS:"Providers, models and open-weight tuning" OPENCODE_MAPPING:"OpenCode → PortCode mapping" ENGINES:"Engines and modes" ROADMAP:Roadmap; do
   "$PC" port page "docs/${p%%:*}.md" "docs/guide/${p%%:*}.html" --title "${p#*:}" >/dev/null
 done
 "$PC" port page README.ru.md docs/ru.html --title "PortCode по-русски" --css style.css --home ./ >/dev/null

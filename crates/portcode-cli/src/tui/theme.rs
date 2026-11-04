@@ -13,6 +13,8 @@ pub const GREEN: Color = Color::Rgb(127, 216, 143);
 pub const RED: Color = Color::Rgb(224, 108, 117);
 pub const YELLOW: Color = Color::Rgb(245, 167, 66);
 pub const PURPLE: Color = Color::Rgb(157, 124, 216);
+pub const TEAL: Color = Color::Rgb(112, 200, 170);
+pub const RULE: Color = Color::Rgb(46, 46, 46);
 pub const CYAN: Color = Color::Rgb(86, 182, 194);
 
 pub fn text() -> Style {
@@ -31,5 +33,15 @@ pub fn agent_color(name: &str) -> Color {
         "reverse" => CYAN,
         "plan" => BLUE,
         _ => MUTED,
+    }
+}
+
+/// Colour of a tool name in the transcript: what kind of evidence it produces.
+pub fn tool_color(name: &str) -> Color {
+    match name {
+        "disasm" | "emulate" | "decompile" | "hexdump" | "re_install" | "re_status" => YELLOW,
+        "evidence_add" | "evidence_list" | "pin" | "parity" => GREEN,
+        "write" | "edit" | "scaffold" => ACCENT,
+        _ => TEXT,
     }
 }

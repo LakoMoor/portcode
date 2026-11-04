@@ -23,6 +23,8 @@ pub struct Config {
     pub agent: BTreeMap<String, AgentOverride>,
     pub mcp: BTreeMap<String, McpEntry>,
     pub max_steps: Option<u32>,
+    /// `clean-room` (default) or `deep`.
+    pub mode: Option<String>,
     /// Extra directories file tools may touch without asking.
     pub allowed_dirs: Vec<String>,
 }

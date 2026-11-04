@@ -256,7 +256,7 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                 let head = vec![
                     Span::raw("  "),
                     Span::styled(format!("{icon} "), Style::new().fg(col)),
-                    Span::styled(name.clone(), bold(TEXT)),
+                    Span::styled(name.clone(), bold(tool_color(name))),
                     Span::styled(format!("  {sum}"), muted()),
                 ];
                 out.extend(wrap(head, width, 6).into_iter().map(Line::from));
@@ -264,7 +264,7 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     let max = if *state == ToolState::Err { 4 } else { 3 };
                     let lines: Vec<&str> = body.lines().collect();
                     for l in lines.iter().take(max) {
-                        let l: String = l.chars().take(width.saturating_sub(6)).collect();
+                        let l: String = l.chars().take(width.saturating_sub(8)).collect();
                         let st = if l.starts_with('+') && !l.starts_with("++") {
                             Style::new().fg(GREEN)
                         } else if (l.starts_with('-') && !l.starts_with("--"))
@@ -274,12 +274,17 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                         } else {
                             muted()
                         };
-                        out.push(Line::from(vec![Span::raw("    "), Span::styled(l, st)]));
+                        out.push(Line::from(vec![
+                            Span::raw("    "),
+                            Span::styled("│ ", Style::new().fg(RULE)),
+                            Span::styled(l, st),
+                        ]));
                     }
                     if lines.len() > max {
                         out.push(Line::from(vec![
                             Span::raw("    "),
-                            Span::styled(format!("… {} more lines", lines.len() - max), muted()),
+                            Span::styled("╰ ", Style::new().fg(RULE)),
+                            Span::styled(format!("{} more lines", lines.len() - max), muted()),
                         ]));
                     }
                 }
@@ -392,7 +397,14 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
         let hint = if app.busy {
             "working… esc to interrupt"
         } else {
-            "Ask anything… \"Port this CLI to Rust, following rustport\""
+            match app.agent.as_str() {
+                "reverse" => {
+                    "Ask anything… \"What file format is save.dat? Record it as evidence\""
+                }
+                "plan" => "Ask anything… \"Plan the port of this module, read-only\"",
+                "build" => "Ask anything… \"Fix the failing test in crates/core\"",
+                _ => "Ask anything… \"Port this CLI to Rust, following rustport\"",
+            }
         };
         lines.push(Line::from(Span::styled(format!(" {hint}"), muted())));
     } else {
@@ -404,18 +416,57 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
         lines.push(Line::from(""));
     }
     lines.push(Line::from(""));
-    lines.push(Line::from(vec![
+    let mut meta = vec![
         Span::raw(" "),
         Span::styled(cap(&app.agent), bold(col)),
         Span::styled(format!("  {}", app.model), text()),
         Span::styled(format!("  {}", app.provider), muted()),
-    ]));
+        Span::raw("   "),
+    ];
+    meta.extend(mode_chip(app));
+    lines.push(Line::from(meta));
     f.render_widget(Paragraph::new(lines), inner);
     let (r, c) = cursor_pos(&app.input, app.cursor, inner_w);
     if focus && app.perm.is_none() {
         f.set_cursor_position((inner.x + 1 + c as u16, inner.y + 1 + r.min(7) as u16));
     }
     (area.x, area.y)
+}
+
+/// The mode chip: sealed teal for clean-room, a filled amber chip for deep (it is the riskier mode, so it shouts).
+fn mode_chip(app: &App) -> Vec<Span<'static>> {
+    if app.deep {
+        vec![Span::styled(
+            " ◉ deep ",
+            Style::new().fg(BG).bg(YELLOW).add_modifier(Modifier::BOLD),
+        )]
+    } else {
+        vec![Span::styled("▣ clean-room", Style::new().fg(TEAL))]
+    }
+}
+
+/// `▰▰▰▱▱▱` bar for a 0..=100 percentage.
+fn bar(pct: u64, cells: usize, on: ratatui::style::Color) -> Vec<Span<'static>> {
+    let filled = ((pct.min(100) as usize * cells) + 50) / 100;
+    vec![
+        Span::styled("▰".repeat(filled), Style::new().fg(on)),
+        Span::styled(
+            "▱".repeat(cells - filled.min(cells)),
+            Style::new().fg(BORDER),
+        ),
+    ]
+}
+
+/// Section title with a hairline rule filling the row.
+fn section(title: &str, w: usize) -> Line<'static> {
+    let used = title.chars().count() + 1;
+    Line::from(vec![
+        Span::styled(title.to_string(), bold(TEXT)),
+        Span::styled(
+            format!(" {}", "─".repeat(w.saturating_sub(used))),
+            Style::new().fg(RULE),
+        ),
+    ])
 }
 
 fn cap(s: &str) -> String {
@@ -429,7 +480,7 @@ fn prompt_height(app: &App, width: u16) -> u16 {
     let rows = hard_wrap(&app.input, width.saturating_sub(4) as usize)
         .len()
         .clamp(1, 8) as u16;
-    rows + 4
+    rows + 3
 }
 
 fn fmt_tokens(n: u64) -> String {
@@ -444,30 +495,33 @@ fn footer(f: &mut Frame, app: &App, area: Rect) {
     let hints = if app.busy {
         "esc interrupt".to_string()
     } else {
-        "tab agents · ctrl+t thinking · ctrl+b sidebar · / commands".to_string()
+        "tab agents · / commands · ctrl+b sidebar".to_string()
     };
-    let left = format!(" {}", app.cwd);
-    let right = format!("{}  ", hints);
-    let gap = (area.width as usize).saturating_sub(left.chars().count() + right.chars().count());
-    f.render_widget(
-        Paragraph::new(Line::from(vec![
-            Span::styled(left, muted()),
-            Span::raw(" ".repeat(gap)),
-            Span::styled(right, muted()),
-        ])),
-        area,
-    );
+    let mut left = vec![Span::styled(format!(" {}", app.cwd), muted())];
+    if let Some((ok, t)) = &app.parity {
+        left.push(Span::styled(
+            format!("  {} {t}", if *ok { "✓" } else { "✗" }),
+            Style::new().fg(if *ok { GREEN } else { RED }),
+        ));
+    }
+    let used: usize = left.iter().map(|s| s.content.chars().count()).sum();
+    let right = format!("{hints}  ");
+    let gap = (area.width as usize).saturating_sub(used + right.chars().count());
+    left.push(Span::raw(" ".repeat(gap)));
+    left.push(Span::styled(right, muted()));
+    f.render_widget(Paragraph::new(Line::from(left)), area);
 }
 
 fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     let block = Block::new()
+        .borders(Borders::LEFT)
+        .border_style(Style::new().fg(RULE))
         .style(Style::new().bg(PANEL))
         .padding(ratatui::widgets::Padding::new(2, 2, 1, 1));
     let inner = block.inner(area);
     f.render_widget(block, area);
     let w = inner.width as usize;
     let mut l: Vec<Line> = Vec::new();
-    let h = |s: &str| Line::from(Span::styled(s.to_string(), bold(TEXT)));
     for r in wrap(
         vec![Span::styled(
             app.title.clone().unwrap_or_else(|| "New session".into()),
@@ -475,53 +529,99 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
         )],
         w,
         0,
-    ) {
+    )
+    .into_iter()
+    .take(2)
+    {
         l.push(Line::from(r));
     }
     l.push(Line::from(""));
-    l.push(h("Context"));
-    l.push(Line::from(Span::styled(
-        format!("{} tokens", fmt_tokens(app.last_prompt)),
+
+    l.push(section("Mode", w));
+    let mut m = mode_chip(app);
+    m.push(Span::styled(
+        if app.deep {
+            "  inside allowed"
+        } else {
+            "  outside only"
+        },
         muted(),
-    )));
+    ));
+    l.push(Line::from(m));
+    l.push(Line::from(""));
+
+    l.push(section("Context", w));
+    let pct = app.context_pct();
+    let mut c = bar(
+        pct,
+        14,
+        if pct > 80 {
+            RED
+        } else if pct > 60 {
+            YELLOW
+        } else {
+            ACCENT
+        },
+    );
+    c.push(Span::styled(format!(" {pct}%"), muted()));
+    l.push(Line::from(c));
     l.push(Line::from(Span::styled(
         format!(
-            "{}% used · {} window",
-            app.context_pct(),
-            fmt_tokens(u64::from(app.ctx_window))
-        ),
-        muted(),
-    )));
-    l.push(Line::from(Span::styled(
-        format!(
-            "{} in · {} out total",
+            "{} of {} · {} in / {} out",
+            fmt_tokens(app.last_prompt),
+            fmt_tokens(u64::from(app.ctx_window)),
             fmt_tokens(app.tokens_in),
             fmt_tokens(app.tokens_out)
         ),
         muted(),
     )));
     l.push(Line::from(""));
-    l.push(h("Evidence"));
+
+    l.push(section("Evidence", w));
     let (o, i, u) = app.ledger;
+    let total = (o + i + u).max(1);
+    let cells = 14usize;
+    let seg = |n: usize| (n * cells + total / 2) / total;
+    let (so, si) = (seg(o), seg(i));
+    let su = cells.saturating_sub(so + si);
+    if o + i + u > 0 {
+        l.push(Line::from(vec![
+            Span::styled("█".repeat(so), Style::new().fg(GREEN)),
+            Span::styled("█".repeat(si), Style::new().fg(YELLOW)),
+            Span::styled("█".repeat(su), Style::new().fg(RED)),
+        ]));
+    }
     l.push(Line::from(vec![
-        Span::styled(format!("● {o} observed  "), Style::new().fg(GREEN)),
-        Span::styled(format!("● {i} inferred"), Style::new().fg(YELLOW)),
+        Span::styled(format!("{o} seen  "), Style::new().fg(GREEN)),
+        Span::styled(format!("{i} inferred  "), Style::new().fg(YELLOW)),
+        Span::styled(format!("{u} open"), Style::new().fg(RED)),
     ]));
-    l.push(Line::from(Span::styled(
-        format!("● {u} unknown"),
-        Style::new().fg(RED),
-    )));
-    for un in app.unknowns.iter().take(3) {
-        for r in wrap(vec![Span::styled(format!("  {un}"), muted())], w, 4)
-            .into_iter()
-            .take(2)
+    for un in app.unknowns.iter().take(2) {
+        for r in wrap(
+            vec![Span::styled(un.clone(), muted())],
+            w.saturating_sub(2),
+            0,
+        )
+        .into_iter()
+        .take(2)
         {
-            l.push(Line::from(r));
+            let mut v = vec![Span::styled("? ", Style::new().fg(RED))];
+            v.extend(r);
+            l.push(Line::from(v));
         }
     }
+    l.push(Line::from(""));
+
+    l.push(section("Proof", w));
+    l.push(Line::from(match &app.parity {
+        Some((true, t)) => Span::styled(format!("✓ {t}"), Style::new().fg(GREEN)),
+        Some((false, t)) => Span::styled(format!("✗ {t}"), Style::new().fg(RED)),
+        None => Span::styled("no parity run yet", muted()),
+    }));
+
     if !app.todos.is_empty() {
         l.push(Line::from(""));
-        l.push(h("Todo"));
+        l.push(section("Todo", w));
         for t in &app.todos {
             let (m, c) = match t.status.as_str() {
                 "completed" => ("☑", GREEN),
@@ -688,7 +788,7 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
             height: 3,
         },
     );
-    let tag = "port anything to Rust · show the proof";
+    let tag = "port anything to Rust, and show the proof";
     f.render_widget(
         Paragraph::new(Line::from(Span::styled(tag, muted()))),
         Rect {
@@ -706,7 +806,7 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     };
     prompt(f, app, pa, true);
     popup(f, app, pa);
-    let tips = "tab agents   /  commands   ctrl+c quit";
+    let tips = "tab agents   /deep look inside   /  commands   ctrl+c quit";
     f.render_widget(
         Paragraph::new(Line::from(Span::styled(tips, muted()))),
         Rect {

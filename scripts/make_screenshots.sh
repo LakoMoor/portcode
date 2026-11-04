@@ -22,8 +22,12 @@ shot ledger    "portcode port ledger"  "portcode port ledger"  sh -c "cd example
 P="$PC"; L="--cwd-label ~/projects/wordstat"
 mockrun() { port="$1"; shift; "$MOCK" examples/wordstat/demo-session.json "$port" >/dev/null & mp=$!; sleep 1
   ( cd "$W" && rm -rf .portcode && PORTCODE_BASE_URL="http://127.0.0.1:$port/v1" "$P" -a port -m mock/mock-model snapshot "$@" $L ); kill $mp 2>/dev/null || true; }
+# deep mode needs Capstone + Unicorn (installed once into the engines folder next to the binary)
+"$PC" engines install core >/dev/null 2>&1 || true
 "$PC" snapshot "$OUT/tui-home.svg" --size 110x32 $L >/dev/null
 "$PC" snapshot "$OUT/tui-slash.svg" --size 110x32 --typed "/" $L >/dev/null
 mockrun 18081 "$OUT/tui-session.svg" --size 132x56 --prompt "Port the wordstat CLI to Rust, following rustport." >/dev/null
 mockrun 18082 "$OUT/tui-permission.svg" --size 132x56 --until-permission --prompt "Port the wordstat CLI to Rust, following rustport." >/dev/null
 ls "$OUT"
+"$MOCK" examples/wordstat/demo-deep.json 18083 >/dev/null & mp=$!; sleep 1
+( cd "$W" && rm -rf .portcode && PORTCODE_BASE_URL="http://127.0.0.1:18083/v1" "$P" --deep -a reverse -m mock/mock-model snapshot "$OUT/tui-deep.svg" --size 132x44 --prompt "What does the original accept on the command line?" $L >/dev/null ); kill $mp 2>/dev/null || true

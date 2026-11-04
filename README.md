@@ -22,7 +22,7 @@ It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, s
 ```sh
 # macOS / Linux (also WSL) — verifies the sha256 of the download
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
-#   options: PORTCODE_VERSION=v0.1.0  PORTCODE_INSTALL_DIR=~/bin  PORTCODE_FROM_SOURCE=1  --with-skill ~/.claude/skills  --uninstall
+#   options: --with-engines core  PORTCODE_VERSION=v0.1.0  PORTCODE_INSTALL_DIR=~/bin  PORTCODE_FROM_SOURCE=1  --with-skill ~/.claude/skills  --uninstall
 
 # Homebrew (after the tap is published)
 brew tap LakoMoor/tap && brew install portcode
@@ -40,8 +40,25 @@ portcode completions zsh > ~/.zfunc/_portcode
 ```
 Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bash` tool is Unix-only for now).
 
+## Clean-room and deep mode
+| | clean-room (default) | deep |
+|---|---|---|
+| looks at | the original from outside: run it, inputs, outputs, screenshots | also inside: disassembly, decompilation, emulation, raw bytes |
+| switch | `--clean-room` | `--deep`, `/deep`, `"mode":"deep"` |
+
+Deep mode drives real engines — **Capstone**, **Unicorn**, **Ghidra** (headless), **ImHex**, plus Keystone, LIEF, YARA, angr, Frida, and system tools (rizin, radare2, binwalk, Detect It Easy, capa, jadx, wabt, upx). They install into an `engines/` folder next to the `portcode` binary, after asking, with sha256-verified downloads:
+```sh
+portcode engines install core          # capstone + unicorn + lief
+portcode engines install ghidra imhex  # Ghidra needs a JDK
+portcode --deep -a reverse             # tools: disasm · emulate · decompile · hexdump
+```
+For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and ledger entries in your own words, then `port --clean-room` to build from those only. Details: [docs/ENGINES.md](docs/ENGINES.md).
+
+![deep mode](docs/screenshots/tui-deep.svg)
+<sub>Deep mode on the bundled example: strings, ARM64 disassembly and a Unicorn run of the prologue (real tools; scripted model).</sub>
+
 ## Keys (full-screen UI)
-`enter` send · `alt+enter` newline · `tab`/`shift+tab` switch agent · `/` commands · `esc` interrupt · `ctrl+t` show reasoning · `ctrl+b` sidebar · `pgup/pgdn`/wheel scroll · `ctrl+c` interrupt / clear / quit. Permission dialog: `y` once · `a` always · `n` reject.
+`enter` send · `alt+enter` newline · `tab`/`shift+tab` switch agent · `/` commands · `esc` interrupt · `/deep` · `/clean` switch mode · `ctrl+t` show reasoning · `ctrl+b` sidebar · `pgup/pgdn`/wheel scroll · `ctrl+c` interrupt / clear / quit. Permission dialog: `y` once · `a` always · `n` reject.
 
 ## Use
 ```sh

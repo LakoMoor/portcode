@@ -1,17 +1,23 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PortCode по-русски — PortCode</title><meta property="og:title" content="PortCode по-русски — PortCode"><link rel="stylesheet" href="style.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="./">Port<b>Code</b></a><a class="l" href="./guide/ARCHITECTURE.html">Architecture</a><a class="l" href="./guide/PROVIDERS.html">Providers</a><a class="l" href="./guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="./guide/ROADMAP.html">Roadmap</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="./">Port<b>Code</b></a><a class="l" href="./guide/ARCHITECTURE.html">Architecture</a><a class="l" href="./guide/PROVIDERS.html">Providers</a><a class="l" href="./guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="./guide/ENGINES.html">Engines</a><a class="l" href="./guide/ROADMAP.html">Roadmap</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
 <main class="wrap" style="padding-top:30px">
 <h1>PortCode (по-русски)</h1>
 <p><strong>Портируй что угодно на Rust — и покажи доказательства.</strong> Терминальный агент для реверс-инжиниринга и портов на Rust, который работает с *твоими* моделями: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p>Что делает: фиксирует точную сборку оригинала (sha256), ведёт журнал доказательств (<code>observation</code> — видел, <code>inference</code> — вывел, <code>unknown</code> — пробел), портит модуль за модулем против golden-выводов <strong>оригинала</strong>, проверяет <code>parity</code> и дифференциальным фаззингом, делает скриншот на каждую функцию и генерирует сайт для GitHub Pages.</p>
 <p>Это переписывание архитектуры OpenCode на Rust (агенты, инструменты, разрешения, сессии, скиллы, MCP) вместе со скиллом [rustport](skills/rustport). Что покрыто, а что нет — в [docs/OPENCODE_MAPPING.md](docs/OPENCODE_MAPPING.md).</p>
-<pre><code>cargo install --path crates/portcode-cli
-portcode init &amp;&amp; export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor
+<p>![Интерфейс PortCode](docs/screenshots/tui-session.svg)</p>
+<p>Установка (macOS / Linux / WSL; проверяет sha256):</p>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
+# или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
+</code></pre>
+<p>Полноэкранный интерфейс в стиле OpenCode: <code>enter</code> отправить · <code>alt+enter</code> перенос · <code>tab</code> сменить агента · <code>/</code> команды · <code>esc</code> прервать · <code>ctrl+t</code> рассуждения · <code>ctrl+b</code> боковая панель. <code>portcode --plain</code> — построчный режим. Windows: через WSL.</p>
+<pre><code>portcode init &amp;&amp; export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor
 portcode doctor
 portcode -a port                               # воркфлоу rustport
 portcode -m ollama/qwen3:14b                   # локальная модель, ключ не нужен
 </code></pre>
+<p><strong>Режимы.</strong> <code>clean-room</code> (по умолчанию) — оригинал изучается только снаружи. <code>--deep</code> / <code>/deep</code> — можно смотреть внутрь: инструменты <code>disasm</code> (Capstone), <code>emulate</code> (Unicorn), <code>decompile</code> (Ghidra headless), <code>hexdump</code>; ImHex, Keystone, LIEF, YARA, angr, Frida и rizin/radare2/binwalk/capa/jadx подключаются тоже. Движки ставятся (с вопросом и проверкой sha256) в папку <code>engines/</code> рядом с бинарём: <code>portcode engines install core</code>. Самая строгая схема: сессия <code>reverse --deep</code> пишет <code>docs/SPEC.md</code> своими словами, сессия <code>port --clean-room</code> строит порт только по ней. Подробнее: [docs/ENGINES.md](docs/ENGINES.md).</p>
 <p>Промпты и скилл оптимизированы под открытые модели (DeepSeek, Qwen, в т. ч. «flash»/малые): короткие нумерованные правила, пример в каждом инструменте, фазы с «Done when», починка битого JSON и tool-call-ов, написанных текстом, стабильный префикс для кэша llama.cpp/vLLM. <strong>Это не результаты бенчмарков</strong>: запусти <code>portcode eval</code> на своей модели и подстрой профиль (<code>docs/PROVIDERS.md</code>).</p>
 <p>Пример порта с реальными данными: [examples/wordstat](examples/wordstat) · сгенерированный сайт: <code>docs/ports/wordstat/</code>. Статус: альфа. Изучай только ПО, которое тебе принадлежит или на анализ которого есть разрешение.</p>
 </main>

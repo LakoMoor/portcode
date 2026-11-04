@@ -18,6 +18,7 @@ pub const RUSTPORT_FILES: &[(&str, &str)] = emb![
     "SKILL.md",
     "references/evidence.md",
     "references/clean-room.md",
+    "references/deep-engines.md",
     "references/architecture.md",
     "references/site-and-screenshots.md",
     "references/pitfalls.md",

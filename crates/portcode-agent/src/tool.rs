@@ -64,6 +64,8 @@ pub struct Ctx {
     pub cancel: Arc<AtomicBool>,
     /// Read-only agent: file edits are denied and nothing may prompt.
     pub readonly: AtomicBool,
+    /// Deep mode: tools may look inside the original (disassemble, decompile, emulate). Default is clean-room.
+    pub deep: AtomicBool,
     pub output_limit: usize,
     pub allowed_dirs: Vec<PathBuf>,
     pub scrub_env: Vec<String>,
@@ -85,11 +87,22 @@ impl Ctx {
             ledger,
             cancel: Arc::new(AtomicBool::new(false)),
             readonly: AtomicBool::new(false),
+            deep: AtomicBool::new(false),
             output_limit: 12_000,
             allowed_dirs: vec![],
             scrub_env: vec![],
             sub: Mutex::new(None),
         }
+    }
+    pub fn is_deep(&self) -> bool {
+        self.deep.load(Ordering::Relaxed)
+    }
+    /// Clean-room mode refuses tools that look inside the original.
+    pub fn need_deep(&self, tool: &str) -> Result<(), ToolError> {
+        if self.is_deep() {
+            return Ok(());
+        }
+        err(format!("{tool} looks inside the original, which clean-room mode forbids. Do not work around it (no objdump/strings/otool via bash either). Continue from outside observation, or tell the user: 'run with --deep (or /deep) if you own this software or may examine it'."))
     }
     pub fn cancelled(&self) -> bool {
         self.cancel.load(Ordering::Relaxed)

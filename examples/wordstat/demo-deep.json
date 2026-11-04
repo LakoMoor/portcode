@@ -1,0 +1,7 @@
+[
+ {"text":"Deep mode is on. Looking for the command-line surface first: printable strings near the end of the text segment.","tool_calls":[{"name":"hexdump","arguments":{"file":"original/wordstat","mode":"strings","offset":2300,"length":160}}]},
+ {"text":"Two options and a usage line. Now the entry function, to see how much it keeps on the stack.","tool_calls":[{"name":"disasm","arguments":{"file":"original/wordstat","arch":"arm64","offset":1120,"length":64,"base":4294968416,"count":10}}]},
+ {"text":"Running just the prologue in the emulator to read the frame size instead of guessing it.","tool_calls":[{"name":"emulate","arguments":{"file":"original/wordstat","arch":"arm64","offset":1120,"length":32,"base":4294968416,"end":4294968448,"show_regs":["sp","x29"]}}]},
+ {"text":"Recording both as inference. Neither is a parity claim until the original agrees with the port.","tool_calls":[{"name":"evidence_add","arguments":{"kind":"inference","subject":"cli.options","statement":"Options --top N and --min-len L exist; usage line is 'usage: wordstat [--top N] [--min-len L] FILE'. Read from strings at 0x90c-0x91c.","confidence":"medium","tool":"hexdump strings original/wordstat"}}]},
+ {"text":"Next: run the original with each option and capture goldens, so the inference above becomes an observation."}
+]

@@ -11,6 +11,16 @@ Work only on software the user owns, has permission to study, or may examine for
 
 Deep mode never replaces observation: recovered rules still need a golden captured from the running original.
 
+### How PortCode enforces it
+- Default is clean-room. `--deep` / `--clean-room` (one run), `"mode": "deep"` in `portcode.json`, `PORTCODE_MODE`, or `/deep` / `/clean` in the UI.
+- In clean-room the tools `disasm`, `emulate`, `decompile`, `hexdump` refuse, and `bash` refuses inspectors (objdump, otool, nm, strings, xxd, gdb/lldb, r2/rizin, ghidra, binwalk, jadx…). The refusal tells the model not to work around it.
+- Engines are listed in [deep-engines](deep-engines.md). Installing one always asks.
+
+### Two-session hand-off (strongest clean-room)
+1. `portcode -a reverse --deep`: study the original, write `docs/SPEC.md` (rules, constants, formats, in your own words) and ledger entries.
+2. `portcode -a port --clean-room`: implement from SPEC.md, the ledger and goldens only; it cannot open the original's internals.
+The spec is the only thing that crosses; decompiler output never does.
+
 ## Executing the original
 - Run it only when the user approved execution; isolated (VM/container for unknown binaries), bounded (time, output size), stdin closed, no real user data, no network unless the scenario needs it.
 - A missing oracle is not a pass: record an `unknown` and lower the fidelity claim.

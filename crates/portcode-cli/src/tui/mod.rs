@@ -78,6 +78,7 @@ async fn runner_task(
                     let _ = tx.send(Msg::Info(e));
                 }
             }
+            Cmd::SetDeep(d) => r.ctx.deep.store(d, std::sync::atomic::Ordering::Relaxed),
             Cmd::Clear => r.clear(),
             Cmd::Resume => {
                 let m = match r.latest_session() {

@@ -261,18 +261,13 @@ pub async fn doctor(cfg: Config) -> Result<i32, String> {
         ("git", "--version", ""),
         ("node", "--version", "needed only for REA (rea.tools)"),
         ("npx", "--version", ""),
-        (
-            "analyzeHeadless",
-            "-help",
-            "optional: Ghidra headless for deep native analysis",
-        ),
     ] {
         let out = std::process::Command::new(bin)
             .arg(arg)
             .stdin(std::process::Stdio::null())
             .output();
         match out {
-            Ok(o) if o.status.success() || bin == "analyzeHeadless" => ok(
+            Ok(o) if o.status.success() => ok(
                 true,
                 &format!(
                     "{bin:<16} {}",
@@ -291,6 +286,7 @@ pub async fn doctor(cfg: Config) -> Result<i32, String> {
             ),
         }
     }
+    engines_list()?;
     println!("{}", bold("MCP engines"));
     if cfg.mcp.is_empty() {
         println!(
@@ -556,6 +552,10 @@ pub async fn run_tool(cfg: Config, name: &str, args: &str) -> Result<i32, String
         Arc::new(TermGate { auto: true }),
         Rules::from_config(&cfg.permission),
     );
+    ctx.deep.store(
+        cfg.mode.as_deref() == Some("deep"),
+        std::sync::atomic::Ordering::Relaxed,
+    );
     match tool.run(&ctx, v).await {
         Ok(o) => {
             println!("{}", o.text);
@@ -587,4 +587,83 @@ pub fn page(input: &str, out: &str, title: &str, css: &str, home: &str) -> Resul
         .map_err(|e| format!("{out}: {e}"))?;
     println!("wrote {out}");
     Ok(0)
+}
+
+pub fn engines_list() -> Result<i32, String> {
+    use portcode_agent::engines::{self, How};
+    println!(
+        "{} {}",
+        bold("Engines"),
+        dim(&engines::dir().display().to_string())
+    );
+    for e in engines::ENGINES {
+        let (mark, note) = match engines::detect(e) {
+            Some(w) => (green("✓"), dim(&w)),
+            None => (
+                yellow("·"),
+                dim(&match e.how {
+                    How::System(_, h) => h.to_string(),
+                    _ => format!("portcode engines install {}", e.id),
+                }),
+            ),
+        };
+        println!("  {mark} {:<9} {}  {note}", e.id, e.what);
+    }
+    println!("{}", dim("  clean-room (default) never uses these on the original; --deep or /deep enables them."));
+    Ok(0)
+}
+
+pub fn engines_install(ids: &[String]) -> Result<i32, String> {
+    use portcode_agent::engines;
+    let mut list: Vec<&engines::Engine> = Vec::new();
+    for id in ids {
+        match id.as_str() {
+            "core" => list.extend(engines::ENGINES.iter().filter(|e| e.core)),
+            "all" => list.extend(
+                engines::ENGINES
+                    .iter()
+                    .filter(|e| !matches!(e.how, engines::How::System(..))),
+            ),
+            other => {
+                list.push(engines::find(other).ok_or_else(|| {
+                    format!("unknown engine '{other}'; see `portcode engines list`")
+                })?)
+            }
+        }
+    }
+    if list.is_empty() {
+        return Err(
+            "name an engine: portcode engines install core | unicorn | ghidra | imhex | all".into(),
+        );
+    }
+    let mut failed = 0;
+    for e in list {
+        if engines::detect(e).is_some() {
+            println!("{} {} already installed", green("✓"), e.id);
+            continue;
+        }
+        println!("{} installing {} ({})…", accent("▸"), bold(e.id), e.license);
+        let script = match engines::install_script(e) {
+            Ok(s) => s,
+            Err(m) => {
+                println!("  {} {m}", yellow("!"));
+                failed += 1;
+                continue;
+            }
+        };
+        let ok = std::process::Command::new("sh")
+            .arg("-c")
+            .arg(&script)
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false);
+        if ok {
+            println!("{} {}", green("✓"), e.id);
+        } else {
+            println!("{} {} failed", red("✗"), e.id);
+            failed += 1;
+        }
+    }
+    engines::write_helpers()?;
+    Ok(if failed == 0 { 0 } else { 1 })
 }

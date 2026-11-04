@@ -3,7 +3,6 @@
 <rect width="1026" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1026" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
-<rect x="167.94" y="129.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="148.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="167.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="186.00" width="690.42" height="19" fill="#1e1e1e"/>
@@ -13,57 +12,57 @@
 <rect x="167.94" y="262.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="281.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="300.00" width="690.42" height="19" fill="#1e1e1e"/>
-<rect x="167.94" y="319.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="319.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="338.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="357.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="376.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="395.00" width="690.42" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
-<text x="167.94" y="143.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
-<text x="167.94" y="162.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="162.00" fill="#fab283" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> /agent     </text>
-<text x="289.23" y="162.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">switch agent: build · port · reverse · plan</text>
-<text x="849.03" y="162.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="162.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
 <text x="167.94" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="181.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /model     </text>
-<text x="289.23" y="181.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">switch model: provider/model</text>
+<text x="177.27" y="181.00" fill="#fab283" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> /agent     </text>
+<text x="289.23" y="181.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">switch agent: build · port · reverse · plan</text>
 <text x="849.03" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="200.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /models    </text>
-<text x="289.23" y="200.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">list models of this provider</text>
+<text x="177.27" y="200.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /model     </text>
+<text x="289.23" y="200.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">switch model: provider/model</text>
 <text x="849.03" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /clear     </text>
-<text x="289.23" y="219.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">new session</text>
+<text x="177.27" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /models    </text>
+<text x="289.23" y="219.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">list models of this provider</text>
 <text x="849.03" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="238.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /resume    </text>
-<text x="289.23" y="238.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs">resume the latest session</text>
+<text x="177.27" y="238.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /clear     </text>
+<text x="289.23" y="238.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">new session</text>
 <text x="849.03" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="257.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /tools     </text>
-<text x="289.23" y="257.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">list tools</text>
+<text x="177.27" y="257.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /resume    </text>
+<text x="289.23" y="257.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs">resume the latest session</text>
 <text x="849.03" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /ledger    </text>
-<text x="289.23" y="276.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs">show the evidence ledger</text>
+<text x="177.27" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /tools     </text>
+<text x="289.23" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">list tools</text>
 <text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="177.27" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /thinking  </text>
-<text x="289.23" y="295.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs">show / hide reasoning</text>
+<text x="177.27" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /ledger    </text>
+<text x="289.23" y="295.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs">show the evidence ledger</text>
 <text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="167.94" y="314.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">└────────────────────────────────────────────────────────────────────────┘</text>
-<text x="167.94" y="333.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="177.27" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /deep      </text>
+<text x="289.23" y="314.00" fill="#808080" textLength="550.47" lengthAdjust="spacingAndGlyphs">deep mode: may disassemble, decompile, emulate the original</text>
+<text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="333.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">└────────────────────────────────────────────────────────────────────────┘</text>
 <text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="177.27" y="352.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs"> /                                                                                         </text>
 <text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="177.27" y="371.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs"> /                                                                                         </text>
 <text x="167.94" y="390.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="409.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="186.60" y="409.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
 <text x="233.25" y="409.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
 <text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="335.88" y="447.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">tab agents   /  commands   ctrl+c quit</text>
+<text x="494.49" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="242.58" y="447.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
 <text x="0.00" y="637.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
-<text x="466.50" y="637.00" fill="#808080" textLength="559.80" lengthAdjust="spacingAndGlyphs">tab agents · ctrl+t thinking · ctrl+b sidebar · / commands  </text>
+<text x="634.44" y="637.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">tab agents · / commands · ctrl+b sidebar  </text>
 </g>
 </svg>

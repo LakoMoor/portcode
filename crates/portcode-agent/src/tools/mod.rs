@@ -1,6 +1,7 @@
 pub mod fs;
 pub mod misc;
 pub mod port;
+pub mod re;
 pub mod shell;
 
 use crate::tool::Registry;
@@ -29,6 +30,12 @@ pub fn builtin(skills: Vec<crate::skills::Skill>) -> Registry {
         Arc::new(port::Screenshot),
         Arc::new(port::SiteBuild),
         Arc::new(port::Scaffold),
+        Arc::new(re::ReStatus),
+        Arc::new(re::ReInstall),
+        Arc::new(re::Disasm),
+        Arc::new(re::Emulate),
+        Arc::new(re::Decompile),
+        Arc::new(re::Hexdump),
     ] {
         r.add(t);
     }

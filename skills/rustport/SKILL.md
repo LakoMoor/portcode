@@ -55,7 +55,7 @@ Done when: every feature in `docs/PORT.md` links an evidence id with a screensho
 - End every turn with: **done / next step / blocked-on**. More: [local-llm](references/local-llm.md).
 
 ## References (load only when the phase needs them)
-[evidence](references/evidence.md) · [clean-room](references/clean-room.md) · [architecture](references/architecture.md) · [site-and-screenshots](references/site-and-screenshots.md) · [pitfalls](references/pitfalls.md) · [local-llm](references/local-llm.md) · [workbench](references/workbench.md) · [compatible-runtime](references/compatible-runtime.md) · [native-lab](references/native-lab.md) · [agent-roles](references/agent-roles.md) · [scenarios](references/scenarios.md) · [agents](references/agents.md)
+[evidence](references/evidence.md) · [clean-room](references/clean-room.md) · [deep-engines](references/deep-engines.md) · [architecture](references/architecture.md) · [site-and-screenshots](references/site-and-screenshots.md) · [pitfalls](references/pitfalls.md) · [local-llm](references/local-llm.md) · [workbench](references/workbench.md) · [compatible-runtime](references/compatible-runtime.md) · [native-lab](references/native-lab.md) · [agent-roles](references/agent-roles.md) · [scenarios](references/scenarios.md) · [agents](references/agents.md)
 
 ## Final report
 Modules done/total · golden cases passing/total · deviations with cause · what is *not* covered · perf vs original · how to build/run · site path. Real output, including failures. Never claim more than the evidence covers.

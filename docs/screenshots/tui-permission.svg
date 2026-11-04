@@ -64,7 +64,6 @@
 <rect x="877.02" y="927.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="946.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="965.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="984.00" width="858.36" height="19" fill="#141414"/>
 <rect x="877.02" y="984.00" width="354.54" height="19" fill="#141414"/>
 <rect x="9.33" y="1003.00" width="858.36" height="19" fill="#141414"/>
 <rect x="877.02" y="1003.00" width="354.54" height="19" fill="#141414"/>
@@ -76,42 +75,88 @@
 <rect x="877.02" y="1060.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="1079.00" width="354.54" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="877.02" y="48.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="9.33" y="67.00" fill="#5c9cf5" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="895.68" y="67.00" fill="#fab283" textLength="279.90" lengthAdjust="spacingAndGlyphs" font-weight="700">Port the wordstat CLI to Rust,</text>
+<text x="877.02" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="67.00" fill="#fab283" textLength="279.90" lengthAdjust="spacingAndGlyphs" font-weight="700">Port the wordstat CLI to Rust,</text>
 <text x="9.33" y="86.00" fill="#5c9cf5" textLength="18.66" lengthAdjust="spacingAndGlyphs">┃ </text>
-<text x="27.99" y="86.00" fill="#eeeeee" textLength="867.69" lengthAdjust="spacingAndGlyphs">Port the wordstat CLI to Rust, following rustport.                                           </text>
-<text x="895.68" y="86.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">following ru…</text>
+<text x="27.99" y="86.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs">Port the wordstat CLI to Rust, following rustport.                                         </text>
+<text x="877.02" y="86.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="86.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">following ru…</text>
 <text x="9.33" y="105.00" fill="#5c9cf5" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="895.68" y="124.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Context</text>
-<text x="0.00" y="143.00" fill="#eeeeee" textLength="895.68" lengthAdjust="spacingAndGlyphs">   Phase 1 — pin the exact original and survey it before writing any Rust.                      </text>
-<text x="895.68" y="143.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">200 tokens</text>
-<text x="895.68" y="162.00" fill="#808080" textLength="205.26" lengthAdjust="spacingAndGlyphs">0% used · 32.8k window</text>
+<text x="877.02" y="105.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="124.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="124.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Mode</text>
+<text x="942.33" y="124.00" fill="#2e2e2e" textLength="270.57" lengthAdjust="spacingAndGlyphs"> ────────────────────────────</text>
+<text x="0.00" y="143.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Phase 1 — pin the exact original and survey it before writing any Rust.                    </text>
+<text x="877.02" y="143.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="143.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="1016.97" y="143.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">  outside only</text>
+<text x="877.02" y="162.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="27.99" y="181.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
-<text x="46.65" y="181.00" fill="#eeeeee" textLength="27.99" lengthAdjust="spacingAndGlyphs" font-weight="700">pin</text>
+<text x="46.65" y="181.00" fill="#7fd88f" textLength="27.99" lengthAdjust="spacingAndGlyphs" font-weight="700">pin</text>
 <text x="74.64" y="181.00" fill="#808080" textLength="177.27" lengthAdjust="spacingAndGlyphs">  original/wordstat</text>
-<text x="895.68" y="181.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs">480 in · 90 out total</text>
-<text x="46.65" y="200.00" fill="#808080" textLength="522.48" lengthAdjust="spacingAndGlyphs">Pinned original/wordstat → .portcode/reference.lock.json</text>
-<text x="46.65" y="219.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">format: Mach-O</text>
-<text x="895.68" y="219.00" fill="#eeeeee" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700">Evidence</text>
-<text x="46.65" y="238.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">size: 34232</text>
-<text x="895.68" y="238.00" fill="#7fd88f" textLength="130.62" lengthAdjust="spacingAndGlyphs">● 1 observed  </text>
-<text x="1026.30" y="238.00" fill="#f5a742" textLength="111.96" lengthAdjust="spacingAndGlyphs">● 0 inferred</text>
-<text x="46.65" y="257.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">… 2 more lines</text>
-<text x="895.68" y="257.00" fill="#e06c75" textLength="102.63" lengthAdjust="spacingAndGlyphs">● 1 unknown</text>
+<text x="877.02" y="181.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="181.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Context</text>
+<text x="970.32" y="181.00" fill="#2e2e2e" textLength="242.58" lengthAdjust="spacingAndGlyphs"> ─────────────────────────</text>
+<text x="46.65" y="200.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="200.00" fill="#808080" textLength="522.48" lengthAdjust="spacingAndGlyphs">Pinned original/wordstat → .portcode/reference.lock.json</text>
+<text x="877.02" y="200.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="200.00" fill="#484848" textLength="130.62" lengthAdjust="spacingAndGlyphs">▱▱▱▱▱▱▱▱▱▱▱▱▱▱</text>
+<text x="1035.63" y="200.00" fill="#808080" textLength="27.99" lengthAdjust="spacingAndGlyphs"> 0%</text>
+<text x="46.65" y="219.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="219.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">format: Mach-O</text>
+<text x="877.02" y="219.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="219.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs">200 of 32.8k · 480 in / 90 out</text>
+<text x="46.65" y="238.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="238.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">size: 34232</text>
+<text x="877.02" y="238.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="46.65" y="257.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">╰ </text>
+<text x="65.31" y="257.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">2 more lines</text>
+<text x="877.02" y="257.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="257.00" fill="#eeeeee" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700">Evidence</text>
+<text x="979.65" y="257.00" fill="#2e2e2e" textLength="233.25" lengthAdjust="spacingAndGlyphs"> ────────────────────────</text>
 <text x="27.99" y="276.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
 <text x="46.65" y="276.00" fill="#eeeeee" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">survey</text>
 <text x="102.63" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  original</text>
-<text x="895.68" y="276.00" fill="#808080" textLength="298.56" lengthAdjust="spacingAndGlyphs">  E-0002 isalnum()/tolower() are</text>
-<text x="46.65" y="295.00" fill="#808080" textLength="298.56" lengthAdjust="spacingAndGlyphs">== Survey: original (2 files) ==</text>
-<text x="933.00" y="295.00" fill="#808080" textLength="270.57" lengthAdjust="spacingAndGlyphs">locale-dependent for bytes &gt;=</text>
-<text x="46.65" y="333.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">-- Languages (files / LOC)</text>
-<text x="46.65" y="352.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs">… 11 more lines</text>
-<text x="0.00" y="390.00" fill="#eeeeee" textLength="1231.56" lengthAdjust="spacingAndGlyphs">   Recording the gap I already see as an unknown.                                                                                   </text>
+<text x="877.02" y="276.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="276.00" fill="#7fd88f" textLength="65.31" lengthAdjust="spacingAndGlyphs">███████</text>
+<text x="970.32" y="276.00" fill="#e06c75" textLength="65.31" lengthAdjust="spacingAndGlyphs">███████</text>
+<text x="46.65" y="295.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="295.00" fill="#808080" textLength="298.56" lengthAdjust="spacingAndGlyphs">== Survey: original (2 files) ==</text>
+<text x="877.02" y="295.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="295.00" fill="#7fd88f" textLength="74.64" lengthAdjust="spacingAndGlyphs">1 seen  </text>
+<text x="979.65" y="295.00" fill="#f5a742" textLength="111.96" lengthAdjust="spacingAndGlyphs">0 inferred  </text>
+<text x="1091.61" y="295.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs">1 open</text>
+<text x="46.65" y="314.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="877.02" y="314.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="314.00" fill="#e06c75" textLength="18.66" lengthAdjust="spacingAndGlyphs">? </text>
+<text x="923.67" y="314.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs">E-0002 isalnum()/tolower() are</text>
+<text x="46.65" y="333.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="333.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">-- Languages (files / LOC)</text>
+<text x="877.02" y="333.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="333.00" fill="#e06c75" textLength="18.66" lengthAdjust="spacingAndGlyphs">? </text>
+<text x="923.67" y="333.00" fill="#808080" textLength="270.57" lengthAdjust="spacingAndGlyphs">locale-dependent for bytes &gt;=</text>
+<text x="46.65" y="352.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">╰ </text>
+<text x="65.31" y="352.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs">11 more lines</text>
+<text x="877.02" y="352.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="371.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="371.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Proof</text>
+<text x="951.66" y="371.00" fill="#2e2e2e" textLength="261.24" lengthAdjust="spacingAndGlyphs"> ───────────────────────────</text>
+<text x="0.00" y="390.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Recording the gap I already see as an unknown.                                             </text>
+<text x="877.02" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="390.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">no parity run yet</text>
+<text x="877.02" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="27.99" y="428.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
-<text x="46.65" y="428.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">evidence_add</text>
+<text x="46.65" y="428.00" fill="#7fd88f" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">evidence_add</text>
 <text x="158.61" y="428.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  E-0002</text>
-<text x="46.65" y="447.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">Recorded E-0002 (Unknown, Low) for cli.locale.</text>
-<text x="0.00" y="485.00" fill="#eeeeee" textLength="1231.56" lengthAdjust="spacingAndGlyphs">   Capture goldens from the ORIGINAL, then run the same cases on the port.                                                          </text>
+<text x="877.02" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="46.65" y="447.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="447.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">Recorded E-0002 (Unknown, Low) for cli.locale.</text>
+<text x="877.02" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="0.00" y="485.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Capture goldens from the ORIGINAL, then run the same cases on the port.                    </text>
+<text x="877.02" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="261.24" y="504.00" fill="#f5a742" textLength="709.08" lengthAdjust="spacingAndGlyphs">╭──────────────────────────────────────────────────────────────────────────╮</text>
 <text x="27.99" y="523.00" fill="#f5a742" textLength="18.66" lengthAdjust="spacingAndGlyphs">⠋ </text>
 <text x="46.65" y="523.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">bash</text>
@@ -139,19 +184,43 @@
 <text x="578.46" y="618.00" fill="#eeeeee" textLength="382.53" lengthAdjust="spacingAndGlyphs"> reject                                  </text>
 <text x="960.99" y="618.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="261.24" y="637.00" fill="#f5a742" textLength="709.08" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────╯</text>
-<text x="9.33" y="998.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="877.02" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="694.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="713.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="732.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="751.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="770.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="789.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="808.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="827.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="846.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="865.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="884.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="903.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="922.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="941.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="960.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="979.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="877.02" y="998.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="9.33" y="1017.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="18.66" y="1017.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs"> working… esc to interrupt</text>
+<text x="877.02" y="1017.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="9.33" y="1036.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="18.66" y="1036.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs"> working… esc to interrupt</text>
+<text x="877.02" y="1036.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="9.33" y="1055.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="877.02" y="1055.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="9.33" y="1074.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="27.99" y="1074.00" fill="#9d7cd8" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Port</text>
 <text x="65.31" y="1074.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">  mock/mock-model</text>
 <text x="223.92" y="1074.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="895.68" y="1074.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs">port</text>
-<text x="933.00" y="1074.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">code </text>
-<text x="979.65" y="1074.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">0.1.0</text>
+<text x="345.21" y="1074.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="877.02" y="1074.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="1074.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs">port</text>
+<text x="942.33" y="1074.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">code </text>
+<text x="988.98" y="1074.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">0.1.0</text>
 <text x="0.00" y="1093.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
 <text x="737.07" y="1093.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs">esc interrupt  </text>
+<text x="877.02" y="1093.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 </g>
 </svg>
