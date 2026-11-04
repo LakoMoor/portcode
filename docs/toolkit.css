@@ -80,3 +80,23 @@
 
 .marks .mark{overflow:hidden}
 .marks .mark.yara img{flex:none;width:150px;max-width:none;max-height:none;height:auto}
+
+/* light theme overrides: tiles on varied grounds, dark panes stay dark like real tools */
+.tk{--card:#fff;--line:rgba(18,18,18,.09);--mut:#6c6b67;--fg:#121212;--acc:#ff7a1a;--acc2:#ff9a4d;margin-top:0}
+.tile{border:0;box-shadow:var(--shadow)}
+.tile h3{color:var(--ink)}
+.tile h3 span{color:var(--mut)}
+.pane{--mut:#8b93a5;--fg:#e9ebf0;--line:#222a38;--acc:#ff7a1a;--acc2:#ffb37a;box-shadow:0 10px 30px rgba(20,20,40,.22)}
+.t-ghidra{background:linear-gradient(150deg,#e9e5ff,#ffe4d1)}
+.t-capstone{background:var(--peach)}
+.t-unicorn{background:linear-gradient(135deg,#6d5df6,#b9a8ff)}
+.t-unicorn h3,.t-unicorn h3 span{color:#fff}
+.t-stat{background:linear-gradient(160deg,#ff7a1a,#ff5b1f);color:#fff}
+.t-stat .lead,.t-stat .lab{color:rgba(255,255,255,.8)}.t-stat .num{color:#fff}
+.t-imhex{background:linear-gradient(150deg,#d9f4e6,#c9ecf2)}
+.t-rest{background:var(--grid);box-shadow:none;background-image:linear-gradient(rgba(0,0,0,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.045) 1px,transparent 1px);background-size:28px 28px}
+.t-mode{background:var(--dark)}.t-mode h3{color:#fff}.t-mode p{color:#9da1ab}
+.mark{background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04),0 4px 12px rgba(20,20,20,.1)}
+.marks .mark{border-radius:16px}
+.names span{background:#fff;color:var(--ink);border-color:var(--rule)}
+.t-mode .chip{background:#1b1d21}

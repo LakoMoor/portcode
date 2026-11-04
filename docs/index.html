@@ -2,39 +2,69 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PortCode — port anything to Rust, with proof. Runs on your own LLMs.</title>
 <meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='11' fill='%23ff8700'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23111'%3Epc%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='13' fill='%23ff7a1a'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23fff'%3Epc%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="#">Port<b>Code</b></a><a class="l" href="#install">Install</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#skill">Skill</a><a class="l" href="#ports">Ports</a><a class="l" href="#cli">CLI</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="#"><i>pc</i>PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
-<div class="eyebrow">Open source · 100% Rust · local-first</div>
-<h1>Port anything to Rust.<br><em>Show the proof.</em></h1>
-<p class="lead">PortCode is a terminal agent that studies an original program, records what it learns as evidence, ports it to Rust slice by slice, and proves it with golden tests, parity checks, screenshots and a generated documentation site. It talks to <strong>your</strong> models — <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM — not to a vendor you did not choose.</p>
-<div class="cmd"><span>$</span> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</div>
-<div class="btns"><a class="btn" href="#how">See how it works</a><a class="btn ghost" href="ports/wordstat/">Example port with evidence</a><a class="btn ghost" href="https://github.com/LakoMoor/portcode">Source</a></div>
-<figure class="shot"><img src="screenshots/tui-session.svg" alt="PortCode full-screen UI: port agent with tool calls, evidence and todo sidebar"></figure>
-<p class="cap">The full-screen UI running the <code>port</code> agent on the wordstat example. The model here is a scripted replay (<code>portcode-mock-llm</code>) so the run is reproducible; the UI and the tools — pin, survey, bash, parity, ledger — are real. <a href="https://github.com/LakoMoor/portcode/blob/main/scripts/make_screenshots.sh">Regenerate it yourself</a>.</p>
+<div class="top"><div>
+<h1>Port anything to Rust. Show the proof.</h1>
+<p class="lead">A terminal agent that studies the original, writes down what it learns, ports one slice at a time, and proves it with golden tests, screenshots and a site. It runs on your models: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
+<div><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</span></div>
+<div class="btns"><a class="btn" href="#install">Install</a><a class="btn light" href="ports/wordstat/">See an example port</a></div></div></div>
+
+<div class="bento">
+<div class="t g-grid s7 h340"><div class="collage">
+ <div class="ctl seg a1"><span class="on">Clean-room</span><span>Deep</span></div>
+ <div class="ctl tog on a2" aria-label="Finish gate on"><i></i></div>
+ <div class="ctl step a3"><u>−</u><b>150 steps</b><u>+</u></div>
+ <div class="ctl checks c1"><div class="done"><i>✓</i>Pin the build</div><div class="done"><i>✓</i>Golden cases</div><div class="done"><i>✓</i>Parity PASS</div><div><i></i>Screenshots</div></div>
+ <div class="ctl search c2">⌕ &nbsp;E-0007</div>
+ <div class="ctl cta c2" style="grid-column:6/13">Run parity</div>
+ <div style="grid-column:6/13"><div class="lbl">context</div><div class="ctl slider" style="--w:68%"><em></em><i></i></div></div>
+ <div class="ctl select" style="grid-column:6/13"><span>lakomoor/deepseek-chat</span><small>⌄</small></div>
+</div></div>
+<div class="t g-violet s5 h340"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">lakomoor.github.io/portcode/remote</span></div>
+ <div class="body"><span class="chipx">● connected · full control</span>
+ <div class="bub">Port wordstat to Rust</div>
+ <div class="trow"><b>✓</b>pin<span>E-0001</span></div><div class="trow"><b>✓</b>survey<span>E-0002</span></div>
+ <div class="ask"><b>bash asks to run</b><code>cargo test --workspace</code><div class="row"><span>Allow</span><span>Deny</span></div></div></div></div></div>
+
+<div class="t g-orange s3 half"><div class="keys">
+ <div class="key"><small>agent</small><b>tab</b></div><div class="key"><small>stop</small><b>esc</b></div><div class="key"><small>menu</small><b>/</b></div>
+ <div class="key"><small>allow</small><b>y</b></div><div class="key"><small>deny</small><b>n</b></div><div class="key"><small>send</small><b>⏎</b></div></div></div>
+<div class="t g-light s3 half"><div class="apps">
+ <div class="app"><img src="assets/engines/ghidra.png" alt="Ghidra"></div><div class="app"><img src="assets/engines/imhex.svg" alt="ImHex"></div><div class="app"><img src="assets/engines/unicorn.svg" alt="Unicorn"></div>
+ <div class="app"><img src="assets/engines/radare2.png" alt="radare2"></div><div class="app"><img src="assets/engines/rizin.png" alt="Rizin"></div><div class="app"><img src="assets/engines/capstone.png" alt="Capstone"></div></div></div>
+<div class="t g-dark s6"><div class="player"><div class="art"><b>6/6</b></div><div><h3>parity PASS</h3><p>wordstat · C → Rust</p><div class="prog"><i></i></div><div class="times"><span>fuzz 400/400</span><span>1 unknown</span></div><div class="pbtns"><a class="btn sm" href="ports/wordstat/">Open the port</a><a class="btn sm" href="screenshots/ledger.svg">Ledger</a></div></div></div></div>
+</div>
+<p class="cap">Controls and the remote page are drawn from the real UI. The parity numbers come from the bundled wordstat example; the model in the screenshots below is a scripted replay so the run is reproducible.</p>
 </header>
 
-<section id="install"><h2><small>Install</small>One line, checksum verified</h2>
+<section id="tui"><div class="bento">
+<div class="t g-violet s8 h340 shotile"><img src="screenshots/tui-session.svg" alt="PortCode full-screen UI: port agent with tool calls, evidence and todo sidebar"></div>
+<div class="t g-dark s4 tc h340"><h3 style="color:#fff">One full-screen UI</h3><p>The port agent running on wordstat: tool calls, evidence and a todo sidebar. Regenerate it with <a style="color:#ffb37a" href="https://github.com/LakoMoor/portcode/blob/main/scripts/make_screenshots.sh">make_screenshots.sh</a>.</p></div>
+</div></section>
+
+<section id="install"><h2>One line, checksum verified</h2>
 <pre><code># macOS / Linux / WSL
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
-# options: PORTCODE_VERSION=v0.1.0 · PORTCODE_INSTALL_DIR=~/bin · PORTCODE_FROM_SOURCE=1 · --with-skill ~/.claude/skills · --uninstall
+# options: PORTCODE_VERSION=v0.1.0 · PORTCODE_INSTALL_DIR=~/bin · PORTCODE_FROM_SOURCE=1 · --with-engines core · --with-skill ~/.claude/skills · --uninstall
 
 brew tap LakoMoor/tap &amp;&amp; brew install portcode          # Homebrew
 cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 
 portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
-<p>Prebuilt: Linux and macOS, x86_64 and aarch64. The installer verifies the sha256 and falls back to a source build when no binary exists. Windows: use WSL for now.</p>
-<div class="grid">
-<div class="card"><h3>Home</h3><p><img src="screenshots/tui-home.svg" alt="home screen" style="width:100%;border-radius:8px"></p></div>
-<div class="card"><h3>Slash commands</h3><p><img src="screenshots/tui-slash.svg" alt="slash popup" style="width:100%;border-radius:8px"></p></div>
-<div class="card"><h3>Permission dialog</h3><p><img src="screenshots/tui-permission.svg" alt="permission dialog" style="width:100%;border-radius:8px"></p></div>
+<p class="sub">Linux and macOS, x86_64 and aarch64. The installer verifies the sha256 and builds from source when no binary exists. Windows: use WSL.</p>
+<div class="bento">
+<div class="t g-peach s4"><div class="framed"><img src="screenshots/tui-home.svg" alt="home screen"></div></div>
+<div class="t g-mint s4"><div class="framed"><img src="screenshots/tui-slash.svg" alt="slash popup"></div></div>
+<div class="t g-grid s4"><div class="framed"><img src="screenshots/tui-permission.svg" alt="permission dialog"></div></div>
 </div></section>
 
-<section id="deep"><h2><small>Reverse engineering</small>Clean-room by default, deep when you say so</h2>
-<p>In clean-room mode PortCode only observes the original from outside, and refuses disassemblers, decompilers and raw-byte tools. Switch to <code>deep</code> and it drives Capstone, Unicorn, Ghidra and ImHex, installed into an <code>engines/</code> folder next to the binary after you approve each one.</p>
+<section id="deep"><h2>Clean-room by default. Deep when you say so.</h2>
+<p class="sub">Clean-room only observes the original from outside and refuses disassemblers, decompilers and raw-byte tools. Deep drives Capstone, Unicorn, Ghidra and ImHex, installed beside the binary after you approve each one.</p>
 <div class="tk" role="list">
   <article class="tile t-ghidra" role="listitem">
     <div class="head"><span class="mark "><img src="assets/engines/ghidra.png" alt=""></span><h3>Ghidra reads the whole function. <span>The default is recorded as an inference until a golden from the original agrees.</span></h3></div>
@@ -140,74 +170,76 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   </article>
 </div>
 <p class="cap">Every number on these cards is real: the decompiler lines, instructions, emulator registers and header bytes come from running the tools on the bundled wordstat binary.</p>
-<figure class="shot"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></figure>
-<p class="cap">Deep mode on the wordstat example: real <code>hexdump</code>, <code>disasm</code> and <code>emulate</code> calls; the model is a scripted replay.</p>
-<pre><code>portcode engines install core          # capstone + unicorn + lief
-portcode engines install ghidra imhex
-portcode --deep -a reverse             # then: portcode --clean-room -a port</code></pre>
+<div class="bento" style="margin-top:14px"><div class="t g-dark s8"><div class="framed mid"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></div></div>
+<div class="t g-peach s4 tc"><h3>Two sessions, one wall</h3><p>Reverse in deep, write <code>docs/SPEC.md</code>, then port in clean-room from the spec alone.</p>
+<pre style="margin:auto 0 0;font-size:12.5px"><code>portcode engines install core
+portcode --deep -a reverse
+portcode --clean-room -a port</code></pre></div></div>
 </section>
 
-<section id="how"><h2><small>Workflow</small>Evidence first, code second</h2>
-<div class="grid">
-<div class="card"><h3>Study</h3><p>Pin the exact build, survey the tree, trace the main loop. Static findings are labelled <code>inference</code>; only things you ran are <code>observation</code>.</p></div>
-<div class="card"><h3>Record</h3><p>An append-only ledger of facts with ids (<code>E-0007</code>), sources, hashes and open unknowns. Every rule in the port cites one.</p></div>
-<div class="card"><h3>Port</h3><p>One small slice at a time against golden outputs captured from the original — never from your reading of its code.</p></div>
-<div class="card"><h3>Prove</h3><p><code>parity</code> and differential fuzz decide equality. Each feature gets a screenshot, and a site is generated from plan + ledger + images.</p></div>
+<section id="how"><h2>Evidence first, code second</h2>
+<div class="bento">
+<div class="t g-peach s3 half tc"><h3>Study</h3><p>Pin the exact build, survey the tree, trace the main loop. Static findings are <code>inference</code>; only what you ran is <code>observation</code>.</p></div>
+<div class="t g-light s3 half tc"><h3>Record</h3><p>An append-only ledger with ids (<code>E-0007</code>), sources, hashes and open unknowns. Every rule in the port cites one.</p></div>
+<div class="t g-mint s3 half tc"><h3>Port</h3><p>One small slice at a time against goldens captured from the original, never from your reading of its code.</p></div>
+<div class="t g-dark s3 half tc"><h3 style="color:#fff">Prove</h3><p><code style="background:rgba(255,255,255,.12)">parity</code> and differential fuzz decide equality. The finish gate refuses to stop before a PASS.</p></div>
 </div></section>
 
-<section id="llm"><h2><small>Models</small>Built for local and self-hosted LLMs</h2>
-<p>One OpenAI-compatible client with the quirks of open-weight models handled for you: <code>reasoning_content</code> and inline <code>&lt;think&gt;</code>, tool calls written as text (<code>&lt;tool_call&gt;</code>, fenced JSON), broken or truncated tool-argument JSON, quoted numbers, servers that reject optional sampling fields, stalled streams.</p>
+<section id="llm"><h2>Built for local and self-hosted LLMs</h2>
+<p class="sub">One OpenAI-compatible client that handles open-weight quirks: <code>reasoning_content</code> and inline <code>&lt;think&gt;</code>, tool calls written as text, broken tool-argument JSON, quoted numbers, servers that reject optional fields, stalled streams.</p>
 <table><tr><th>Provider</th><th>Default endpoint</th><th>Key</th></tr>
 <tr><td><code>lakomoor</code></td><td>https://lakomoor.com/v1</td><td><code>LAKOMOOR_API_KEY</code></td></tr>
-<tr><td><code>ollama</code></td><td>http://localhost:11434/v1</td><td>—</td></tr>
-<tr><td><code>lmstudio</code></td><td>http://localhost:1234/v1</td><td>—</td></tr>
+<tr><td><code>ollama</code></td><td>http://localhost:11434/v1</td><td>none</td></tr>
+<tr><td><code>lmstudio</code></td><td>http://localhost:1234/v1</td><td>none</td></tr>
 <tr><td><code>llamacpp</code> · <code>vllm</code> · <code>sglang</code></td><td>:8080 · :8000 · :30000</td><td>optional</td></tr>
 <tr><td><code>deepseek</code> · <code>openrouter</code></td><td>hosted, same protocol</td><td>env var</td></tr></table>
-<p>Model profiles (sampling, context window, one-tool-at-a-time, tool-output limits, prompt style) exist for the DeepSeek and Qwen families — including small and “flash” variants — and any field is overridable per model in <code>portcode.json</code>. Prompts are short numbered rules with a worked example and a byte-stable prefix so llama.cpp / vLLM prefix caches hit.</p>
-<div class="note"><strong>Honest status.</strong> The client, repair logic and agent loop are tested end-to-end against a scripted server. The profiles are conservative starting points, not benchmark results: run <code>portcode eval</code> against your model (chat, tool-call JSON, read→edit round-trip) and tune.</div>
+<div class="note"><strong>Honest status.</strong> The client, repair logic and agent loop are tested end to end against a scripted server. Model profiles for DeepSeek and Qwen are conservative starting points, not benchmark results: run <code>portcode eval</code> against your model and tune.</div>
 <pre><code>$ portcode models -p lakomoor
 $ portcode -m lakomoor/deepseek-chat
 $ portcode -m ollama/qwen3:14b -a port</code></pre></section>
 
-<section id="agents"><h2><small>Agents</small>Six agents, one permission model</h2>
-<div class="grid">
+<section id="agents"><h2>Six agents, one permission model</h2>
+<div class="cards">
 <div class="card"><h3>build</h3><p>Default. Implements changes end to end.</p></div>
-<div class="card"><h3>port</h3><p>The rustport workflow with the porting tools. Phases with “Done when”.</p></div>
-<div class="card"><h3>reverse</h3><p>Evidence-first analysis; no code edits. Uses MCP engines such as REA when configured.</p></div>
+<div class="card"><h3>port</h3><p>The rustport workflow with the porting tools and the finish gate.</p></div>
+<div class="card"><h3>reverse</h3><p>Evidence-first analysis; no code edits. Uses the deep engines.</p></div>
 <div class="card"><h3>plan</h3><p>Read-only investigation and plan.</p></div>
-<div class="card"><h3>explore · general</h3><p>Sub-agents with fresh context, called via <code>task</code>.</p></div>
+<div class="card"><h3>explore · general</h3><p>Sub-agents with fresh context, called through <code>task</code>.</p></div>
 </div>
-<p>Edits and commands ask first (allow / always / deny), patterns are configurable, dangerous commands are always refused, file tools stay inside the project, shell runs with closed stdin, a deadline, capped output and whole-process-group kill.</p></section>
+<p class="sub" style="margin-top:20px">Edits and commands ask first (allow, always, deny). Dangerous commands are always refused, file tools stay inside the project, and the shell runs with closed stdin, a deadline, capped output and a whole-process-group kill.</p></section>
 
-<section id="skill"><h2><small>Skill</small>rustport — the workflow as a portable skill</h2>
-<p>The skill ships inside the binary and also works in Claude Code, Codex, OpenCode and others (<code>portcode skill export ~/.claude/skills</code>). It is a ~100-line router with phases, loading detail from references only when a phase needs it — the shape open-weight models follow best.</p>
+<section id="skill"><h2>rustport, as a portable skill</h2>
+<p class="sub">It ships inside the binary and also works in Claude Code, Codex and OpenCode (<code>portcode skill export ~/.claude/skills</code>). A ~100-line router that loads references only when a phase needs them.</p>
 <ol class="phases">
-<li><b>Intake</b> <span>fidelity, platforms, clean-room vs deep, licence → <code>docs/PORT.md</code></span></li>
+<li><b>Intake</b> <span>fidelity, platforms, clean-room or deep, licence → <code>docs/PORT.md</code></span></li>
 <li><b>Pin + survey</b> <span>exact build hash, inventory, unknowns recorded</span></li>
-<li><b>Plan</b> <span>module map leaves-first; rewrite / bind / drop per module</span></li>
+<li><b>Plan</b> <span>module map leaves-first; rewrite, bind or drop per module</span></li>
 <li><b>Golden harness</b> <span>deterministic scenarios captured from the original</span></li>
 <li><b>Port core</b> <span>slice → test → clippy → parity; bisect, never widen tolerance</span></li>
-<li><b>Platform / rendering</b> <span>only if GUI; wgpu behind traits, offscreen PNG compare</span></li>
+<li><b>Platform / rendering</b> <span>only for a GUI; wgpu behind traits, offscreen PNG compare</span></li>
 <li><b>Prove it</b> <span>screenshots per feature, perf, <code>site_build</code></span></li></ol></section>
 
-<section id="ports"><h2><small>Proof</small>A port you can look at</h2>
-<div class="ports">
-<div class="port"><a href="ports/wordstat/"><img src="ports/wordstat/screenshots/port-minlen5.svg" alt="wordstat port output"></a><div><h3>wordstat — C → Rust</h3><p>Real C original, 6 golden cases, 400 random differential-fuzz runs, 11 evidence records, one open unknown.</p><span class="tag ok">parity 6/6</span><span class="tag ok">fuzz 400/400</span><span class="tag">1 unknown</span> <a href="ports/wordstat/">Open the generated site →</a></div></div>
-<div class="port"><a href="screenshots/ledger.svg"><img src="screenshots/ledger.svg" alt="evidence ledger in the terminal"></a><div><h3>The ledger, in the terminal</h3><p><code>portcode port ledger</code> lists what is observed, inferred and unknown for the port above.</p></div></div>
+<section id="ports"><h2>A port you can look at</h2>
+<div class="bento">
+<div class="t g-mint s6"><a href="ports/wordstat/"><div class="framed"><img src="ports/wordstat/screenshots/port-minlen5.svg" alt="wordstat port output"></div></a></div>
+<div class="t g-grid s6"><a href="screenshots/ledger.svg"><div class="framed"><img src="screenshots/ledger.svg" alt="evidence ledger in the terminal"></div></a></div>
+<div class="t s6 tc"><h3>wordstat, C → Rust</h3><p>A real C original, 6 golden cases, 400 differential-fuzz runs, 11 evidence records, one open unknown.</p><div><span class="tag ok">parity 6/6</span><span class="tag ok">fuzz 400/400</span><span class="tag">1 unknown</span></div><a href="ports/wordstat/">Open the generated site</a></div>
+<div class="t s6 tc"><h3>The ledger, in the terminal</h3><p><code>portcode port ledger</code> lists what is observed, inferred and unknown for that port.</p></div>
 </div></section>
 
-<section id="cli"><h2><small>CLI</small>Everything is a tool</h2>
-<p>The terminal UI, the agent and scripts call the same tools. Anything the model can do, you can run by hand with <code>portcode tool &lt;name&gt; '{json}'</code>.</p>
-<figure class="shot"><img src="screenshots/help.svg" alt="portcode --help"></figure>
-<table><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><code>portcode</code></td><td>Interactive chat (<code>/agent</code>, <code>/model</code>, <code>/tools</code>, <code>/ledger</code>)</td></tr>
-<tr><td><code>portcode run "…" -a port -y --json</code></td><td>One-shot, scriptable, JSON-lines output</td></tr>
-<tr><td><code>portcode doctor</code> · <code>eval</code></td><td>Check providers/toolchain/engines · probe a model</td></tr>
-<tr><td><code>portcode port survey|pin|parity|scaffold|shot|site|ledger</code></td><td>The porting workbench, no LLM needed</td></tr>
-<tr><td><code>portcode skill export &lt;dir&gt;</code></td><td>Install the rustport skill into another agent</td></tr></table></section>
+<section id="cli"><h2>Everything is a tool</h2>
+<p class="sub">The terminal UI, the agent and scripts call the same tools. Anything the model can do, you can run by hand with <code>portcode tool &lt;name&gt; '{json}'</code>.</p>
+<div class="bento"><div class="t g-dark s7"><div class="framed mid"><img src="screenshots/help.svg" alt="portcode --help"></div></div>
+<div class="s5"><table style="margin:0"><tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>portcode</code></td><td>Interactive chat</td></tr>
+<tr><td><code>portcode run "…" -a port -y --json</code></td><td>One-shot, JSON lines</td></tr>
+<tr><td><code>portcode doctor</code> · <code>eval</code></td><td>Check setup · probe a model</td></tr>
+<tr><td><code>portcode port …</code></td><td>The porting workbench, no LLM</td></tr>
+<tr><td><code>portcode serve</code></td><td>Remote control, see <a href="remote/">remote</a></td></tr>
+<tr><td><code>portcode skill export &lt;dir&gt;</code></td><td>Install the skill elsewhere</td></tr></table></div></div></section>
 
-<section><h2><small>Lineage</small>Where this comes from</h2>
-<p>PortCode re-implements the architecture of <a href="https://github.com/anomalyco/opencode">OpenCode</a> (agents, tools, permissions, sessions, skills, MCP) in Rust, and fuses it with the <a href="https://github.com/LakoMoor/rustport-skill">rustport</a> skill plus ideas from <a href="https://github.com/storytold/craft-anything">Craft Anything</a> (evidence, clean-room discipline, never-crash rules). It is a rewrite, not a fork: see <a href="https://github.com/LakoMoor/portcode/blob/main/docs/OPENCODE_MAPPING.md">the mapping</a> for what is covered and what is not yet.</p></section>
+<section><h2>Where this comes from</h2>
+<p class="sub">PortCode re-implements the architecture of <a href="https://github.com/anomalyco/opencode">OpenCode</a> in Rust and fuses it with the <a href="https://github.com/LakoMoor/rustport-skill">rustport</a> skill plus ideas from <a href="https://github.com/storytold/craft-anything">Craft Anything</a>. It is a rewrite, not a fork: <a href="https://github.com/LakoMoor/portcode/blob/main/docs/OPENCODE_MAPPING.md">the mapping</a> says what is covered.</p></section>
 </main>
 <footer><div class="wrap">MIT licensed · OpenCode is © its authors (MIT), see NOTICE · Screenshots are captured from real runs and never edited.</div></footer>
 </body></html>
