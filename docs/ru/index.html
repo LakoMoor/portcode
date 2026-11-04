@@ -11,7 +11,7 @@
 <header class="hero">
 <div class="top"><div>
 <h1>Перенеси программу на Rust и проверь, что она ведёт себя так же.</h1>
-<p class="lead">PortCode — терминальный агент. Он изучает оригинал, записывает, что удалось выяснить, переписывает программу на Rust по кусочку и сверяет каждый кусок с настоящим выводом оригинала. Работает с моделями, которые вы запускаете сами: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
+<p class="lead">PortCode — терминальный агент. Он изучает оригинал, записывает, что удалось выяснить, переписывает программу на Rust по кусочку и сверяет каждый кусок с настоящим выводом оригинала. Работает с моделями, которые ты запускаешь сам: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
 <div><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</span></div>
 <div class="btns"><a class="btn" href="#install">Установить</a><a class="btn light" href="../ports/wordstat/">Пример порта</a></div></div></div>
 
@@ -49,11 +49,23 @@
 </div></section>
 
 <section id="create"><h2>Начните с /create</h2>
-<p class="sub">Введите <code>/create</code> и ответьте на несколько вопросов: что воссоздать (сайт, программу, игру, формат файла или пока ничего), насколько близко PortCode может в это заглядывать, на чём строить и чего вы хотите. Он запустит нужного агента в нужном режиме. Выберите «Just look inside», если нужно только разобраться: получите <code>docs/SPEC.md</code> и журнал фактов, без кода порта.</p>
+<p class="sub">Введите <code>/create</code> и ответь на несколько вопросов: что воссоздать (сайт, программу, игру, формат файла или пока ничего), насколько близко PortCode может в это заглядывать, на чём строить и чего ты хочешь. Он запустит нужного агента в нужном режиме. Выберите «Just look inside», если нужно только разобраться: получите <code>docs/SPEC.md</code> и журнал фактов, без кода порта.</p>
 <div class="bento">
 <div class="t g-peach s6"><div class="framed"><img src="../screenshots/tui-create.svg" alt="Экран /create для сайта"></div></div>
 <div class="t g-mint s6"><div class="framed"><img src="../screenshots/tui-create-look.svg" alt="Экран /create в режиме «только посмотреть» для программы"></div></div>
 </div></section>
+
+<section id="try"><h2>Посмотри настоящий запуск</h2>
+<p class="sub">Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.</p>
+<div id="demo" data-lang="ru"><div class="dlog" aria-live="polite"></div><div class="dside"><h4>Доказательства</h4><div class="dev">0</div><h4>Дела</h4><div class="dtodo"></div></div>
+<div class="dctl"><button class="dplay" type="button">Пуск</button><div class="dtrack"><i class="dbar"></i></div><button class="dspeed" type="button" aria-label="Speed">1×</button></div></div>
+<h3 style="margin-top:34px">Попробуй /create</h3>
+<div id="wiz"><div>
+<fieldset><legend>Что хочешь сделать?</legend><button type="button" data-k="goal" data-v="port" class="on">Воссоздать</button><button type="button" data-k="goal" data-v="look">Только изучить</button></fieldset>
+<fieldset><legend>Что это?</legend><button type="button" data-k="kind" data-v="website" class="on">Сайт</button><button type="button" data-k="kind" data-v="program">Программа</button><button type="button" data-k="kind" data-v="game">Игра</button><button type="button" data-k="kind" data-v="format">Формат файла</button></fieldset>
+<fieldset><legend>Насколько близко смотреть?</legend><button type="button" data-k="close" data-v="clean-room" class="on">Только снаружи</button><button type="button" data-k="close" data-v="deep">И внутри</button></fieldset>
+<fieldset><legend>На чём строить</legend><button type="button" data-k="stack" data-v="Rust, std only" class="on">Rust, std only</button><button type="button" data-k="stack" data-v="Rust + wgpu">Rust + wgpu</button></fieldset></div>
+<pre class="wprompt" aria-live="polite"></pre></div></section>
 
 <section id="install"><h2>Установка</h2>
 <pre><code># macOS / Linux / WSL
@@ -64,7 +76,7 @@ brew tap LakoMoor/tap &amp;&amp; brew install portcode          # Homebrew
 cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 
 portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
-<p class="sub">Linux и macOS, x86_64 и aarch64. Установщик проверяет sha256 и собирает из исходников, если для вашей системы нет бинарника. В Windows используйте WSL.</p>
+<p class="sub">Linux и macOS, x86_64 и aarch64. Установщик проверяет sha256 и собирает из исходников, если для твоей системы нет бинарника. В Windows используй WSL.</p>
 <div class="bento">
 <div class="t g-peach s4"><div class="framed"><img src="../screenshots/tui-home.svg" alt="home screen"></div></div>
 <div class="t g-mint s4"><div class="framed"><img src="../screenshots/tui-slash.svg" alt="slash popup"></div></div>
@@ -72,7 +84,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 </div></section>
 
 <section id="deep"><h2>Clean room или deep</h2>
-<p class="sub">В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после вашего «да».</p>
+<p class="sub">В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».</p>
 <div class="tk" role="list">
   <article class="tile t-ghidra" role="listitem">
     <div class="head"><span class="mark "><img src="../assets/engines/ghidra.png" alt=""></span><h3>Ghidra разбирает функцию целиком. <span>Значение по умолчанию записано как inference, пока вывод оригинала его не подтвердит.</span></h3></div>
@@ -133,10 +145,10 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   <article class="tile t-stat" role="listitem">
     <div class="top"><p class="lead">PortCode работает с</p>
     <div class="num">21</div></div>
-    <p class="lab">инструментами. Каждый ставится только после вашего «да».</p>
+    <p class="lab">инструментами. Каждый ставится только после твоего «да».</p>
   </article>
   <article class="tile t-imhex" role="listitem">
-    <div class="head"><span class="mark "><img src="../assets/engines/imhex.svg" alt=""></span><h3>ImHex описывает формат файла. <span>Агент пишет шаблон, вы проверяете его в ImHex.</span></h3></div>
+    <div class="head"><span class="mark "><img src="../assets/engines/imhex.svg" alt=""></span><h3>ImHex описывает формат файла. <span>Агент пишет шаблон, ты проверяешь его в ImHex.</span></h3></div>
     <div class="pane hex mono" aria-label="Mach-O header bytes with a pattern">
       <div class="bytes">
         <span class="off">0000</span><span class="by"><span class="f1">cf</span><span class="f1">fa</span><span class="f1">ed</span><span class="f1">fe</span><span class="f2">0c</span><span class="f2">00</span><span class="f2">00</span><span class="f2">01</span></span>
@@ -172,7 +184,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   </article>
 
   <article class="tile t-mode" role="listitem">
-    <div><h3>Внутрь никто не заглядывает, пока вы не включите.</h3>
+    <div><h3>Внутрь никто не заглядывает, пока ты не включишь.</h3>
     <p>По умолчанию — clean room. Deep включается в терминале или на странице пульта.</p></div>
     <div class="chips"><span class="chip"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8-7 10-4-2-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg> clean-room</span><span class="chip deep"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> deep</span></div>
   </article>
@@ -191,7 +203,7 @@ portcode --clean-room -a port</code></pre></div></div>
 <div class="bento">
 <div class="t g-peach s3 half tc"><h3>Изучение</h3><p>Фиксируем точную сборку, просматриваем файлы, идём по главному циклу. Что только прочитано — <code>inference</code>; <code>observation</code> — только то, что запускали.</p></div>
 <div class="t g-light s3 half tc"><h3>Запись</h3><p>Журнал, в который можно только дописывать. У каждой записи есть id (<code>E-0007</code>), источник и хеш, открытые вопросы помечены <code>unknown</code>. Каждое правило в порте ссылается на запись.</p></div>
-<div class="t g-mint s3 half tc"><h3>Порт</h3><p>По одному небольшому куску, сверяя с выводом оригинала, а не с вашим прочтением его кода.</p></div>
+<div class="t g-mint s3 half tc"><h3>Порт</h3><p>По одному небольшому куску, сверяя с выводом оригинала, а не с твоим прочтением его кода.</p></div>
 <div class="t g-dark s3 half tc"><h3 style="color:#fff">Проверка</h3><p><code style="background:rgba(255,255,255,.12)">parity</code> и фаззинг против оригинала решают, совпадает ли порт. Агент не остановится до PASS.</p></div>
 </div></section>
 
@@ -252,4 +264,4 @@ $ portcode -m ollama/qwen3:14b -a port</code></pre></section>
 <p class="sub">PortCode повторяет архитектуру <a href="https://github.com/anomalyco/opencode">OpenCode</a>, переписанную на Rust, и объединяет её с навыком <a href="https://github.com/LakoMoor/rustport-skill">rustport</a> и идеями <a href="https://github.com/storytold/craft-anything">Craft Anything</a>. Это переписывание, а не форк. <a href="https://github.com/LakoMoor/portcode/blob/main/docs/OPENCODE_MAPPING.md">Таблица соответствия</a> показывает, что покрыто.</p></section>
 </main>
 <footer><div class="wrap">Лицензия MIT · OpenCode © его авторы (MIT), см. NOTICE · Скриншоты сняты с настоящих запусков и не редактируются.</div></footer>
-</body></html>
+<script src="../demo/session.js"></script><script src="../demo.js"></script></body></html>

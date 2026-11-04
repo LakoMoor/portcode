@@ -7,6 +7,25 @@ root = pathlib.Path(__file__).resolve().parent.parent
 src = (root / "docs/index.html").read_text()
 
 T = [
+ ('Watch a real run', 'Посмотри настоящий запуск'),
+ ("This is the wordstat port. The tool calls and their output were recorded from a real run, and the model's replies are scripted so it is repeatable. Nothing here is typed by hand.", 'Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.'),
+ ('data-lang="en"', 'data-lang="ru"'),
+ ('<h4>Evidence</h4>', '<h4>Доказательства</h4>'),
+ ('<h4>To do</h4>', '<h4>Дела</h4>'),
+ ('>Play</button>', '>Пуск</button>'),
+ ('Try /create', 'Попробуй /create'),
+ ('What do you want to do?', 'Что хочешь сделать?'),
+ ('>Recreate it<', '>Воссоздать<'),
+ ('>Just look inside<', '>Только изучить<'),
+ ('What is it?', 'Что это?'),
+ ('>Website<', '>Сайт<'),
+ ('>Program<', '>Программа<'),
+ ('>Game<', '>Игра<'),
+ ('>File format<', '>Формат файла<'),
+ ('How closely may it look?', 'Насколько близко смотреть?'),
+ ('>Outside only<', '>Только снаружи<'),
+ ('>Inside too<', '>И внутри<'),
+ ('Build with', 'На чём строить'),
  ('<html lang="en">', '<html lang="ru">'),
  ('<title>PortCode: port a program to Rust and check it behaves the same</title>', '<title>PortCode: перенеси программу на Rust и проверь, что она ведёт себя так же</title>'),
  ('content="PortCode: port a program to Rust and check it behaves the same"', 'content="PortCode: перенеси программу на Rust и проверь, что она ведёт себя так же"'),
@@ -17,7 +36,7 @@ T = [
  ('>Ports</a>', '>Порты</a>'), ('>Remote</a>', '>Пульт</a>'), ('>Docs</a>', '>Документация</a>'), ('>RU</a>', '>EN</a>'),
  # hero
  ('Port a program to Rust and check it behaves the same.', 'Перенеси программу на Rust и проверь, что она ведёт себя так же.'),
- ("PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself:", 'PortCode — терминальный агент. Он изучает оригинал, записывает, что удалось выяснить, переписывает программу на Rust по кусочку и сверяет каждый кусок с настоящим выводом оригинала. Работает с моделями, которые вы запускаете сами:'),
+ ("PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself:", 'PortCode — терминальный агент. Он изучает оригинал, записывает, что удалось выяснить, переписывает программу на Rust по кусочку и сверяет каждый кусок с настоящим выводом оригинала. Работает с моделями, которые ты запускаешь сам:'),
  ('>Install</a>', '>Установить</a>'), ('See an example port', 'Пример порта'),
  ('>Clean-room</span>', '>Clean-room</span>'),
  ('150 steps', '150 шагов'), ('Pin the build', 'Зафиксировать сборку'), ('Golden cases', 'Эталонные случаи'), ('Parity PASS', 'Parity PASS'),
@@ -30,25 +49,25 @@ T = [
  ('The controls and the remote page are copies of the real interface. The numbers come from the wordstat example in the repo. In the screenshots the model is a scripted replay, so anyone can reproduce them.', 'Элементы управления и страница пульта — копии настоящего интерфейса. Цифры взяты из примера wordstat в репозитории. В скриншотах модель — записанный сценарий, поэтому всё воспроизводимо.'),
  # create
  ('Start with /create', 'Начните с /create'),
- ('Type <code>/create</code> and answer a few questions: what to recreate (a website, a program, a game, a file format, or nothing yet), how closely PortCode may look at it, what to build with, and what you want. It starts the right agent in the right mode. Pick "Just look inside" if you only want to understand it: you get <code>docs/SPEC.md</code> and the evidence ledger, no port code.', 'Введите <code>/create</code> и ответьте на несколько вопросов: что воссоздать (сайт, программу, игру, формат файла или пока ничего), насколько близко PortCode может в это заглядывать, на чём строить и чего вы хотите. Он запустит нужного агента в нужном режиме. Выберите «Just look inside», если нужно только разобраться: получите <code>docs/SPEC.md</code> и журнал фактов, без кода порта.'),
+ ('Type <code>/create</code> and answer a few questions: what to recreate (a website, a program, a game, a file format, or nothing yet), how closely PortCode may look at it, what to build with, and what you want. It starts the right agent in the right mode. Pick "Just look inside" if you only want to understand it: you get <code>docs/SPEC.md</code> and the evidence ledger, no port code.', 'Введите <code>/create</code> и ответь на несколько вопросов: что воссоздать (сайт, программу, игру, формат файла или пока ничего), насколько близко PortCode может в это заглядывать, на чём строить и чего ты хочешь. Он запустит нужного агента в нужном режиме. Выберите «Just look inside», если нужно только разобраться: получите <code>docs/SPEC.md</code> и журнал фактов, без кода порта.'),
  ('The /create screen set up for a website', 'Экран /create для сайта'), ('The /create screen set to just look inside a program', 'Экран /create в режиме «только посмотреть» для программы'),
  # tui
  ('The terminal interface', 'Терминальный интерфейс'),
  ('The port agent working on wordstat: tool calls, evidence and a to-do list on the right. Made with', 'Агент port работает над wordstat: вызовы инструментов, факты и список дел справа. Снято скриптом'),
  # install
  ('<h2>Install</h2>', '<h2>Установка</h2>'),
- ('Linux and macOS, x86_64 and aarch64. The installer checks the sha256 and builds from source if there is no binary for your system. On Windows use WSL.', 'Linux и macOS, x86_64 и aarch64. Установщик проверяет sha256 и собирает из исходников, если для вашей системы нет бинарника. В Windows используйте WSL.'),
+ ('Linux and macOS, x86_64 and aarch64. The installer checks the sha256 and builds from source if there is no binary for your system. On Windows use WSL.', 'Linux и macOS, x86_64 и aarch64. Установщик проверяет sha256 и собирает из исходников, если для твоей системы нет бинарника. В Windows используй WSL.'),
  # deep
  ('<h2>Clean room or deep</h2>', '<h2>Clean room или deep</h2>'),
- ('In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Ghidra and ImHex, which are installed next to the binary, each one only after you say yes.', 'В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после вашего «да».'),
+ ('In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Ghidra and ImHex, which are installed next to the binary, each one only after you say yes.', 'В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».'),
  ('Ghidra reads the whole function.', 'Ghidra разбирает функцию целиком.'),
  ('The default value is recorded as an inference until output from the original confirms it.', 'Значение по умолчанию записано как inference, пока вывод оригинала его не подтвердит.'),
  ('shows the first instructions: the function reserves 416 bytes of stack.', 'показывает первые инструкции: функция резервирует 416 байт стека.'),
  ('runs it.', 'запускает.'), ('sp before', 'sp до'), ('sp after', 'sp после'), ('8 instructions · frame 0x1a0 bytes', '8 инструкций · кадр 0x1a0 байт'),
- ('PortCode works with', 'PortCode работает с'), ('tools. Each one is installed only after you say yes.', 'инструментами. Каждый ставится только после вашего «да».'),
- ('describes a file format. <span>The agent writes the pattern, you check it in ImHex.</span>', 'описывает формат файла. <span>Агент пишет шаблон, вы проверяете его в ImHex.</span>'),
+ ('PortCode works with', 'PortCode работает с'), ('tools. Each one is installed only after you say yes.', 'инструментами. Каждый ставится только после твоего «да».'),
+ ('describes a file format. <span>The agent writes the pattern, you check it in ImHex.</span>', 'описывает формат файла. <span>Агент пишет шаблон, ты проверяешь его в ImHex.</span>'),
  ('Around them', 'Рядом'), ('rizin, radare2, YARA, Frida, LIEF, capa and Detect It Easy, plus ILSpy, Il2CppDumper, dnfile and UnityPy for Unity and C#.', 'rizin, radare2, YARA, Frida, LIEF, capa и Detect It Easy, а для Unity и C# ещё ILSpy, Il2CppDumper, dnfile и UnityPy.'),
- ('Nothing looks inside unless you turn it on.', 'Внутрь никто не заглядывает, пока вы не включите.'),
+ ('Nothing looks inside unless you turn it on.', 'Внутрь никто не заглядывает, пока ты не включишь.'),
  ('Clean room is the default. Switch to deep in the terminal or on the remote page.', 'По умолчанию — clean room. Deep включается в терминале или на странице пульта.'),
  ('The numbers on these cards come from running the tools on the wordstat binary from the repo.', 'Числа на этих карточках получены запуском инструментов на бинарнике wordstat из репозитория.'),
  ('in deep mode. Functions on the left; pseudo-C, disassembly or hex in the middle; the evidence ledger on the right; the agent at the bottom.', 'в режиме deep. Слева функции, в центре псевдо-C, дизассемблер или hex, справа журнал фактов, внизу агент.'),
@@ -63,7 +82,7 @@ T = [
  ('>Study<', '>Изучение<'), ('>Record<', '>Запись<'), ('>Port<', '>Порт<'), ('>Prove<', '>Проверка<'),
  ('Fix the exact build, look through the files, follow the main loop. What you only read is an <code>inference</code>; only what you ran counts as an <code>observation</code>.', 'Фиксируем точную сборку, просматриваем файлы, идём по главному циклу. Что только прочитано — <code>inference</code>; <code>observation</code> — только то, что запускали.'),
  ('A log you can only add to. Each entry has an id (<code>E-0007</code>), a source and a hash, and open questions are marked <code>unknown</code>. Every rule in the port points to an entry.', 'Журнал, в который можно только дописывать. У каждой записи есть id (<code>E-0007</code>), источник и хеш, открытые вопросы помечены <code>unknown</code>. Каждое правило в порте ссылается на запись.'),
- ('One small piece at a time, checked against output captured from the original, not against your reading of its code.', 'По одному небольшому куску, сверяя с выводом оригинала, а не с вашим прочтением его кода.'),
+ ('One small piece at a time, checked against output captured from the original, not against your reading of its code.', 'По одному небольшому куску, сверяя с выводом оригинала, а не с твоим прочтением его кода.'),
  ('and fuzzing against the original decide whether the port matches. The agent will not stop before a PASS.', 'и фаззинг против оригинала решают, совпадает ли порт. Агент не остановится до PASS.'),
  # llm
  ('<h2>Works with local and self-hosted models</h2>', '<h2>Работает с локальными и своими моделями</h2>'),
@@ -114,7 +133,7 @@ for a, b in T:
     out = out.replace(a, b)
 # the language switch and local paths
 out = out.replace('href="ru/"', 'href="../"')
-for d in ("style.css", "toolkit.css", "theme.js", "assets/", "screenshots/", "ports/", "guide/", "remote/"):
+for d in ("style.css", "toolkit.css", "theme.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "remote/"):
     out = out.replace(f'href="{d}', f'href="../{d}').replace(f'src="{d}', f'src="../{d}')
 out = out.replace('<a class="l" href="../guide/ARCHITECTURE.html">Документация</a>', '<a class="l" href="../guide/ARCHITECTURE.html">Документация</a>')
 out = out.replace('href="#"', 'href="./"')

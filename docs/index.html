@@ -55,6 +55,18 @@
 <div class="t g-mint s6"><div class="framed"><img src="screenshots/tui-create-look.svg" alt="The /create screen set to just look inside a program"></div></div>
 </div></section>
 
+<section id="try"><h2>Watch a real run</h2>
+<p class="sub">This is the wordstat port. The tool calls and their output were recorded from a real run, and the model's replies are scripted so it is repeatable. Nothing here is typed by hand.</p>
+<div id="demo" data-lang="en"><div class="dlog" aria-live="polite"></div><div class="dside"><h4>Evidence</h4><div class="dev">0</div><h4>To do</h4><div class="dtodo"></div></div>
+<div class="dctl"><button class="dplay" type="button">Play</button><div class="dtrack"><i class="dbar"></i></div><button class="dspeed" type="button" aria-label="Speed">1×</button></div></div>
+<h3 style="margin-top:34px">Try /create</h3>
+<div id="wiz"><div>
+<fieldset><legend>What do you want to do?</legend><button type="button" data-k="goal" data-v="port" class="on">Recreate it</button><button type="button" data-k="goal" data-v="look">Just look inside</button></fieldset>
+<fieldset><legend>What is it?</legend><button type="button" data-k="kind" data-v="website" class="on">Website</button><button type="button" data-k="kind" data-v="program">Program</button><button type="button" data-k="kind" data-v="game">Game</button><button type="button" data-k="kind" data-v="format">File format</button></fieldset>
+<fieldset><legend>How closely may it look?</legend><button type="button" data-k="close" data-v="clean-room" class="on">Outside only</button><button type="button" data-k="close" data-v="deep">Inside too</button></fieldset>
+<fieldset><legend>Build with</legend><button type="button" data-k="stack" data-v="Rust, std only" class="on">Rust, std only</button><button type="button" data-k="stack" data-v="Rust + wgpu">Rust + wgpu</button></fieldset></div>
+<pre class="wprompt" aria-live="polite"></pre></div></section>
+
 <section id="install"><h2>Install</h2>
 <pre><code># macOS / Linux / WSL
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
@@ -252,4 +264,4 @@ $ portcode -m ollama/qwen3:14b -a port</code></pre></section>
 <p class="sub">PortCode follows the architecture of <a href="https://github.com/anomalyco/opencode">OpenCode</a>, rewritten in Rust, and combines it with the <a href="https://github.com/LakoMoor/rustport-skill">rustport</a> skill and ideas from <a href="https://github.com/storytold/craft-anything">Craft Anything</a>. It is a rewrite, not a fork. <a href="https://github.com/LakoMoor/portcode/blob/main/docs/OPENCODE_MAPPING.md">The mapping</a> lists what is covered.</p></section>
 </main>
 <footer><div class="wrap">MIT licensed · OpenCode is © its authors (MIT), see NOTICE · Screenshots are captured from real runs and never edited.</div></footer>
-</body></html>
+<script src="demo/session.js"></script><script src="demo.js"></script></body></html>
