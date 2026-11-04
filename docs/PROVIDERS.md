@@ -33,7 +33,7 @@ Keys: env var (`api_key_env`), or `portcode auth set <provider>` (`~/.config/por
 | same tool call 3× in a row | blocked; stops after repeats |
 
 ## Profiles (`ModelProfile`)
-`temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full), tool_output_limit`. Built-in families by substring: `deepseek*`, `qwen*` (smaller output/context for `flash`, `mini`, `4b/7b/8b`), generic open families. **These are starting points, not measured claims.** Newer releases may want different values — override under `"models"`.
+`temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full|qwen38), tool_output_limit`. Built-in families by substring: `deepseek*`, `qwen*` (smaller output/context for `flash`, `mini`, `4b/7b/8b`), generic open families. **These are starting points, not measured claims.** Newer releases may want different values — override under `"models"`.
 
 ### Small context windows and short outputs
 

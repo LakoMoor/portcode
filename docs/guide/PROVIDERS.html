@@ -32,7 +32,7 @@
 <tr><td>same tool call 3× in a row</td><td>blocked; stops after repeats</td></tr>
 </tbody></table>
 <h2>Profiles (<code>ModelProfile</code>)</h2>
-<p><code>temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full), tool_output_limit</code>. Built-in families by substring: <code>deepseek*</code>, <code>qwen*</code> (smaller output/context for <code>flash</code>, <code>mini</code>, <code>4b/7b/8b</code>), generic open families. <strong>These are starting points, not measured claims.</strong> Newer releases may want different values — override under <code>&quot;models&quot;</code>.</p>
+<p><code>temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full|qwen38), tool_output_limit</code>. Built-in families by substring: <code>deepseek*</code>, <code>qwen*</code> (smaller output/context for <code>flash</code>, <code>mini</code>, <code>4b/7b/8b</code>), generic open families. <strong>These are starting points, not measured claims.</strong> Newer releases may want different values — override under <code>&quot;models&quot;</code>.</p>
 <h3>Small context windows and short outputs</h3>
 <p>Many local servers run with a 4k to 16k window and cut replies early. PortCode accounts for it:</p>
 <ul>

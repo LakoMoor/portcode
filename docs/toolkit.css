@@ -136,3 +136,12 @@
 #wiz [data-k].on{background:var(--ink);color:var(--white);border-color:var(--ink)}
 #wiz .wprompt{background:#17161c;color:#e9e7f2;border-radius:16px;padding:18px;font:13.5px/1.55 var(--mono);white-space:pre-wrap;margin:0}
 @media(max-width:760px){#demo{grid-template-columns:1fr}#demo .dside{display:none}#demo .dlog{height:340px}#wiz{grid-template-columns:1fr}}
+
+/* small screens: text tiles shrink to their text, terminal screenshots scroll sideways at a readable size */
+@media(max-width:980px){.tc.h340{min-height:0}.g-dark.tc.h340{min-height:0}}
+@media(max-width:700px){
+ .framed,.shotile{overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .framed img{width:auto;min-width:900px;max-width:none}
+ .shotile{max-height:none;padding:20px 0 0 20px}
+ .shotile img{width:auto;min-width:900px}
+}
