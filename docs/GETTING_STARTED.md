@@ -27,6 +27,7 @@ Inside the app:
 | `/key [provider]` | asks for the API key, hidden |
 | `/models` | lists the models the current provider serves |
 | `/model <provider>/<model>` | picks a model |
+| `/theme light` or `/theme dark` | switches the colours, remembered for next time (`PORTCODE_THEME` overrides) |
 | `/setup` | prints these steps again |
 
 The model you pick with `/model` or `/provider` is remembered for the next start (`-m` and `PORTCODE_MODEL` still win).

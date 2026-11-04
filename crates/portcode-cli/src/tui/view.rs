@@ -91,7 +91,7 @@ fn inline_md(text: &str, base: Style) -> Vec<Span<'static>> {
         if i % 2 == 1 {
             out.push(Span::styled(
                 part.to_string(),
-                Style::new().fg(ACCENT).bg(PANEL2),
+                Style::new().fg(c_accent()).bg(c_panel2()),
             ));
         } else {
             for (j, b) in part.split("**").enumerate() {
@@ -124,7 +124,7 @@ fn md_lines(text: &str, width: usize, indent: &str) -> Vec<Line<'static>> {
         if code {
             out.push(Line::from(vec![
                 pad,
-                Span::styled(format!(" {raw} "), Style::new().fg(TEXT).bg(PANEL2)),
+                Span::styled(format!(" {raw} "), Style::new().fg(c_text()).bg(c_panel2())),
             ]));
             continue;
         }
@@ -133,13 +133,13 @@ fn md_lines(text: &str, width: usize, indent: &str) -> Vec<Line<'static>> {
             .or_else(|| raw.strip_prefix("## "))
             .or_else(|| raw.strip_prefix("### "))
         {
-            (vec![Span::styled(h.to_string(), bold(ACCENT))], 0)
+            (vec![Span::styled(h.to_string(), bold(c_accent()))], 0)
         } else if let Some(r) = raw
             .trim_start()
             .strip_prefix("- ")
             .or_else(|| raw.trim_start().strip_prefix("* "))
         {
-            let mut v = vec![Span::styled("• ", Style::new().fg(ACCENT))];
+            let mut v = vec![Span::styled("• ", Style::new().fg(c_accent()))];
             v.extend(inline_md(r, text_style()));
             (v, 2)
         } else {
@@ -176,9 +176,9 @@ fn chip_ids(line: Line<'static>, unknown: &[String]) -> Line<'static> {
                     out.push(Span::styled(std::mem::take(&mut plain), sp.style));
                 }
                 let col = if unknown.iter().any(|u| u.starts_with(&id)) {
-                    RED
+                    c_red()
                 } else {
-                    GREEN
+                    c_green()
                 };
                 out.push(Span::styled(
                     id,
@@ -228,9 +228,9 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
             Item::User(t) => {
                 out.push(Line::from(""));
                 out.push(pad_line(
-                    vec![Span::styled("┃", Style::new().fg(BLUE).bg(PANEL))],
+                    vec![Span::styled("┃", Style::new().fg(c_blue()).bg(c_panel()))],
                     width,
-                    PANEL,
+                    c_panel(),
                 ));
                 for raw in t.lines() {
                     for l in wrap(
@@ -238,18 +238,19 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                         width.saturating_sub(3),
                         0,
                     ) {
-                        let mut v = vec![Span::styled("┃ ", Style::new().fg(BLUE).bg(PANEL))];
+                        let mut v =
+                            vec![Span::styled("┃ ", Style::new().fg(c_blue()).bg(c_panel()))];
                         v.extend(
                             l.into_iter()
-                                .map(|s| Span::styled(s.content, s.style.bg(PANEL))),
+                                .map(|s| Span::styled(s.content, s.style.bg(c_panel()))),
                         );
-                        out.push(pad_line(v, width, PANEL));
+                        out.push(pad_line(v, width, c_panel()));
                     }
                 }
                 out.push(pad_line(
-                    vec![Span::styled("┃", Style::new().fg(BLUE).bg(PANEL))],
+                    vec![Span::styled("┃", Style::new().fg(c_blue()).bg(c_panel()))],
                     width,
-                    PANEL,
+                    c_panel(),
                 ));
                 out.push(Line::from(""));
             }
@@ -293,9 +294,9 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                 text: body,
             } => {
                 let (icon, col) = match state {
-                    ToolState::Running => (spin, YELLOW),
-                    ToolState::Ok => ("✓", GREEN),
-                    ToolState::Err => ("✗", RED),
+                    ToolState::Running => (spin, c_yellow()),
+                    ToolState::Ok => ("✓", c_green()),
+                    ToolState::Err => ("✗", c_red()),
                 };
                 let sum =
                     if matches!(state, ToolState::Running) || title.is_empty() || title == name {
@@ -320,9 +321,9 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     .map(|r| r.trim().starts_with("PASS"));
                 if let Some(pass) = verdict {
                     let (bg, fg, word) = if pass {
-                        (PASS_BG, GREEN, " PASS ")
+                        (c_pass_bg(), c_green(), " PASS ")
                     } else {
-                        (FAIL_BG, RED, " FAIL ")
+                        (c_fail_bg(), c_red(), " FAIL ")
                     };
                     let counts = body
                         .lines()
@@ -334,7 +335,7 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                             Span::raw("    "),
                             Span::styled(
                                 word,
-                                Style::new().fg(BG).bg(fg).add_modifier(Modifier::BOLD),
+                                Style::new().fg(c_bg()).bg(fg).add_modifier(Modifier::BOLD),
                             ),
                             Span::styled(format!("  {counts}"), Style::new().fg(fg)),
                         ],
@@ -347,18 +348,18 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     for l in lines.iter().take(max) {
                         let l: String = l.chars().take(width.saturating_sub(8)).collect();
                         let st = if l.starts_with('+') && !l.starts_with("++") {
-                            Style::new().fg(GREEN)
+                            Style::new().fg(c_green())
                         } else if (l.starts_with('-') && !l.starts_with("--"))
                             || *state == ToolState::Err
                         {
-                            Style::new().fg(RED)
+                            Style::new().fg(c_red())
                         } else {
                             muted()
                         };
                         out.push(chip_ids(
                             Line::from(vec![
                                 Span::raw("    "),
-                                Span::styled("│ ", Style::new().fg(RULE)),
+                                Span::styled("│ ", Style::new().fg(c_rule())),
                                 Span::styled(l, st),
                             ]),
                             &app.unknowns,
@@ -367,7 +368,7 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     if lines.len() > max {
                         out.push(Line::from(vec![
                             Span::raw("    "),
-                            Span::styled("╰ ", Style::new().fg(RULE)),
+                            Span::styled("╰ ", Style::new().fg(c_rule())),
                             Span::styled(format!("{} more lines", lines.len() - max), muted()),
                         ]));
                     }
@@ -391,7 +392,7 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
             Item::Error(t) => {
                 out.extend(
                     wrap(
-                        vec![Span::styled(format!("✗ {t}"), Style::new().fg(RED))],
+                        vec![Span::styled(format!("✗ {t}"), Style::new().fg(c_red()))],
                         width.saturating_sub(2),
                         2,
                     )
@@ -472,7 +473,7 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
         .borders(Borders::LEFT)
         .border_type(BorderType::Thick)
         .border_style(Style::new().fg(col))
-        .style(Style::new().bg(PANEL));
+        .style(Style::new().bg(c_panel()));
     let inner = block.inner(area);
     f.render_widget(block, area);
     let shown = if app.key_for.is_some() {
@@ -533,10 +534,13 @@ fn mode_chip(app: &App) -> Vec<Span<'static>> {
     if app.deep {
         vec![Span::styled(
             " ◉ deep ",
-            Style::new().fg(BG).bg(YELLOW).add_modifier(Modifier::BOLD),
+            Style::new()
+                .fg(c_bg())
+                .bg(c_yellow())
+                .add_modifier(Modifier::BOLD),
         )]
     } else {
-        vec![Span::styled("▣ clean-room", Style::new().fg(TEAL))]
+        vec![Span::styled("▣ clean-room", Style::new().fg(c_teal()))]
     }
 }
 
@@ -547,7 +551,7 @@ fn bar(pct: u64, cells: usize, on: ratatui::style::Color) -> Vec<Span<'static>> 
         Span::styled("▰".repeat(filled), Style::new().fg(on)),
         Span::styled(
             "▱".repeat(cells - filled.min(cells)),
-            Style::new().fg(BORDER),
+            Style::new().fg(c_border()),
         ),
     ]
 }
@@ -556,10 +560,10 @@ fn bar(pct: u64, cells: usize, on: ratatui::style::Color) -> Vec<Span<'static>> 
 fn section(title: &str, w: usize) -> Line<'static> {
     let used = title.chars().count() + 1;
     Line::from(vec![
-        Span::styled(title.to_string(), bold(TEXT)),
+        Span::styled(title.to_string(), bold(c_text())),
         Span::styled(
             format!(" {}", "─".repeat(w.saturating_sub(used))),
-            Style::new().fg(RULE),
+            Style::new().fg(c_rule()),
         ),
     ])
 }
@@ -596,13 +600,13 @@ fn footer(f: &mut Frame, app: &App, area: Rect) {
     if let Some((ok, t)) = &app.parity {
         left.push(Span::styled(
             format!("  {} {t}", if *ok { "✓" } else { "✗" }),
-            Style::new().fg(if *ok { GREEN } else { RED }),
+            Style::new().fg(if *ok { c_green() } else { c_red() }),
         ));
     }
     if let Some(a) = &app.remote_addr {
         left.push(Span::styled(
             format!("  ● remote {a}"),
-            Style::new().fg(CYAN),
+            Style::new().fg(c_cyan()),
         ));
     }
     let used: usize = left.iter().map(|s| s.content.chars().count()).sum();
@@ -616,8 +620,8 @@ fn footer(f: &mut Frame, app: &App, area: Rect) {
 fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     let block = Block::new()
         .borders(Borders::LEFT)
-        .border_style(Style::new().fg(RULE))
-        .style(Style::new().bg(PANEL))
+        .border_style(Style::new().fg(c_rule()))
+        .style(Style::new().bg(c_panel()))
         .padding(ratatui::widgets::Padding::new(2, 2, 1, 1));
     let inner = block.inner(area);
     f.render_widget(block, area);
@@ -626,7 +630,7 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     for r in wrap(
         vec![Span::styled(
             app.title.clone().unwrap_or_else(|| "New session".into()),
-            bold(ACCENT),
+            bold(c_accent()),
         )],
         w,
         0,
@@ -657,11 +661,11 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
         pct,
         14,
         if pct > 80 {
-            RED
+            c_red()
         } else if pct > 60 {
-            YELLOW
+            c_yellow()
         } else {
-            ACCENT
+            c_accent()
         },
     );
     c.push(Span::styled(format!(" {pct}%"), muted()));
@@ -687,15 +691,15 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     let su = cells.saturating_sub(so + si);
     if o + i + u > 0 {
         l.push(Line::from(vec![
-            Span::styled("█".repeat(so), Style::new().fg(GREEN)),
-            Span::styled("█".repeat(si), Style::new().fg(YELLOW)),
-            Span::styled("█".repeat(su), Style::new().fg(RED)),
+            Span::styled("█".repeat(so), Style::new().fg(c_green())),
+            Span::styled("█".repeat(si), Style::new().fg(c_yellow())),
+            Span::styled("█".repeat(su), Style::new().fg(c_red())),
         ]));
     }
     l.push(Line::from(vec![
-        Span::styled(format!("{o} seen  "), Style::new().fg(GREEN)),
-        Span::styled(format!("{i} inferred  "), Style::new().fg(YELLOW)),
-        Span::styled(format!("{u} open"), Style::new().fg(RED)),
+        Span::styled(format!("{o} seen  "), Style::new().fg(c_green())),
+        Span::styled(format!("{i} inferred  "), Style::new().fg(c_yellow())),
+        Span::styled(format!("{u} open"), Style::new().fg(c_red())),
     ]));
     for un in app.unknowns.iter().take(2) {
         for r in wrap(
@@ -706,7 +710,7 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
         .into_iter()
         .take(2)
         {
-            let mut v = vec![Span::styled("? ", Style::new().fg(RED))];
+            let mut v = vec![Span::styled("? ", Style::new().fg(c_red()))];
             v.extend(r);
             l.push(Line::from(v));
         }
@@ -717,14 +721,14 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     match &app.parity {
         Some((ok, t)) => {
             let (bg, fg, word) = if *ok {
-                (PASS_BG, GREEN, " PASS ")
+                (c_pass_bg(), c_green(), " PASS ")
             } else {
-                (FAIL_BG, RED, " FAIL ")
+                (c_fail_bg(), c_red(), " FAIL ")
             };
             l.push(pad_line(
                 vec![Span::styled(
                     word,
-                    Style::new().fg(BG).bg(fg).add_modifier(Modifier::BOLD),
+                    Style::new().fg(c_bg()).bg(fg).add_modifier(Modifier::BOLD),
                 )],
                 w,
                 bg,
@@ -748,9 +752,9 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
         l.push(section("Todo", w));
         for t in &app.todos {
             let (m, c) = match t.status.as_str() {
-                "completed" => ("☑", GREEN),
-                "in_progress" => ("◐", YELLOW),
-                _ => ("☐", MUTED),
+                "completed" => ("☑", c_green()),
+                "in_progress" => ("◐", c_yellow()),
+                _ => ("☐", c_muted()),
             };
             let st = if t.status == "completed" {
                 muted()
@@ -778,7 +782,7 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(l), inner);
     let tag = Line::from(vec![
         Span::styled("port", muted()),
-        Span::styled("code ", bold(ACCENT)),
+        Span::styled("code ", bold(c_accent())),
         Span::styled(env!("CARGO_PKG_VERSION"), muted()),
     ]);
     f.render_widget(
@@ -822,20 +826,20 @@ fn popup(f: &mut Frame, app: &App, above: Rect) {
         .take(rows)
         .map(|(i, it)| {
             let on = i == sel;
-            let row = Style::new().bg(if on { SELECT } else { PANEL2 });
+            let row = Style::new().bg(if on { c_select() } else { c_panel2() });
             Line::from(vec![
-                Span::styled(if on { " ▸ " } else { "   " }, row.fg(ACCENT)),
+                Span::styled(if on { " ▸ " } else { "   " }, row.fg(c_accent())),
                 Span::styled(
                     format!("{:<w$}  ", it.label),
                     if on {
-                        bold(ACCENT).bg(SELECT)
+                        bold(c_accent()).bg(c_select())
                     } else {
-                        text().bg(PANEL2)
+                        text().bg(c_panel2())
                     },
                 ),
                 Span::styled(
                     it.desc.clone(),
-                    muted().bg(if on { SELECT } else { PANEL2 }),
+                    muted().bg(if on { c_select() } else { c_panel2() }),
                 ),
             ])
         })
@@ -849,9 +853,9 @@ fn popup(f: &mut Frame, app: &App, above: Rect) {
         Paragraph::new(lines).block(
             Block::new()
                 .borders(Borders::ALL)
-                .border_style(Style::new().fg(BORDER))
+                .border_style(Style::new().fg(c_border()))
                 .title_bottom(Span::styled(more, muted()))
-                .style(Style::new().bg(PANEL2)),
+                .style(Style::new().bg(c_panel2())),
         ),
         area,
     );
@@ -871,15 +875,15 @@ fn permission(f: &mut Frame, app: &App, full: Rect) {
     f.render_widget(Clear, area);
     let mut l = vec![
         Line::from(vec![
-            Span::styled(" Permission required ", bold(YELLOW)),
-            Span::styled(format!(" {}", p.req.tool), bold(TEXT)),
+            Span::styled(" Permission required ", bold(c_yellow())),
+            Span::styled(format!(" {}", p.req.tool), bold(c_text())),
         ]),
         Line::from(""),
     ];
     for t in target.iter().take(6) {
         l.push(Line::from(Span::styled(
             format!(" {t}"),
-            Style::new().fg(TEXT).bg(PANEL2),
+            Style::new().fg(c_text()).bg(c_panel2()),
         )));
     }
     if !p.req.reason.is_empty() {
@@ -890,11 +894,11 @@ fn permission(f: &mut Frame, app: &App, full: Rect) {
     }
     l.push(Line::from(""));
     l.push(Line::from(vec![
-        Span::styled(" y ", Style::new().fg(BG).bg(GREEN)),
+        Span::styled(" y ", Style::new().fg(c_bg()).bg(c_green())),
         Span::styled(" allow once   ", text()),
-        Span::styled(" a ", Style::new().fg(BG).bg(ACCENT)),
+        Span::styled(" a ", Style::new().fg(c_bg()).bg(c_accent())),
         Span::styled(" always   ", text()),
-        Span::styled(" n ", Style::new().fg(BG).bg(RED)),
+        Span::styled(" n ", Style::new().fg(c_bg()).bg(c_red())),
         Span::styled(" reject", text()),
     ]));
     f.render_widget(
@@ -902,8 +906,8 @@ fn permission(f: &mut Frame, app: &App, full: Rect) {
             Block::new()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::new().fg(YELLOW))
-                .style(Style::new().bg(PANEL)),
+                .border_style(Style::new().fg(c_yellow()))
+                .style(Style::new().bg(c_panel())),
         ),
         area,
     );
@@ -926,7 +930,7 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
         .map(|(a, b)| {
             Line::from(vec![
                 Span::styled(*a, muted()),
-                Span::styled(*b, bold(TEXT)),
+                Span::styled(*b, bold(c_text())),
             ])
         })
         .collect();
@@ -964,9 +968,9 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     let lw = "● observed   ● inferred   ● unknown".chars().count() as u16;
     f.render_widget(
         Paragraph::new(Line::from(vec![
-            Span::styled("● observed", Style::new().fg(GREEN)),
-            Span::styled("   ● inferred", Style::new().fg(YELLOW)),
-            Span::styled("   ● unknown", Style::new().fg(RED)),
+            Span::styled("● observed", Style::new().fg(c_green())),
+            Span::styled("   ● inferred", Style::new().fg(c_yellow())),
+            Span::styled("   ● unknown", Style::new().fg(c_red())),
         ])),
         Rect {
             x: cx(lw),
@@ -979,7 +983,10 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     if let Some(h) = &app.hint {
         let w = (h.chars().count() as u16).min(area.width.saturating_sub(2));
         f.render_widget(
-            Paragraph::new(Line::from(Span::styled(h.clone(), Style::new().fg(YELLOW)))),
+            Paragraph::new(Line::from(Span::styled(
+                h.clone(),
+                Style::new().fg(c_yellow()),
+            ))),
             Rect {
                 x: cx(w),
                 y: pa.y + pa.height + 5,
@@ -1013,7 +1020,10 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
 
 pub fn draw(f: &mut Frame, app: &mut App) {
     let area = f.area();
-    f.render_widget(Block::new().style(Style::new().bg(BG).fg(TEXT)), area);
+    f.render_widget(
+        Block::new().style(Style::new().bg(c_bg()).fg(c_text())),
+        area,
+    );
     if app.wiz.is_some() {
         wizard(f, app, area);
         return;
@@ -1088,7 +1098,10 @@ const C_KW: [&str; 14] = [
 fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
     let mut spans: Vec<Span<'static>> = Vec::new();
     if let Some(n) = num {
-        spans.push(Span::styled(format!("{n:>4}  "), Style::new().fg(BORDER)));
+        spans.push(Span::styled(
+            format!("{n:>4}  "),
+            Style::new().fg(c_border()),
+        ));
     }
     match tab {
         Tab::Disasm => {
@@ -1101,18 +1114,21 @@ fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
             spans.push(Span::styled(format!("{a:<10} "), muted()));
             spans.push(Span::styled(
                 format!("{bytes:<18}"),
-                Style::new().fg(BORDER),
+                Style::new().fg(c_border()),
             ));
-            spans.push(Span::styled(format!("{mnem:<7} "), Style::new().fg(BLUE)));
-            spans.push(Span::styled(ops, Style::new().fg(TEXT)));
+            spans.push(Span::styled(
+                format!("{mnem:<7} "),
+                Style::new().fg(c_blue()),
+            ));
+            spans.push(Span::styled(ops, Style::new().fg(c_text())));
         }
         Tab::Hex => {
             let (off, rest) = raw.split_once("  ").unwrap_or(("", raw));
             let (hex, asc) = rest.split_once("  |").unwrap_or((rest, ""));
             spans.push(Span::styled(format!("{off}  "), muted()));
-            spans.push(Span::styled(format!("{hex}  "), Style::new().fg(TEAL)));
+            spans.push(Span::styled(format!("{hex}  "), Style::new().fg(c_teal())));
             if !asc.is_empty() {
-                spans.push(Span::styled(format!("|{asc}"), Style::new().fg(MUTED)));
+                spans.push(Span::styled(format!("|{asc}"), Style::new().fg(c_muted())));
             }
         }
         Tab::Pseudo => {
@@ -1120,7 +1136,7 @@ fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
             if t.starts_with("//") || t.starts_with("/*") {
                 spans.push(Span::styled(
                     raw.to_string(),
-                    Style::new().fg(MUTED).add_modifier(Modifier::ITALIC),
+                    Style::new().fg(c_muted()).add_modifier(Modifier::ITALIC),
                 ));
             } else {
                 // split into words and punctuation, colour keywords, numbers and strings
@@ -1131,13 +1147,13 @@ fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
                     }
                     let c = std::mem::take(cur);
                     let st = if in_str {
-                        Style::new().fg(GREEN)
+                        Style::new().fg(c_green())
                     } else if C_KW.contains(&c.as_str()) {
-                        Style::new().fg(PURPLE)
+                        Style::new().fg(c_purple())
                     } else if c.starts_with(|x: char| x.is_ascii_digit()) {
-                        Style::new().fg(YELLOW)
+                        Style::new().fg(c_yellow())
                     } else {
-                        Style::new().fg(TEXT)
+                        Style::new().fg(c_text())
                     };
                     spans.push(Span::styled(c, st));
                 };
@@ -1156,7 +1172,7 @@ fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
                         cur.push(ch);
                     } else {
                         flush(&mut cur, &mut spans, false);
-                        spans.push(Span::styled(ch.to_string(), Style::new().fg(MUTED)));
+                        spans.push(Span::styled(ch.to_string(), Style::new().fg(c_muted())));
                     }
                 }
                 flush(&mut cur, &mut spans, in_str);
@@ -1223,7 +1239,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
         .split(area);
     // header
     let mut head = vec![
-        Span::styled(" workbench ", bold(ACCENT)),
+        Span::styled(" workbench ", bold(c_accent())),
         Span::styled(format!(" {} ", wb.file), text()),
         Span::styled(
             format!("{} {}  ", wb.format.to_lowercase(), wb.arch),
@@ -1248,10 +1264,10 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     let lw = cols[0].width.saturating_sub(2) as usize;
     let mut lines: Vec<Line> = vec![
         Line::from(vec![
-            Span::styled(" Functions ", bold(TEXT)),
+            Span::styled(" Functions ", bold(c_text())),
             Span::styled(
                 format!("{}", wb.funcs.len()),
-                Style::new().fg(MUTED).bg(PANEL2),
+                Style::new().fg(c_muted()).bg(c_panel2()),
             ),
         ]),
         Line::from(Span::styled(
@@ -1283,7 +1299,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     if let Some(st) = &wb.status {
         lines.push(Line::from(Span::styled(
             format!(" {st}"),
-            Style::new().fg(YELLOW),
+            Style::new().fg(c_yellow()),
         )));
     }
     let per = (cols[0].height as usize).saturating_sub(lines.len()) / 2;
@@ -1291,7 +1307,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     for (n, &i) in vis.iter().enumerate().skip(first).take(per.max(1)) {
         let Some(fu) = wb.funcs.get(i) else { continue };
         let on = n == wb.sel;
-        let bg = if on { PANEL2 } else { BG };
+        let bg = if on { c_panel2() } else { c_bg() };
         let size = if fu.size > 0 {
             format!("size {}", fu.size)
         } else {
@@ -1302,10 +1318,12 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
         lines.push(Line::from(vec![
             Span::styled(
                 format!(" {}", clip_to(&a, lw)),
-                Style::new().fg(if on { BLUE } else { MUTED }).bg(bg),
+                Style::new()
+                    .fg(if on { c_blue() } else { c_muted() })
+                    .bg(bg),
             ),
             Span::styled(" ".repeat(gap), Style::new().bg(bg)),
-            Span::styled(format!("{size} "), Style::new().fg(MUTED).bg(bg)),
+            Span::styled(format!("{size} "), Style::new().fg(c_muted()).bg(bg)),
         ]));
         lines.push(Line::from(Span::styled(
             format!(
@@ -1313,14 +1331,16 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
                 clip_to(&fu.name, lw.saturating_sub(1)),
                 " ".repeat(lw.saturating_sub(fu.name.chars().count() + 1))
             ),
-            Style::new().fg(if on { ACCENT } else { TEXT }).bg(bg),
+            Style::new()
+                .fg(if on { c_accent() } else { c_text() })
+                .bg(bg),
         )));
     }
     f.render_widget(
         Paragraph::new(lines).block(
             Block::new()
                 .borders(Borders::RIGHT)
-                .border_style(Style::new().fg(RULE)),
+                .border_style(Style::new().fg(c_rule())),
         ),
         cols[0],
     );
@@ -1330,7 +1350,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     let mut tabs: Vec<Span> = vec![Span::raw(" ")];
     for (i, t) in Tab::ALL.iter().enumerate() {
         let st = if *t == wb.tab {
-            bold(ACCENT).add_modifier(Modifier::UNDERLINED)
+            bold(c_accent()).add_modifier(Modifier::UNDERLINED)
         } else {
             muted()
         };
@@ -1340,7 +1360,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     let mut code: Vec<Line> = vec![Line::from(tabs)];
     if let Some(fu) = wb.current() {
         code.push(Line::from(vec![
-            Span::styled(format!(" {}", fu.name), bold(TEXT)),
+            Span::styled(format!(" {}", fu.name), bold(c_text())),
             Span::styled(
                 format!(
                     "  0x{:x}{}{}",
@@ -1378,7 +1398,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
             for l in hard_wrap(e, cw) {
                 code.push(Line::from(Span::styled(
                     format!(" {l}"),
-                    Style::new().fg(RED),
+                    Style::new().fg(c_red()),
                 )));
             }
         }
@@ -1402,10 +1422,10 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
         let ew = cols[2].width.saturating_sub(5) as usize;
         let mut ev: Vec<Line> = vec![
             Line::from(vec![
-                Span::styled(" Evidence ", bold(TEXT)),
+                Span::styled(" Evidence ", bold(c_text())),
                 Span::styled(
                     format!("{}", wb.notes.len()),
-                    Style::new().fg(MUTED).bg(PANEL2),
+                    Style::new().fg(c_muted()).bg(c_panel2()),
                 ),
             ]),
             Line::from(""),
@@ -1421,20 +1441,20 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
         let me = wb.current().map(|f| f.name.clone()).unwrap_or_default();
         for n in &wb.notes {
             let col = match n.kind {
-                "observation" => GREEN,
-                "inference" => YELLOW,
-                _ => RED,
+                "observation" => c_green(),
+                "inference" => c_yellow(),
+                _ => c_red(),
             };
             let hot = !me.is_empty() && n.text.contains(&me);
             ev.push(Line::from(vec![
                 Span::styled(" ● ", Style::new().fg(col)),
-                Span::styled(n.id.clone(), bold(if hot { ACCENT } else { TEXT })),
+                Span::styled(n.id.clone(), bold(if hot { c_accent() } else { c_text() })),
                 Span::styled(format!("  {}", n.kind), Style::new().fg(col)),
             ]));
             for l in word_wrap(&n.text, ew).into_iter().take(4) {
                 ev.push(Line::from(Span::styled(
                     format!("   {l}"),
-                    Style::new().fg(MUTED),
+                    Style::new().fg(c_muted()),
                 )));
             }
             ev.push(Line::from(""));
@@ -1443,7 +1463,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
             Paragraph::new(ev).block(
                 Block::new()
                     .borders(Borders::LEFT)
-                    .border_style(Style::new().fg(RULE)),
+                    .border_style(Style::new().fg(c_rule())),
             ),
             cols[2],
         );
@@ -1504,16 +1524,16 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
     let on = |c: bool| {
         if c {
             Style::new()
-                .fg(TEXT)
+                .fg(c_text())
                 .bg(Color::Rgb(22, 38, 78))
                 .add_modifier(Modifier::BOLD)
         } else {
-            Style::new().fg(MUTED).bg(PANEL2)
+            Style::new().fg(c_muted()).bg(c_panel2())
         }
     };
     let focus_mark = |fld: Field| {
         if w.focus == fld {
-            Span::styled("▎", Style::new().fg(ACCENT))
+            Span::styled("▎", Style::new().fg(c_accent()))
         } else {
             Span::raw(" ")
         }
@@ -1526,7 +1546,7 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
         }
     };
     lines.push(Line::from(vec![
-        Span::styled("New project", bold(TEXT)),
+        Span::styled("New project", bold(c_text())),
         Span::styled(
             "   enter or ctrl+s starts · tab moves · esc closes",
             muted(),
@@ -1548,7 +1568,7 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
         } else {
             "What do you want to make?"
         },
-        bold(TEXT),
+        bold(c_text()),
     )));
     lines.push(Line::from(Span::styled(
         if w.look_only {
@@ -1561,14 +1581,14 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
     lines.push(Line::from(""));
     // 1
     lines.push(Line::from(vec![
-        Span::styled(" 1 ", Style::new().fg(TEXT).bg(PANEL2)),
+        Span::styled(" 1 ", Style::new().fg(c_text()).bg(c_panel2())),
         Span::styled(
             if w.look_only {
                 "  What do you want to look into?"
             } else {
                 "  What do you want to recreate?"
             },
-            bold(TEXT),
+            bold(c_text()),
         ),
     ]));
     lines.push(Line::from(""));
@@ -1600,21 +1620,21 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
         };
         let mut sp = vec![focus_mark(Field::Source), shown];
         if w.focus == Field::Source {
-            sp.push(Span::styled("▏", Style::new().fg(ACCENT)));
+            sp.push(Span::styled("▏", Style::new().fg(c_accent())));
         }
         let used: usize = sp.iter().map(|s| s.content.chars().count()).sum();
         sp.push(Span::styled(
             " ".repeat(width.saturating_sub(used).min(60)),
-            Style::new().bg(PANEL2),
+            Style::new().bg(c_panel2()),
         ));
-        lines.push(Line::from(sp).style(Style::new().bg(PANEL2)));
+        lines.push(Line::from(sp).style(Style::new().bg(c_panel2())));
         if let Some(n) = &w.note {
             lines.push(Line::from(Span::styled(
                 format!("  {n}"),
                 Style::new().fg(if n.contains("outside") || n.contains("not found") {
-                    YELLOW
+                    c_yellow()
                 } else {
-                    TEAL
+                    c_teal()
                 }),
             )));
         }
@@ -1694,11 +1714,11 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
             focus_mark(Field::Options),
             Span::styled(
                 format!(" 1 {} Its own design and art ", box_(w.own_art)),
-                Style::new().fg(if w.own_art { TEXT } else { MUTED }),
+                Style::new().fg(if w.own_art { c_text() } else { c_muted() }),
             ),
             Span::styled(
                 format!("  2 {} Screenshots and a site ", box_(w.proof)),
-                Style::new().fg(if w.proof { TEXT } else { MUTED }),
+                Style::new().fg(if w.proof { c_text() } else { c_muted() }),
             ),
         ]));
         lines.push(Line::from(Span::styled(
@@ -1713,8 +1733,8 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
     lines.push(Line::from(""));
     // 2
     lines.push(Line::from(vec![
-        Span::styled(" 2 ", Style::new().fg(TEXT).bg(PANEL2)),
-        Span::styled("  Say what you want", bold(TEXT)),
+        Span::styled(" 2 ", Style::new().fg(c_text()).bg(c_panel2())),
+        Span::styled("  Say what you want", bold(c_text())),
     ]));
     lines.push(Line::from(""));
     mark(&lines, Field::Text, &mut focus_line);
@@ -1731,9 +1751,9 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
             Span::styled(format!(" {l}"), body_style),
         ];
         if i + 1 == shown.len().min(5) && w.focus == Field::Text {
-            sp.push(Span::styled("▏", Style::new().fg(ACCENT)));
+            sp.push(Span::styled("▏", Style::new().fg(c_accent())));
         }
-        lines.push(Line::from(sp).style(Style::new().bg(PANEL2)));
+        lines.push(Line::from(sp).style(Style::new().bg(c_panel2())));
     }
     lines.push(Line::from(Span::styled(
         "  Enter to start · Alt+Enter for a new line",
@@ -1763,25 +1783,31 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
                 " ▣ clean-room "
             },
             if w.look_only || w.deep {
-                Style::new().fg(BG).bg(YELLOW).add_modifier(Modifier::BOLD)
+                Style::new()
+                    .fg(c_bg())
+                    .bg(c_yellow())
+                    .add_modifier(Modifier::BOLD)
             } else {
-                Style::new().fg(TEAL)
+                Style::new().fg(c_teal())
             },
         ),
         Span::raw("   "),
         Span::styled(
             "  ✦ Start  ",
             if w.focus == Field::Start {
-                Style::new().fg(BG).bg(TEXT).add_modifier(Modifier::BOLD)
+                Style::new()
+                    .fg(c_bg())
+                    .bg(c_text())
+                    .add_modifier(Modifier::BOLD)
             } else {
-                Style::new().fg(TEXT).bg(PANEL2)
+                Style::new().fg(c_text()).bg(c_panel2())
             },
         ),
     ]));
     if let Some(e) = &w.error {
         lines.push(Line::from(Span::styled(
             format!(" {e}"),
-            Style::new().fg(RED),
+            Style::new().fg(c_red()),
         )));
     }
     let h = area.height as usize;

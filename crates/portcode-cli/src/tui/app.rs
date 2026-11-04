@@ -110,6 +110,7 @@ pub const SLASH: &[(&str, &str)] = &[
         "workbench",
         "deep: functions, pseudo-C, disassembly, hex and evidence side by side",
     ),
+    ("theme", "dark or light: /theme light"),
     ("thinking", "show / hide reasoning"),
     ("sidebar", "toggle sidebar"),
     ("help", "keys and commands"),
@@ -1030,6 +1031,22 @@ impl App {
             ("create", _) => self.wiz = Some(super::wizard::Wizard::default()),
             ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
+            ("theme", a) => {
+                let light = match a {
+                    Some("light") => true,
+                    Some("dark") => false,
+                    None => !super::theme::is_light(),
+                    Some(o) => {
+                        self.items.push(Item::Error(format!("unknown theme '{o}'. Use /theme dark or /theme light")));
+                        return;
+                    }
+                };
+                super::theme::set_light(light);
+                if self.persist {
+                    let _ = portcode_agent::config::save_pref("theme", if light { "light" } else { "dark" });
+                }
+                self.items.push(Item::Info(format!("theme: {}", if light { "light" } else { "dark" })));
+            }
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
             ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile functions hexdump unity dotnet unity_assets (+ MCP)".into())),

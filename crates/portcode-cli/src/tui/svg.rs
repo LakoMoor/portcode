@@ -1,5 +1,5 @@
 //! Render a ratatui `Buffer` as an SVG "screenshot" (colours, bold, dim, backgrounds). Used by `portcode snapshot`.
-use super::theme::{BG, TEXT};
+use super::theme::{c_bg, c_text, is_light};
 use ratatui::buffer::Buffer;
 use ratatui::style::{Color, Modifier};
 
@@ -37,17 +37,22 @@ pub fn buffer_to_svg(buf: &Buffer, title: &str) -> String {
     let (cw, lh, top, pad) = (9.33_f64, 19.0_f64, 34.0_f64, 0.0_f64);
     let (cols, rows) = (buf.area.width as usize, buf.area.height as usize);
     let (w, h) = (cols as f64 * cw + pad * 2.0, top + rows as f64 * lh);
-    let bg = rgb(BG, BG);
-    let mut s = format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{w:.0}\" height=\"{h:.0}\" viewBox=\"0 0 {w:.0} {h:.0}\" role=\"img\" aria-label=\"{}\">\n<rect width=\"{w:.0}\" height=\"{h:.0}\" rx=\"10\" fill=\"{bg}\"/>\n<rect width=\"{w:.0}\" height=\"{top}\" rx=\"10\" fill=\"#1b1b1b\"/><rect y=\"24\" width=\"{w:.0}\" height=\"10\" fill=\"#1b1b1b\"/>\n<circle cx=\"18\" cy=\"17\" r=\"5\" fill=\"#ff5f56\"/><circle cx=\"36\" cy=\"17\" r=\"5\" fill=\"#ffbd2e\"/><circle cx=\"54\" cy=\"17\" r=\"5\" fill=\"#27c93f\"/>\n<text x=\"{:.0}\" y=\"21\" fill=\"#8b8b8b\" font-family=\"ui-monospace,Menlo,monospace\" font-size=\"12\" text-anchor=\"middle\">{}</text>\n", esc(title), w / 2.0, esc(title));
+    let bg = rgb(c_bg(), c_bg());
+    let (bar, cap) = if is_light() {
+        ("#e6e5e1", "#6b6b68")
+    } else {
+        ("#1b1b1b", "#8b8b8b")
+    };
+    let mut s = format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{w:.0}\" height=\"{h:.0}\" viewBox=\"0 0 {w:.0} {h:.0}\" role=\"img\" aria-label=\"{}\">\n<rect width=\"{w:.0}\" height=\"{h:.0}\" rx=\"10\" fill=\"{bg}\"/>\n<rect width=\"{w:.0}\" height=\"{top}\" rx=\"10\" fill=\"{bar}\"/><rect y=\"24\" width=\"{w:.0}\" height=\"10\" fill=\"{bar}\"/>\n<circle cx=\"18\" cy=\"17\" r=\"5\" fill=\"#ff5f56\"/><circle cx=\"36\" cy=\"17\" r=\"5\" fill=\"#ffbd2e\"/><circle cx=\"54\" cy=\"17\" r=\"5\" fill=\"#27c93f\"/>\n<text x=\"{:.0}\" y=\"21\" fill=\"{cap}\" font-family=\"ui-monospace,Menlo,monospace\" font-size=\"12\" text-anchor=\"middle\">{}</text>\n", esc(title), w / 2.0, esc(title));
     let font = "font-family=\"ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace\" font-size=\"15.5\"";
     // backgrounds first (merged runs), then text
     for y in 0..rows {
         let mut x = 0;
         while x < cols {
             let c = &buf[(x as u16, y as u16)];
-            let color = rgb(c.bg, BG);
+            let color = rgb(c.bg, c_bg());
             let mut e = x + 1;
-            while e < cols && rgb(buf[(e as u16, y as u16)].bg, BG) == color {
+            while e < cols && rgb(buf[(e as u16, y as u16)].bg, c_bg()) == color {
                 e += 1;
             }
             if color != bg {
@@ -61,12 +66,12 @@ pub fn buffer_to_svg(buf: &Buffer, title: &str) -> String {
         let mut x = 0;
         while x < cols {
             let c = &buf[(x as u16, y as u16)];
-            let key = (rgb(c.fg, TEXT), c.modifier);
+            let key = (rgb(c.fg, c_text()), c.modifier);
             let mut e = x;
             let mut text = String::new();
             while e < cols {
                 let n = &buf[(e as u16, y as u16)];
-                if (rgb(n.fg, TEXT), n.modifier) != key {
+                if (rgb(n.fg, c_text()), n.modifier) != key {
                     break;
                 }
                 text.push_str(n.symbol());

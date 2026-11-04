@@ -62,23 +62,38 @@ fn state_path() -> Option<PathBuf> {
     global_dir().map(|d| d.join("state.json"))
 }
 
-fn read_last_model(p: &Path) -> Option<String> {
+fn read_state(p: &Path, key: &str) -> Option<String> {
     let v: Value = serde_json::from_str(&std::fs::read_to_string(p).ok()?).ok()?;
-    v.get("model")?
+    v.get(key)?
         .as_str()
         .filter(|m| !m.is_empty())
         .map(String::from)
 }
 
-fn write_last_model(p: &Path, model: &str) -> Result<(), String> {
+fn write_state(p: &Path, key: &str, val: &str) -> Result<(), String> {
     std::fs::create_dir_all(p.parent().ok_or("bad path")?).map_err(|e| e.to_string())?;
-    std::fs::write(p, serde_json::json!({ "model": model }).to_string()).map_err(|e| e.to_string())
+    let mut v: Value = std::fs::read_to_string(p)
+        .ok()
+        .and_then(|t| serde_json::from_str(&t).ok())
+        .unwrap_or(Value::Object(Default::default()));
+    if let Some(o) = v.as_object_mut() {
+        o.insert(key.into(), Value::String(val.into()));
+    }
+    std::fs::write(p, v.to_string()).map_err(|e| e.to_string())
 }
 
 /// Remember the model picked in the app (`/model`, `/provider`) so the next start uses it.
 /// `-m` and `PORTCODE_MODEL` still win.
 pub fn save_last_model(model: &str) -> Result<(), String> {
-    write_last_model(&state_path().ok_or("no config directory")?, model)
+    write_state(&state_path().ok_or("no config directory")?, "model", model)
+}
+
+/// Small UI preferences kept next to the model (`theme`: dark or light).
+pub fn save_pref(key: &str, val: &str) -> Result<(), String> {
+    write_state(&state_path().ok_or("no config directory")?, key, val)
+}
+pub fn pref(key: &str) -> Option<String> {
+    read_state(&state_path()?, key)
 }
 
 fn merge(base: &mut Value, over: Value) {
@@ -125,7 +140,7 @@ impl Config {
         }
         let mut c: Config =
             serde_json::from_value(v).map_err(|e| format!("invalid config: {e}"))?;
-        if let Some(m) = state_path().and_then(|p| read_last_model(&p)) {
+        if let Some(m) = state_path().and_then(|p| read_state(&p, "model")) {
             c.model = Some(m);
         }
         if let Ok(m) = std::env::var("PORTCODE_MODEL") {
@@ -277,9 +292,11 @@ mod tests {
     fn last_model_round_trips() {
         let d = tempfile::tempdir().unwrap();
         let p = d.path().join("sub/state.json");
-        assert_eq!(read_last_model(&p), None);
-        write_last_model(&p, "ollama/qwen3:14b").unwrap();
-        assert_eq!(read_last_model(&p).as_deref(), Some("ollama/qwen3:14b"));
+        assert_eq!(read_state(&p, "model"), None);
+        write_state(&p, "model", "ollama/qwen3:14b").unwrap();
+        write_state(&p, "theme", "light").unwrap();
+        assert_eq!(read_state(&p, "model").as_deref(), Some("ollama/qwen3:14b"));
+        assert_eq!(read_state(&p, "theme").as_deref(), Some("light"));
     }
 
     #[test]

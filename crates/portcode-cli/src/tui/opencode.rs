@@ -322,3 +322,19 @@ fn parity_result_gets_a_verdict_banner_and_ids_are_coloured() {
     assert!(s.contains(" PASS ") && s.contains("ok=6 diff=0"));
     assert!(s.contains("E-0002"));
 }
+
+#[test]
+fn theme_command_switches_palette_and_rejects_unknown_names() {
+    let (mut a, _rx) = app();
+    a.input = "/theme light".into();
+    a.on_key(k(KeyCode::Enter));
+    assert!(super::theme::is_light());
+    let s = screen(&mut a, 100, 30);
+    assert!(s.contains("Ask anything"), "still renders");
+    a.input = "/theme dark".into();
+    a.on_key(k(KeyCode::Enter));
+    assert!(!super::theme::is_light());
+    a.input = "/theme neon".into();
+    a.on_key(k(KeyCode::Enter));
+    assert!(infos(&a).contains("unknown theme"));
+}

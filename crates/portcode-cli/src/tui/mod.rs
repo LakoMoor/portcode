@@ -348,10 +348,19 @@ impl Drop for Guard {
     }
 }
 
+/// `PORTCODE_THEME` wins, then the last `/theme`; the default is dark.
+pub fn apply_theme() {
+    let t = std::env::var("PORTCODE_THEME")
+        .ok()
+        .or_else(|| portcode_agent::config::pref("theme"));
+    theme::set_light(t.as_deref() == Some("light"));
+}
+
 pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
     let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
     app.welcome();
     app.persist = true;
+    apply_theme();
     let mut remote = Remote::default();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |i| {
@@ -415,6 +424,7 @@ pub struct Snap {
 
 /// Headless render of the real UI into an SVG file (no terminal needed). Drives the real runner if `prompt` is set.
 pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
+    theme::set_light(std::env::var("PORTCODE_THEME").as_deref() == Ok("light"));
     let (mut app, mut rx, _mtx) = start(cfg, &o, !s.until_permission).await?;
     if let Some(p) = &s.prompt {
         app.input = p.clone();
