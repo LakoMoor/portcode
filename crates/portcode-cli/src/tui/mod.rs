@@ -2,6 +2,8 @@
 //! sidebar (context, evidence, todo), slash-command popup, permission dialog. Real runs and headless snapshots
 //! share the same `App` + `view`, so screenshots are produced by the real UI code.
 pub mod app;
+#[cfg(test)]
+mod opencode;
 pub mod svg;
 pub mod theme;
 pub mod view;

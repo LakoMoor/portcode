@@ -75,7 +75,9 @@ pub const SLASH: &[(&str, &str)] = &[
     ("key", "enter an API key (hidden); /key <provider>"),
     ("setup", "first-run guide: provider, key, model"),
     ("update", "check for a newer PortCode"),
+    ("new", "new session (same as /clear)"),
     ("clear", "new session"),
+    ("agents", "list agents"),
     ("resume", "resume the latest session"),
     ("tools", "list tools"),
     ("ledger", "show the evidence ledger"),
@@ -922,14 +924,14 @@ impl App {
             ("exit" | "quit" | "q", _) => self.quit = true,
             ("help", _) => self.items.push(Item::Info("/setup: first-run steps · /provider · /key · tab: switch agent · /workbench: deep code view · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
             ("agent", Some(a)) => { if self.agents.iter().any(|x| x == a) { if !self.busy { self.agent = a.into(); let _ = self.cmd_tx.send(Cmd::SetAgent(a.into())); } } else { self.items.push(Item::Error(format!("unknown agent '{a}'. Try: {}", self.agents.join(", ")))); } }
-            ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
+            ("agents", _) | ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
             ("model", Some(m)) => match self.cfg.resolve(Some(m)) {
                 Ok(r) => { self.model = r.model; self.provider = r.provider.name; self.ctx_window = r.profile.context_window; let _ = self.cmd_tx.send(Cmd::SetModel(m.into())); }
                 Err(e) => self.items.push(Item::Error(e)),
             },
             ("model", None) => self.items.push(Item::Info(format!("{}/{} (context {} tokens)", self.provider, self.model, self.ctx_window))),
             ("models", _) => { let _ = self.cmd_tx.send(Cmd::ListModels); }
-            ("clear", _) => { self.items.clear(); self.todos.clear(); self.title = None; self.tokens_in = 0; self.tokens_out = 0; self.last_prompt = 0; let _ = self.cmd_tx.send(Cmd::Clear); }
+            ("clear" | "new", _) => { self.items.clear(); self.todos.clear(); self.title = None; self.tokens_in = 0; self.tokens_out = 0; self.last_prompt = 0; let _ = self.cmd_tx.send(Cmd::Clear); }
             ("resume", _) => { let _ = self.cmd_tx.send(Cmd::Resume); }
             ("deep", _) => { self.deep = true; let _ = self.cmd_tx.send(Cmd::SetDeep(true)); self.items.push(Item::Info("deep mode: disasm, emulate, decompile and hexdump are available. Use it only on software you own or may examine.".into())); }
             ("clean" | "clean-room", _) => { self.deep = false; let _ = self.cmd_tx.send(Cmd::SetDeep(false)); self.items.push(Item::Info("clean-room mode: the original is observed from outside only.".into())); }
@@ -937,7 +939,7 @@ impl App {
                 let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
                 self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
             }
-            ("create" | "new", _) => self.wiz = Some(super::wizard::Wizard::default()),
+            ("create", _) => self.wiz = Some(super::wizard::Wizard::default()),
             ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,

@@ -808,7 +808,8 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
             y: top,
             width: 26,
             height: 3,
-        },
+        }
+        .intersection(area),
     );
     let tag = "port anything to Rust, and show the proof";
     f.render_widget(
@@ -818,14 +819,16 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
             y: top + 4,
             width: tag.chars().count() as u16,
             height: 1,
-        },
+        }
+        .intersection(area),
     );
     let pa = Rect {
         x: cx(box_w),
         y: top + 6,
         width: box_w,
         height: ph,
-    };
+    }
+    .intersection(area);
     prompt(f, app, pa, true);
     popup(f, app, pa);
     let tips = "tab agents   /deep look inside   /  commands   ctrl+c quit";
@@ -836,7 +839,8 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
             y: pa.y + pa.height + 1,
             width: tips.chars().count() as u16,
             height: 1,
-        },
+        }
+        .intersection(area),
     );
     footer(
         f,

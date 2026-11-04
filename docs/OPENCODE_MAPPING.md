@@ -19,5 +19,8 @@ PortCode is a clean Rust rewrite of OpenCode's *design*, not a translation of it
 | server / SDK / plugins / LSP / formatters / GitHub integration / share | — | ⏳ |
 | i18n READMEs | EN + RU | ◐ |
 
+## Tested against OpenCode's behaviour
+`crates/portcode-cli/src/tui/opencode.rs` pins the parts of the TUI people know from OpenCode: enter / alt+enter, history on ↑↓, readline keys, ctrl+c and esc, tab and shift+tab between primary agents, the `/` menu (filter, ↑↓, tab, enter), `/new` `/models` `/agents` `/help` `/exit`, the allow once / always / reject dialog, the home screen, the sidebar and small terminals. Not matched on purpose: OpenCode's leader key (`ctrl+x`) chords, `/undo`, `/share`, `/themes`, `/sessions` (PortCode has `/resume`) and the diff viewer.
+
 ## PortCode-only
 Evidence ledger + pins, `parity`, differential harness hooks, terminal screenshots → SVG, static site generator, scaffold, `port`/`reverse` agents, rustport skill embedded, open-model repair layer, model profiles, `portcode eval`, scripted mock server.
