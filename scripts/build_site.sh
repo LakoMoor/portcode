@@ -3,7 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 PC="$PWD/target/release/portcode"
-for p in ARCHITECTURE:Architecture PROVIDERS:"Providers, models and open-weight tuning" OPENCODE_MAPPING:"OpenCode → PortCode mapping" ENGINES:"Engines and modes" REMOTE:"Remote control" ROADMAP:Roadmap; do
+for p in GETTING_STARTED:"Getting started" ARCHITECTURE:Architecture PROVIDERS:"Providers, models and open-weight tuning" OPENCODE_MAPPING:"OpenCode → PortCode mapping" ENGINES:"Engines and modes" REMOTE:"Remote control" ROADMAP:Roadmap; do
   "$PC" port page "docs/${p%%:*}.md" "docs/guide/${p%%:*}.html" --title "${p#*:}" >/dev/null
 done
 python3 scripts/build_ru.py >/dev/null

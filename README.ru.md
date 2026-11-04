@@ -12,6 +12,8 @@
 
 ![Интерфейс PortCode](docs/screenshots/tui-session.svg)
 
+**Первый запуск.** Запусти `portcode` в папке проекта. Локальная модель: `/provider ollama qwen3:14b`. Облачный API: `/key` и вставь ключ (он скрыт и сохраняется с правами 600). `portcode doctor` проверит настройку, `/create` запустит пошаговый перенос, `/setup` повторит эти шаги, `portcode update` проверит новую версию. Подробно: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
+
 Установка (macOS / Linux / WSL; проверяет sha256):
 ```sh
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh

@@ -6,7 +6,7 @@
 <script src="../theme.js"></script>
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="../toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="./"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Режим deep</a><a class="l" href="#how">Как это работает</a><a class="l" href="#llm">Модели</a><a class="l" href="#ports">Порты</a><a class="l" href="../remote/">Пульт</a><a class="l" href="../guide/ARCHITECTURE.html">Документация</a><a class="l" href="../">EN</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="./"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Режим deep</a><a class="l" href="#first">Первый запуск</a><a class="l" href="#how">Как это работает</a><a class="l" href="#llm">Модели</a><a class="l" href="#ports">Порты</a><a class="l" href="../remote/">Пульт</a><a class="l" href="../guide/ARCHITECTURE.html">Документация</a><a class="l" href="../">EN</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="top"><div>
@@ -54,6 +54,15 @@
 <div class="t g-peach s6"><div class="framed"><img src="../screenshots/tui-create.svg" alt="Экран /create для сайта"></div></div>
 <div class="t g-mint s6"><div class="framed"><img src="../screenshots/tui-create-look.svg" alt="Экран /create в режиме «только посмотреть» для программы"></div></div>
 </div></section>
+
+<section id="first"><h2>Первый запуск</h2>
+<p class="sub">Три шага, все внутри приложения. <code>/setup</code> покажет их снова.</p>
+<div class="bento">
+<div class="t g-peach s4"><h3>1. Выбери провайдера</h3><p>Локальная модель, ключ не нужен: <code>/provider ollama qwen3:14b</code>. Просто <code>/provider</code> покажет все и у каких нет ключа.</p></div>
+<div class="t g-mint s4"><h3>2. Вставь ключ</h3><p><code>/key</code> спросит его. Пока вводишь, он скрыт; сохраняется с правами 600. Или в терминале: <code>portcode auth set &lt;provider&gt;</code>.</p></div>
+<div class="t g-light s4"><h3>3. Проверь и начни</h3><p><code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="../guide/GETTING_STARTED.html">Подробная инструкция</a>.</p></div>
+</div>
+<p class="cap">Обновления: <code>portcode update</code> или <code>/update</code> сравнивает твою версию с последним релизом. Раз в день приложение проверяет тихо. <code>PORTCODE_NO_UPDATE_CHECK=1</code> отключает. Сами обновления не ставятся.</p></section>
 
 <section id="try"><h2>Посмотри настоящий запуск</h2>
 <p class="sub">Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.</p>

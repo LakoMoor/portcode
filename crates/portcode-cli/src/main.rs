@@ -4,6 +4,7 @@ mod cmds;
 mod remote;
 mod term;
 mod tui;
+mod update;
 
 use clap::{Parser, Subcommand};
 use portcode_agent::{Config, Runner, Status};
@@ -115,6 +116,8 @@ enum Cmd {
     Providers,
     /// Check providers, toolchain and optional engines
     Doctor,
+    /// Check whether a newer PortCode is released
+    Update,
     /// Probe a model: chat, tool-calling, JSON validity, edit accuracy
     Eval,
     /// Create portcode.json in this directory
@@ -390,6 +393,10 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
         }
         Some(Cmd::Models { provider }) => cmds::models(cfg()?, provider.or(cli.model)).await,
         Some(Cmd::Providers) => cmds::providers(cfg()?),
+        Some(Cmd::Update) => {
+            println!("{}", update::report(true).await);
+            Ok(0)
+        }
         Some(Cmd::Doctor) => cmds::doctor(cfg()?).await,
         Some(Cmd::Eval) => cmds::eval(cfg()?, cli.model.as_deref()).await,
         Some(Cmd::Init { force }) => cmds::init(force),

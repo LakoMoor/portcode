@@ -7,6 +7,16 @@ root = pathlib.Path(__file__).resolve().parent.parent
 src = (root / "docs/index.html").read_text()
 
 T = [
+ ('>First run</a>', '>Первый запуск</a>'),
+ ('<h2>First run</h2>', '<h2>Первый запуск</h2>'),
+ ('Three steps, all inside the app. Type <code>/setup</code> any time to see them again.', 'Три шага, все внутри приложения. <code>/setup</code> покажет их снова.'),
+ ('1. Pick a provider', '1. Выбери провайдера'),
+ ('Local model, no key: <code>/provider ollama qwen3:14b</code>. Type <code>/provider</code> alone to see all of them and which need a key.', 'Локальная модель, ключ не нужен: <code>/provider ollama qwen3:14b</code>. Просто <code>/provider</code> покажет все и у каких нет ключа.'),
+ ('2. Paste your key', '2. Вставь ключ'),
+ ('<code>/key</code> asks for it. It is hidden while you type and saved with mode 600. Or run <code>portcode auth set &lt;provider&gt;</code> in a shell.', '<code>/key</code> спросит его. Пока вводишь, он скрыт; сохраняется с правами 600. Или в терминале: <code>portcode auth set &lt;provider&gt;</code>.'),
+ ('3. Check and start', '3. Проверь и начни'),
+ ('<code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="guide/GETTING_STARTED.html">Full guide</a>.', '<code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="guide/GETTING_STARTED.html">Подробная инструкция</a>.'),
+ ('Updates: <code>portcode update</code> or <code>/update</code> compares your version with the latest release. Once a day the app checks quietly. <code>PORTCODE_NO_UPDATE_CHECK=1</code> turns it off. Nothing installs by itself.', 'Обновления: <code>portcode update</code> или <code>/update</code> сравнивает твою версию с последним релизом. Раз в день приложение проверяет тихо. <code>PORTCODE_NO_UPDATE_CHECK=1</code> отключает. Сами обновления не ставятся.'),
  ('Watch a real run', 'Посмотри настоящий запуск'),
  ("This is the wordstat port. The tool calls and their output were recorded from a real run, and the model's replies are scripted so it is repeatable. Nothing here is typed by hand.", 'Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.'),
  ('data-lang="en"', 'data-lang="ru"'),

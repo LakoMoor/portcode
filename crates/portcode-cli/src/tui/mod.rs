@@ -81,6 +81,12 @@ async fn runner_task(
                 }
             }
             Cmd::SetDeep(d) => r.ctx.deep.store(d, std::sync::atomic::Ordering::Relaxed),
+            Cmd::Update => {
+                let tx = tx.clone();
+                tokio::spawn(async move {
+                    let _ = tx.send(Msg::Info(crate::update::report(true).await));
+                });
+            }
             Cmd::Clear => r.clear(),
             Cmd::Resume => {
                 let m = match r.latest_session() {
@@ -162,6 +168,15 @@ async fn start(
     app.show_reasoning = o.show_reasoning;
     app.auto_allow = gate_auto;
     app.refresh_ledger();
+    app.welcome();
+    if !gate_auto {
+        let tx = mtx.clone();
+        tokio::spawn(async move {
+            if let Some(m) = crate::update::passive().await {
+                let _ = tx.send(Msg::Info(m));
+            }
+        });
+    }
     tokio::spawn(runner_task(runner, ctx_rx, mtx.clone()));
     Ok((app, mrx, mtx))
 }

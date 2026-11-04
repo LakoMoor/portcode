@@ -6,7 +6,7 @@
 <script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru/">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#first">First run</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru/">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="top"><div>
@@ -54,6 +54,15 @@
 <div class="t g-peach s6"><div class="framed"><img src="screenshots/tui-create.svg" alt="The /create screen set up for a website"></div></div>
 <div class="t g-mint s6"><div class="framed"><img src="screenshots/tui-create-look.svg" alt="The /create screen set to just look inside a program"></div></div>
 </div></section>
+
+<section id="first"><h2>First run</h2>
+<p class="sub">Three steps, all inside the app. Type <code>/setup</code> any time to see them again.</p>
+<div class="bento">
+<div class="t g-peach s4"><h3>1. Pick a provider</h3><p>Local model, no key: <code>/provider ollama qwen3:14b</code>. Type <code>/provider</code> alone to see all of them and which need a key.</p></div>
+<div class="t g-mint s4"><h3>2. Paste your key</h3><p><code>/key</code> asks for it. It is hidden while you type and saved with mode 600. Or run <code>portcode auth set &lt;provider&gt;</code> in a shell.</p></div>
+<div class="t g-light s4"><h3>3. Check and start</h3><p><code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="guide/GETTING_STARTED.html">Full guide</a>.</p></div>
+</div>
+<p class="cap">Updates: <code>portcode update</code> or <code>/update</code> compares your version with the latest release. Once a day the app checks quietly. <code>PORTCODE_NO_UPDATE_CHECK=1</code> turns it off. Nothing installs by itself.</p></section>
 
 <section id="try"><h2>Watch a real run</h2>
 <p class="sub">This is the wordstat port. The tool calls and their output were recorded from a real run, and the model's replies are scripted so it is repeatable. Nothing here is typed by hand.</p>

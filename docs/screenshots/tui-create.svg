@@ -23,7 +23,7 @@
 <rect x="485.16" y="395.00" width="74.64" height="19" fill="#1e1e1e"/>
 <rect x="93.30" y="471.00" width="27.99" height="19" fill="#1e1e1e"/>
 <rect x="93.30" y="509.00" width="223.92" height="19" fill="#1e1e1e"/>
-<rect x="690.42" y="566.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="709.08" y="566.00" width="102.63" height="19" fill="#1e1e1e"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="93.30" y="48.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700">New project</text>
 <text x="195.93" y="48.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   enter or ctrl+s starts · tab moves · esc closes</text>
@@ -61,9 +61,9 @@
 <text x="307.89" y="523.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
 <text x="93.30" y="542.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
 <text x="102.63" y="580.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
-<text x="195.93" y="580.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">lakomoor/deepseek-chat</text>
-<text x="401.19" y="580.00" fill="#9d7cd8" textLength="130.62" lengthAdjust="spacingAndGlyphs">  agent port  </text>
-<text x="531.81" y="580.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
-<text x="662.43" y="580.00" fill="#eeeeee" textLength="494.49" lengthAdjust="spacingAndGlyphs">     ✦ Start                                         </text>
+<text x="195.93" y="580.00" fill="#eeeeee" textLength="223.92" lengthAdjust="spacingAndGlyphs">lakomoor/mock/mock-model</text>
+<text x="419.85" y="580.00" fill="#9d7cd8" textLength="130.62" lengthAdjust="spacingAndGlyphs">  agent port  </text>
+<text x="550.47" y="580.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
+<text x="681.09" y="580.00" fill="#eeeeee" textLength="475.83" lengthAdjust="spacingAndGlyphs">     ✦ Start                                       </text>
 </g>
 </svg>

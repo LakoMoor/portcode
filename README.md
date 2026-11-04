@@ -22,6 +22,12 @@ Start with `/create`: it asks what to recreate (a website, a program, a game, a 
 
 It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, sessions, skills, MCP) combined with the [rustport](skills/rustport) skill. See [docs/OPENCODE_MAPPING.md](docs/OPENCODE_MAPPING.md) for exactly what is and isn't covered.
 
+## First run
+
+1. Install (below), then run `portcode` in your project folder.
+2. Local model: `/provider ollama qwen3:14b`. Hosted API: `/key` and paste the key (hidden, saved with mode 600).
+3. `portcode doctor` checks the setup, `/create` starts a guided port. Full steps: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md). `portcode update` checks for a new release.
+
 ## Install
 ```sh
 # macOS / Linux (also WSL) — verifies the sha256 of the download

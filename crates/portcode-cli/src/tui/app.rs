@@ -37,6 +37,7 @@ pub enum Cmd {
     Clear,
     Resume,
     ListModels,
+    Update,
     SetDeep(bool),
 }
 
@@ -67,6 +68,13 @@ pub const SLASH: &[(&str, &str)] = &[
     ("agent", "switch agent: build · port · reverse · plan"),
     ("model", "switch model: provider/model"),
     ("models", "list models of this provider"),
+    (
+        "provider",
+        "list providers or switch: /provider <name> [model]",
+    ),
+    ("key", "enter an API key (hidden); /key <provider>"),
+    ("setup", "first-run guide: provider, key, model"),
+    ("update", "check for a newer PortCode"),
     ("clear", "new session"),
     ("resume", "resume the latest session"),
     ("tools", "list tools"),
@@ -127,6 +135,10 @@ pub struct App {
     pub wb: Option<super::workbench::Wb>,
     pub wiz: Option<super::wizard::Wizard>,
     pub auto_allow: bool,
+    /// Highlighted row of the `/` menu (arrows move it).
+    pub slash_sel: usize,
+    /// While set, the next input line is an API key for this provider (shown hidden).
+    pub key_for: Option<String>,
     /// Deep mode (may look inside the original); default is clean-room.
     pub deep: bool,
     /// Remote control is active: events are copied to `outbox` for the server to publish.
@@ -190,6 +202,8 @@ impl App {
             wb: None,
             wiz: None,
             auto_allow: false,
+            slash_sel: 0,
+            key_for: None,
             deep,
             remote_on: false,
             remote_addr: None,
@@ -490,8 +504,19 @@ impl App {
     pub fn insert(&mut self, s: &str) {
         let b = self.byte_at(self.cursor);
         self.input.insert_str(b, s);
+        self.slash_sel = 0;
         self.cursor += s.chars().count();
     }
+    /// Called once at startup: a short pointer when nothing is set up yet.
+    pub fn welcome(&mut self) {
+        if self.key_missing(&self.provider.clone()) {
+            self.items.push(Item::Info(format!(
+                "No API key for {} yet. Type /key to enter it, /provider to pick another provider (local ones need no key), or /setup for the steps.",
+                self.provider
+            )));
+        }
+    }
+
     pub fn on_paste(&mut self, s: &str) {
         self.insert(&s.replace('\r', ""));
     }
@@ -504,6 +529,78 @@ impl App {
                 .filter(|(n, _)| n.starts_with(p))
                 .collect(),
             _ => vec![],
+        }
+    }
+
+    /// True when the provider needs a key and none is stored, in env or in the config.
+    pub fn key_missing(&self, prov: &str) -> bool {
+        let Ok(r) = self.cfg.resolve(Some(&format!("{prov}/x"))) else {
+            return false;
+        };
+        let p = r.provider;
+        p.api_key.is_none()
+            && p.api_key_env
+                .as_deref()
+                .is_some_and(|e| std::env::var(e).map_or(true, |v| v.is_empty()))
+    }
+
+    fn ask_key(&mut self, prov: &str) {
+        self.key_for = Some(prov.to_string());
+        self.input.clear();
+        self.cursor = 0;
+        self.items.push(Item::Info(format!(
+            "Paste the API key for {prov} and press enter. It is hidden while you type, saved in your config folder (mode 600) and never sent anywhere but {prov}. esc cancels."
+        )));
+    }
+
+    fn list_providers(&mut self) {
+        let mut names: Vec<String> = portcode_llm::presets()
+            .into_iter()
+            .map(|p| p.name)
+            .collect();
+        for k in self.cfg.provider.keys() {
+            if !names.contains(k) {
+                names.push(k.clone());
+            }
+        }
+        self.items.push(Item::Info(
+            "providers (switch: /provider <name> [model], key: /key <name>):".into(),
+        ));
+        for n in names {
+            let state = if self.key_missing(&n) {
+                "needs a key → /key"
+            } else if portcode_agent::config::stored_key(&n).is_some() {
+                "key saved"
+            } else {
+                "ready"
+            };
+            let mark = if n == self.provider { "●" } else { "○" };
+            self.items
+                .push(Item::Info(format!("  {mark} {n:<11} {state}")));
+        }
+    }
+
+    fn setup_guide(&mut self) {
+        for l in [
+            "First run, three steps:",
+            "1. /provider  shows providers. /provider ollama qwen3:14b switches (local models need no key).",
+            "2. /key  asks for the API key of the current provider (hidden). Or run `portcode auth set <provider>` in a shell.",
+            "3. /models  lists what the provider serves. /model <provider>/<model> picks one. Then just type a task, or /create for a guided start.",
+            "Check everything with `portcode doctor`. Updates: /update. More: /help.",
+        ] {
+            self.items.push(Item::Info(l.into()));
+        }
+    }
+
+    fn complete_slash(&mut self) {
+        let m = self.slash_matches();
+        if let Some((n, _)) = m
+            .get(self.slash_sel.min(m.len().saturating_sub(1)))
+            .copied()
+        {
+            self.input = format!("/{n} ");
+            self.cursor = self.len_chars();
+            self.slash_sel = 0;
         }
     }
 
@@ -613,6 +710,12 @@ impl App {
                 }
             }
             (KeyCode::Char('d'), true, _) if self.input.is_empty() => self.quit = true,
+            (KeyCode::Esc, ..) if self.key_for.is_some() => {
+                self.key_for = None;
+                self.input.clear();
+                self.cursor = 0;
+                self.items.push(Item::Info("key entry cancelled".into()));
+            }
             (KeyCode::Esc, ..) => {
                 if self.busy {
                     self.cancel.store(true, Ordering::Relaxed);
@@ -621,11 +724,19 @@ impl App {
                 }
             }
             (KeyCode::Enter, _, true) | (KeyCode::Char('j'), true, _) => self.insert("\n"),
-            (KeyCode::Enter, ..) => self.submit(),
+            (KeyCode::Enter, ..) => {
+                // A partial command completes to the highlighted one; a full name runs.
+                let m = self.slash_matches();
+                let typed = self.input.trim().trim_start_matches('/');
+                if !m.is_empty() && !m.iter().any(|(n, _)| *n == typed) {
+                    self.complete_slash();
+                } else {
+                    self.submit();
+                }
+            }
             (KeyCode::Tab, ..) => {
-                if let Some((n, _)) = self.slash_matches().first().copied() {
-                    self.input = format!("/{n} ");
-                    self.cursor = self.len_chars();
+                if !self.slash_matches().is_empty() {
+                    self.complete_slash();
                 } else {
                     self.cycle_agent(1);
                 }
@@ -668,6 +779,14 @@ impl App {
                     self.input.replace_range(a..b, "");
                 }
             }
+            (KeyCode::Up, ..) if !self.slash_matches().is_empty() => {
+                let n = self.slash_matches().len();
+                self.slash_sel = (self.slash_sel.min(n - 1) + n - 1) % n;
+            }
+            (KeyCode::Down, ..) if !self.slash_matches().is_empty() => {
+                let n = self.slash_matches().len();
+                self.slash_sel = (self.slash_sel.min(n - 1) + 1) % n;
+            }
             (KeyCode::Up, ..) => self.history_step(-1),
             (KeyCode::Down, ..) => self.history_step(1),
             (KeyCode::PageUp, ..) => self.scroll = self.scroll.saturating_add(10),
@@ -709,6 +828,27 @@ impl App {
         if text.is_empty() {
             return;
         }
+        if let Some(prov) = self.key_for.take() {
+            self.input.clear();
+            self.cursor = 0;
+            match portcode_agent::config::store_key(&prov, &text) {
+                Ok(p) => {
+                    self.items.push(Item::Info(format!(
+                        "saved the key for {prov} in {} (mode 600). Not shown again.",
+                        p.display()
+                    )));
+                    if prov == self.provider {
+                        let _ = self
+                            .cmd_tx
+                            .send(Cmd::SetModel(format!("{prov}/{}", self.model)));
+                    }
+                }
+                Err(e) => self
+                    .items
+                    .push(Item::Error(format!("could not save the key: {e}"))),
+            }
+            return;
+        }
         if let Some(cmd) = text.strip_prefix('/') {
             self.input.clear();
             self.cursor = 0;
@@ -743,9 +883,44 @@ impl App {
     fn slash(&mut self, cmd: &str) {
         let mut p = cmd.split_whitespace();
         let (name, arg) = (p.next().unwrap_or(""), p.next());
+        let arg2 = p.next();
         match (name, arg) {
+            ("provider", None) => self.list_providers(),
+            ("provider", Some(pv)) => {
+                let model = arg2.map(String::from).or_else(|| {
+                    if pv == self.provider {
+                        Some(self.model.clone())
+                    } else {
+                        self.cfg
+                            .model
+                            .as_deref()
+                            .and_then(|m| m.strip_prefix(&format!("{pv}/")))
+                            .map(String::from)
+                    }
+                });
+                match model {
+                    Some(m) => {
+                        self.slash(&format!("model {pv}/{m}"));
+                        if self.provider == pv && self.key_missing(pv) {
+                            self.ask_key(pv);
+                        }
+                    }
+                    None => self.items.push(Item::Error(format!(
+                        "give a model too: /provider {pv} <model>, for example /provider {pv} qwen3:14b"
+                    ))),
+                }
+            }
+            ("key", a) => {
+                let pv = a.map(String::from).unwrap_or_else(|| self.provider.clone());
+                self.ask_key(&pv);
+            }
+            ("setup", _) => self.setup_guide(),
+            ("update", _) => {
+                self.items.push(Item::Info("checking for updates…".into()));
+                let _ = self.cmd_tx.send(Cmd::Update);
+            }
             ("exit" | "quit" | "q", _) => self.quit = true,
-            ("help", _) => self.items.push(Item::Info("tab: switch agent · /workbench: deep code view · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
+            ("help", _) => self.items.push(Item::Info("/setup: first-run steps · /provider · /key · tab: switch agent · /workbench: deep code view · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
             ("agent", Some(a)) => { if self.agents.iter().any(|x| x == a) { if !self.busy { self.agent = a.into(); let _ = self.cmd_tx.send(Cmd::SetAgent(a.into())); } } else { self.items.push(Item::Error(format!("unknown agent '{a}'. Try: {}", self.agents.join(", ")))); } }
             ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
             ("model", Some(m)) => match self.cfg.resolve(Some(m)) {
@@ -839,6 +1014,40 @@ mod tests {
             Arc::new(AtomicBool::new(false)),
         )
     }
+    #[test]
+    fn arrows_move_in_the_slash_menu_and_enter_completes() {
+        let mut a = app();
+        a.insert("/m");
+        let n = a.slash_matches().len();
+        assert!(n >= 2);
+        a.on_key(key(KeyCode::Down));
+        assert_eq!(a.slash_sel, 1);
+        a.on_key(key(KeyCode::Up));
+        a.on_key(key(KeyCode::Up));
+        assert_eq!(a.slash_sel, n - 1);
+        a.on_key(key(KeyCode::Down));
+        a.on_key(key(KeyCode::Down));
+        let want = a.slash_matches()[1].0;
+        a.on_key(key(KeyCode::Enter));
+        assert_eq!(a.input, format!("/{want} "));
+    }
+
+    #[test]
+    fn key_entry_is_hidden_and_cancellable() {
+        let mut a = app();
+        a.input = "/key ollama".into();
+        a.on_key(key(KeyCode::Enter));
+        assert_eq!(a.key_for.as_deref(), Some("ollama"));
+        a.on_key(key(KeyCode::Esc));
+        assert!(a.key_for.is_none() && a.input.is_empty());
+        a.input = "/provider".into();
+        a.on_key(key(KeyCode::Enter));
+        assert!(a
+            .items
+            .iter()
+            .any(|i| matches!(i, Item::Info(t) if t.contains("ollama"))));
+    }
+
     fn key(c: KeyCode) -> KeyEvent {
         KeyEvent::new(c, KeyModifiers::NONE)
     }

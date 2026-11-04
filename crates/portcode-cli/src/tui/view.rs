@@ -392,10 +392,21 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
         .style(Style::new().bg(PANEL));
     let inner = block.inner(area);
     f.render_widget(block, area);
-    let rows = hard_wrap(&app.input, inner_w);
+    let shown = if app.key_for.is_some() {
+        "•".repeat(app.input.chars().count())
+    } else {
+        app.input.clone()
+    };
+    let rows = hard_wrap(&shown, inner_w);
     let mut lines: Vec<Line> = vec![Line::from("")];
     if app.input.is_empty() {
-        let hint = if app.busy {
+        let key_hint = app
+            .key_for
+            .as_ref()
+            .map(|p| format!("paste the API key for {p} · enter saves · esc cancels"));
+        let hint = if let Some(h) = &key_hint {
+            h.as_str()
+        } else if app.busy {
             "working… esc to interrupt"
         } else {
             match app.agent.as_str() {
@@ -696,7 +707,11 @@ fn popup(f: &mut Frame, app: &App, above: Rect) {
             Line::from(vec![
                 Span::styled(
                     format!(" /{n:<10}"),
-                    if i == 0 { bold(ACCENT) } else { text() },
+                    if i == app.slash_sel.min(m.len() - 1) {
+                        bold(ACCENT)
+                    } else {
+                        text()
+                    },
                 ),
                 Span::styled((*d).to_string(), muted()),
             ])
