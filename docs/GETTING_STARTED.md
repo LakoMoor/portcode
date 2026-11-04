@@ -58,6 +58,7 @@ Put the original in `original/`. PortCode pins its sha256, records what it learn
 
 ## If something is wrong
 
+- *`GLIBC_2.39 not found` on Linux* — the `v0.1.0` binaries were built on a very new Linux. Build your own with `cargo install --git https://github.com/LakoMoor/portcode portcode-cli`, or use a later release (built for glibc 2.35 and checked in CI).
 - *No API key* — `/key`, or pick a local provider with `/provider`.
 - *Connection refused* — the local server is not running, or the port in `portcode.json` differs.
 - *Model not found* — `/models` shows the exact names.

@@ -9,8 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest,    target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          - { os: ubuntu-22.04,     target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-22.04-arm, target: aarch64-unknown-linux-gnu }
           - { os: macos-latest,     target: aarch64-apple-darwin }
           - { os: macos-latest,     target: x86_64-apple-darwin }
     runs-on: ${{ matrix.os }}
@@ -20,6 +20,12 @@ jobs:
         with: { targets: "${{ matrix.target }}" }
       - uses: Swatinem/rust-cache@v2
       - run: packaging/package.sh ${{ matrix.target }}
+      - name: Linux binaries must run on glibc 2.35 (Ubuntu 22.04, Debian 12)
+        if: ${{ contains(matrix.target, 'linux') }}
+        run: |
+          max=$(objdump -T target/${{ matrix.target }}/release/portcode | grep -o 'GLIBC_[0-9.]*' | sed 's/GLIBC_//' | sort -V | tail -1)
+          echo "needs glibc $max"
+          [ "$(printf '%s\n2.35\n' "$max" | sort -V | tail -1)" = "2.35" ]
       - uses: actions/upload-artifact@v4
         with: { name: "portcode-${{ matrix.target }}", path: dist/* }
   publish:
