@@ -9,7 +9,7 @@ curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh |
 portcode --version
 ```
 
-The installer checks the sha256 of the download. Other ways: Homebrew, `cargo install`, see the README.
+The installer checks the sha256 of the download. Another way: `cargo install --git https://github.com/LakoMoor/portcode portcode-cli`. A Homebrew tap is planned.
 
 ## 2. Pick a model and give it a key
 
