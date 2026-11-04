@@ -1,0 +1,245 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="832" viewBox="0 0 1400 832" role="img" aria-label="portcode — workbench">
+<rect width="1400" height="832" rx="10" fill="#0a0a0a"/>
+<rect width="1400" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1400" height="10" fill="#1b1b1b"/>
+<circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
+<text x="700" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — workbench</text>
+<rect x="401.19" y="34.00" width="74.64" height="19" fill="#f5a742"/>
+<rect x="102.63" y="53.00" width="9.33" height="19" fill="#1e1e1e"/>
+<rect x="1147.59" y="53.00" width="9.33" height="19" fill="#1e1e1e"/>
+<rect x="0.00" y="110.00" width="270.57" height="19" fill="#1e1e1e"/>
+<rect x="0.00" y="129.00" width="261.24" height="19" fill="#1e1e1e"/>
+<rect x="9.33" y="737.00" width="1380.84" height="19" fill="#141414"/>
+<rect x="9.33" y="756.00" width="1380.84" height="19" fill="#141414"/>
+<rect x="9.33" y="775.00" width="1380.84" height="19" fill="#141414"/>
+<rect x="9.33" y="794.00" width="363.87" height="19" fill="#141414"/>
+<rect x="373.20" y="794.00" width="74.64" height="19" fill="#f5a742"/>
+<rect x="447.84" y="794.00" width="942.33" height="19" fill="#141414"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="0.00" y="48.00" fill="#fab283" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700"> workbench </text>
+<text x="102.63" y="48.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs"> original/wordstat </text>
+<text x="279.90" y="48.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs">macho arm64  </text>
+<text x="401.19" y="48.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="0.00" y="67.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700"> Functions </text>
+<text x="102.63" y="67.00" fill="#808080" textLength="9.33" lengthAdjust="spacingAndGlyphs">2</text>
+<text x="270.57" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="67.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">1 Pseudo-C</text>
+<text x="410.52" y="67.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">2 Disassembly</text>
+<text x="559.80" y="67.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">3 Hex</text>
+<text x="1044.96" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="67.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs" font-weight="700"> Evidence </text>
+<text x="1147.59" y="67.00" fill="#808080" textLength="9.33" lengthAdjust="spacingAndGlyphs">2</text>
+<text x="0.00" y="86.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> / filter…</text>
+<text x="270.57" y="86.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="279.90" y="86.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700"> main</text>
+<text x="326.55" y="86.00" fill="#808080" textLength="410.52" lengthAdjust="spacingAndGlyphs">  0x100000460 · 992 bytes · file offset 1120</text>
+<text x="1044.96" y="86.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="105.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1044.96" y="105.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="105.00" fill="#e06c75" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ● </text>
+<text x="1082.28" y="105.00" fill="#fab283" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0002</text>
+<text x="1138.26" y="105.00" fill="#e06c75" textLength="83.97" lengthAdjust="spacingAndGlyphs">  unknown</text>
+<text x="0.00" y="124.00" fill="#5c9cf5" textLength="111.96" lengthAdjust="spacingAndGlyphs"> 0x100000460</text>
+<text x="186.60" y="124.00" fill="#808080" textLength="83.97" lengthAdjust="spacingAndGlyphs">size 992 </text>
+<text x="270.57" y="124.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="124.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000460  </text>
+<text x="391.86" y="124.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">ff8306d1          </text>
+<text x="559.80" y="124.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">sub     </text>
+<text x="634.44" y="124.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">sp, sp, #0x1a0                              </text>
+<text x="1044.96" y="124.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="124.00" fill="#808080" textLength="298.56" lengthAdjust="spacingAndGlyphs">   does main call setlocale? not</text>
+<text x="0.00" y="143.00" fill="#fab283" textLength="261.24" lengthAdjust="spacingAndGlyphs"> main                       </text>
+<text x="270.57" y="143.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="143.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000464  </text>
+<text x="391.86" y="143.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">fc6f14a9          </text>
+<text x="559.80" y="143.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="143.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x28, x27, [sp, #0x140]                      </text>
+<text x="1044.96" y="143.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="143.00" fill="#808080" textLength="270.57" lengthAdjust="spacingAndGlyphs">   seen in the first 40 lines</text>
+<text x="0.00" y="162.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs"> 0x100000840</text>
+<text x="270.57" y="162.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="162.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000468  </text>
+<text x="391.86" y="162.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">fa6715a9          </text>
+<text x="559.80" y="162.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="162.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x26, x25, [sp, #0x150]                      </text>
+<text x="1044.96" y="162.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="0.00" y="181.00" fill="#eeeeee" textLength="270.57" lengthAdjust="spacingAndGlyphs"> cmp                         </text>
+<text x="270.57" y="181.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="181.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">10000046c  </text>
+<text x="391.86" y="181.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f85f16a9          </text>
+<text x="559.80" y="181.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="181.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x24, x23, [sp, #0x160]                      </text>
+<text x="1044.96" y="181.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="181.00" fill="#f5a742" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ● </text>
+<text x="1082.28" y="181.00" fill="#fab283" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0001</text>
+<text x="1138.26" y="181.00" fill="#f5a742" textLength="102.63" lengthAdjust="spacingAndGlyphs">  inference</text>
+<text x="270.57" y="200.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="200.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000470  </text>
+<text x="391.86" y="200.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f65717a9          </text>
+<text x="559.80" y="200.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="200.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x22, x21, [sp, #0x170]                      </text>
+<text x="1044.96" y="200.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="200.00" fill="#808080" textLength="317.22" lengthAdjust="spacingAndGlyphs">   main reads --top and --min-len;</text>
+<text x="270.57" y="219.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="219.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000474  </text>
+<text x="391.86" y="219.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f44f18a9          </text>
+<text x="559.80" y="219.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="219.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x20, x19, [sp, #0x180]                      </text>
+<text x="1044.96" y="219.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="219.00" fill="#808080" textLength="317.22" lengthAdjust="spacingAndGlyphs">   --top defaults to 10 (iVar = 10</text>
+<text x="270.57" y="238.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="238.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000478  </text>
+<text x="391.86" y="238.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">fd7b19a9          </text>
+<text x="559.80" y="238.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stp     </text>
+<text x="634.44" y="238.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x29, x30, [sp, #0x190]                      </text>
+<text x="1044.96" y="238.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1054.29" y="238.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">   before the argument loop)</text>
+<text x="270.57" y="257.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="257.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">10000047c  </text>
+<text x="391.86" y="257.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">fd430691          </text>
+<text x="559.80" y="257.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">add     </text>
+<text x="634.44" y="257.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x29, sp, #0x190                             </text>
+<text x="1044.96" y="257.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="276.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="276.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000480  </text>
+<text x="391.86" y="276.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">28000090          </text>
+<text x="559.80" y="276.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">adrp    </text>
+<text x="634.44" y="276.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x8, #0x100004000                            </text>
+<text x="1044.96" y="276.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="295.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="295.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000484  </text>
+<text x="391.86" y="295.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">080d40f9          </text>
+<text x="559.80" y="295.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">ldr     </text>
+<text x="634.44" y="295.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x8, [x8, #0x18]                             </text>
+<text x="1044.96" y="295.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="314.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="314.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000488  </text>
+<text x="391.86" y="314.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">080140f9          </text>
+<text x="559.80" y="314.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">ldr     </text>
+<text x="634.44" y="314.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x8, [x8]                                    </text>
+<text x="1044.96" y="314.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="333.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="333.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">10000048c  </text>
+<text x="391.86" y="333.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">a8031af8          </text>
+<text x="559.80" y="333.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">stur    </text>
+<text x="634.44" y="333.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x8, [x29, #-0x60]                           </text>
+<text x="1044.96" y="333.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="352.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="352.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000490  </text>
+<text x="391.86" y="352.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">1f080071          </text>
+<text x="559.80" y="352.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">cmp     </text>
+<text x="634.44" y="352.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w0, #2                                      </text>
+<text x="1044.96" y="352.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="371.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="371.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000494  </text>
+<text x="391.86" y="371.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">eb120054          </text>
+<text x="559.80" y="371.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">b.lt    </text>
+<text x="634.44" y="371.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">#0x1000006f0                                </text>
+<text x="1044.96" y="371.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="390.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">100000498  </text>
+<text x="391.86" y="390.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f50301aa          </text>
+<text x="559.80" y="390.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="390.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x21, x1                                     </text>
+<text x="1044.96" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="409.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">10000049c  </text>
+<text x="391.86" y="409.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f60300aa          </text>
+<text x="559.80" y="409.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="409.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x22, x0                                     </text>
+<text x="1044.96" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="428.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004a0  </text>
+<text x="391.86" y="428.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">140080d2          </text>
+<text x="559.80" y="428.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="428.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x20, #0                                     </text>
+<text x="1044.96" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="447.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004a4  </text>
+<text x="391.86" y="447.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">37008052          </text>
+<text x="559.80" y="447.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="447.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w23, #1                                     </text>
+<text x="1044.96" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="466.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004a8  </text>
+<text x="391.86" y="466.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">5c018052          </text>
+<text x="559.80" y="466.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="466.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w28, #0xa                                   </text>
+<text x="1044.96" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="485.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004ac  </text>
+<text x="391.86" y="485.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">18000090          </text>
+<text x="559.80" y="485.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">adrp    </text>
+<text x="634.44" y="485.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x24, #0x100000000                           </text>
+<text x="1044.96" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="504.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="504.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004b0  </text>
+<text x="391.86" y="504.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">18332491          </text>
+<text x="559.80" y="504.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">add     </text>
+<text x="634.44" y="504.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x24, x24, #0x90c                            </text>
+<text x="1044.96" y="504.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="523.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="523.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004b4  </text>
+<text x="391.86" y="523.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">3b008052          </text>
+<text x="559.80" y="523.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="523.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w27, #1                                     </text>
+<text x="1044.96" y="523.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="542.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="542.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004b8  </text>
+<text x="391.86" y="542.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">19000090          </text>
+<text x="559.80" y="542.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">adrp    </text>
+<text x="634.44" y="542.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x25, #0x100000000                           </text>
+<text x="1044.96" y="542.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="561.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="561.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004bc  </text>
+<text x="391.86" y="561.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">394b2491          </text>
+<text x="559.80" y="561.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">add     </text>
+<text x="634.44" y="561.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x25, x25, #0x912                            </text>
+<text x="1044.96" y="561.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="580.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="580.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004c0  </text>
+<text x="391.86" y="580.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">07000014          </text>
+<text x="559.80" y="580.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">b       </text>
+<text x="634.44" y="580.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">#0x1000004dc                                </text>
+<text x="1044.96" y="580.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="599.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="599.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004c4  </text>
+<text x="391.86" y="599.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">a07a73f8          </text>
+<text x="559.80" y="599.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">ldr     </text>
+<text x="634.44" y="599.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x0, [x21, x19, lsl #3]                      </text>
+<text x="1044.96" y="599.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="618.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="618.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004c8  </text>
+<text x="391.86" y="618.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">f0000094          </text>
+<text x="559.80" y="618.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">bl      </text>
+<text x="634.44" y="618.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">#0x100000888                                </text>
+<text x="1044.96" y="618.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="637.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="637.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004cc  </text>
+<text x="391.86" y="637.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">fc0300aa          </text>
+<text x="559.80" y="637.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">mov     </text>
+<text x="634.44" y="637.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">x28, x0                                     </text>
+<text x="1044.96" y="637.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="656.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004d0  </text>
+<text x="391.86" y="656.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">7b060011          </text>
+<text x="559.80" y="656.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">add     </text>
+<text x="634.44" y="656.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w27, w19, #1                                </text>
+<text x="1044.96" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="270.57" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="289.23" y="675.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">1000004d4  </text>
+<text x="391.86" y="675.00" fill="#484848" textLength="167.94" lengthAdjust="spacingAndGlyphs">7f03166b          </text>
+<text x="559.80" y="675.00" fill="#5c9cf5" textLength="74.64" lengthAdjust="spacingAndGlyphs">cmp     </text>
+<text x="634.44" y="675.00" fill="#eeeeee" textLength="410.52" lengthAdjust="spacingAndGlyphs">w27, w22                                    </text>
+<text x="1044.96" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="9.33" y="751.00" fill="#56b6c2" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="9.33" y="770.00" fill="#56b6c2" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="18.66" y="770.00" fill="#808080" textLength="634.44" lengthAdjust="spacingAndGlyphs"> Ask anything… "What file format is save.dat? Record it as evidence"</text>
+<text x="9.33" y="789.00" fill="#56b6c2" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="9.33" y="808.00" fill="#56b6c2" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="27.99" y="808.00" fill="#56b6c2" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Reverse</text>
+<text x="93.30" y="808.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">  mock/mock-model</text>
+<text x="251.91" y="808.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
+<text x="373.20" y="808.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="0.00" y="827.00" fill="#808080" textLength="793.05" lengthAdjust="spacingAndGlyphs"> j/k function · 1 2 3 view · / filter · a ask the agent · i chat · r reload · q close</text>
+</g>
+</svg>

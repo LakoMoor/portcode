@@ -35,3 +35,16 @@ portcode --deep -a reverse
 ```
 Emulation never touches the host: no syscalls, a hard instruction budget, a 60 s deadline.
 Use only on software you own or may examine. PortCode never bypasses DRM, logins or anti-cheat.
+
+## Workbench
+
+`/workbench [file]` (deep mode only; with no file it takes the first executable in `original/`) opens one screen for reading a binary:
+
+| area | shows | from |
+|---|---|---|
+| left | functions: address, size, name; `/` filters | `functions` (LIEF) |
+| middle | **1** Pseudo-C · **2** Disassembly · **3** Hex of the selected function | `decompile` (Ghidra), `disasm` (Capstone), `hexdump` |
+| right | the evidence ledger, newest first; records that mention the selected function are highlighted | `.portcode/evidence` |
+| bottom | the agent's last answer and the prompt | the current session |
+
+Keys: `j`/`k` move, `1 2 3` or `h`/`l` switch view, `PgUp`/`PgDn` scroll, `/` filter, `a` ask the agent to explain the function and record it as an inference, `i` type to the agent, `r` reload, `q` close. The first Pseudo-C of a binary includes Ghidra's analysis, so it can take a while; later functions reuse the project. Sizes are the distance to the next symbol, so treat them as estimates. The workbench makes the same tool calls an agent would, and it refuses to open in clean-room mode.

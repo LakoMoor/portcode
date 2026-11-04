@@ -6,6 +6,7 @@
 use std::path::{Path, PathBuf};
 
 pub const DISASM_PY: &str = include_str!("../re/disasm.py");
+pub const FUNCTIONS_PY: &str = include_str!("../re/functions.py");
 pub const EMULATE_PY: &str = include_str!("../re/emulate.py");
 pub const DECOMPILE_JAVA: &str = include_str!("../re/PcDecompile.java");
 
@@ -219,6 +220,7 @@ pub fn write_helpers() -> Result<PathBuf, String> {
     std::fs::create_dir_all(&d).map_err(|e| format!("{}: {e}", d.display()))?;
     for (n, body) in [
         ("disasm.py", DISASM_PY),
+        ("functions.py", FUNCTIONS_PY),
         ("emulate.py", EMULATE_PY),
         ("PcDecompile.java", DECOMPILE_JAVA),
     ] {

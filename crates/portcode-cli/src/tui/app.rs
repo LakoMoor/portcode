@@ -12,6 +12,7 @@ pub enum Msg {
     Done(Result<Outcome, String>),
     Info(String),
     Remote(Remote),
+    Wb(super::workbench::WbMsg),
 }
 
 /// Commands from a remote client (already checked against the key's scope).
@@ -83,6 +84,10 @@ pub const SLASH: &[(&str, &str)] = &[
         "start remote control (browser / phone); /remote key to pair",
     ),
     ("engines", "installed reverse-engineering engines"),
+    (
+        "workbench",
+        "deep: functions, pseudo-C, disassembly, hex and evidence side by side",
+    ),
     ("thinking", "show / hide reasoning"),
     ("sidebar", "toggle sidebar"),
     ("help", "keys and commands"),
@@ -115,6 +120,7 @@ pub struct App {
     pub title: Option<String>,
     pub spinner: usize,
     pub quit: bool,
+    pub wb: Option<super::workbench::Wb>,
     pub auto_allow: bool,
     /// Deep mode (may look inside the original); default is clean-room.
     pub deep: bool,
@@ -176,6 +182,7 @@ impl App {
             title: None,
             spinner: 0,
             quit: false,
+            wb: None,
             auto_allow: false,
             deep,
             remote_on: false,
@@ -207,6 +214,23 @@ impl App {
                 all.iter().filter(|e| e.kind == Unknown).count(),
             );
         }
+        if let (Some(wb), Ok(all)) = (self.wb.as_mut(), l.all()) {
+            use portcode_evidence::Kind;
+            wb.notes = all
+                .iter()
+                .rev()
+                .take(12)
+                .map(|e| super::workbench::Note {
+                    id: e.id.clone(),
+                    kind: match e.kind {
+                        Kind::Observation => "observation",
+                        Kind::Inference => "inference",
+                        Kind::Unknown => "unknown",
+                    },
+                    text: e.statement.clone(),
+                })
+                .collect();
+        }
         self.unknowns = l
             .open_unknowns()
             .map(|u| {
@@ -215,6 +239,38 @@ impl App {
                     .collect()
             })
             .unwrap_or_default();
+    }
+
+    /// A tool context for the workbench's own calls: auto-allowed (the user opened the workbench), deep as the app is.
+    pub fn tool_ctx(&self) -> (portcode_agent::tool::Ctx, std::path::PathBuf) {
+        let c = portcode_agent::tool::Ctx::new(
+            self.root.clone(),
+            Arc::new(crate::term::TermGate { auto: true }),
+            portcode_agent::Rules::from_config(&self.cfg.permission),
+        );
+        c.deep.store(self.deep, Ordering::Relaxed);
+        (c, self.root.clone())
+    }
+
+    fn open_workbench(&mut self, arg: Option<&str>) {
+        if !self.deep {
+            self.items.push(Item::Error("the workbench looks inside the original, so it needs deep mode. Type /deep first (only on software you own or may examine).".into()));
+            return;
+        }
+        let file = match arg
+            .map(String::from)
+            .or_else(|| super::workbench::find_binary(&self.root))
+        {
+            Some(f) => f,
+            None => {
+                self.items.push(Item::Error(
+                    "no executable found in original/. Usage: /workbench path/to/binary".into(),
+                ));
+                return;
+            }
+        };
+        self.wb = Some(super::workbench::Wb::new(&file));
+        self.refresh_ledger();
     }
 
     pub fn context_pct(&self) -> u64 {
@@ -244,6 +300,11 @@ impl App {
             }
         }
         match m {
+            Msg::Wb(w) => {
+                if let Some(wb) = self.wb.as_mut() {
+                    wb.on_msg(w);
+                }
+            }
             Msg::Remote(r) => self.on_remote(r),
             Msg::Ui(e) => match e {
                 UiEvent::Text(t) => self.push_text(&t),
@@ -474,6 +535,34 @@ impl App {
             }
             return;
         }
+        if let Some(wb) = self.wb.as_mut() {
+            use super::workbench::{Act, Focus};
+            if wb.focus == Focus::Chat {
+                if k.code == KeyCode::Esc && !self.busy {
+                    wb.focus = Focus::List;
+                    return;
+                }
+            } else if !(k.code == KeyCode::Char('c') && k.modifiers.contains(KeyModifiers::CONTROL))
+            {
+                match wb.on_key(k) {
+                    Act::Close => self.wb = None,
+                    Act::Ask(q) => {
+                        if self.busy {
+                            self.items.push(Item::Info(
+                                "still working — press esc to interrupt first".into(),
+                            ));
+                        } else {
+                            wb.focus = Focus::Chat;
+                            self.input = q;
+                            self.cursor = self.len_chars();
+                            self.submit();
+                        }
+                    }
+                    Act::Chat | Act::None => {}
+                }
+                return;
+            }
+        }
         let ctrl = k.modifiers.contains(KeyModifiers::CONTROL);
         let alt = k.modifiers.contains(KeyModifiers::ALT);
         match (k.code, ctrl, alt) {
@@ -621,7 +710,7 @@ impl App {
         let (name, arg) = (p.next().unwrap_or(""), p.next());
         match (name, arg) {
             ("exit" | "quit" | "q", _) => self.quit = true,
-            ("help", _) => self.items.push(Item::Info("tab: switch agent · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
+            ("help", _) => self.items.push(Item::Info("tab: switch agent · /workbench: deep code view · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
             ("agent", Some(a)) => { if self.agents.iter().any(|x| x == a) { if !self.busy { self.agent = a.into(); let _ = self.cmd_tx.send(Cmd::SetAgent(a.into())); } } else { self.items.push(Item::Error(format!("unknown agent '{a}'. Try: {}", self.agents.join(", ")))); } }
             ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
             ("model", Some(m)) => match self.cfg.resolve(Some(m)) {
@@ -638,10 +727,11 @@ impl App {
                 let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
                 self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
             }
+            ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
-            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile hexdump (+ MCP)".into())),
+            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile functions hexdump (+ MCP)".into())),
             ("ledger", _) => {
                 self.refresh_ledger();
                 let (o, i, u) = self.ledger;
@@ -809,6 +899,27 @@ mod tests {
         assert!(a.deep);
     }
 
+    #[test]
+    fn workbench_needs_deep_and_owns_the_keys_until_closed() {
+        let mut a = app();
+        a.input = "/workbench original/x".into();
+        a.submit();
+        assert!(a.wb.is_none(), "clean-room must not open the workbench");
+        assert!(matches!(a.items.last(), Some(Item::Error(e)) if e.contains("deep")));
+        a.deep = true;
+        a.input = "/workbench original/x".into();
+        a.submit();
+        assert!(a.wb.is_some());
+        a.on_key(key(KeyCode::Char('/')));
+        a.on_key(key(KeyCode::Char('q')));
+        assert!(
+            a.wb.is_some() && a.input.is_empty(),
+            "keys go to the filter, not the prompt or close"
+        );
+        a.on_key(key(KeyCode::Esc));
+        a.on_key(key(KeyCode::Char('q')));
+        assert!(a.wb.is_none());
+    }
     #[test]
     fn remote_answers_permission_asks_once() {
         let mut a = app();

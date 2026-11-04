@@ -684,6 +684,7 @@ const BUILTIN_NAMES: &[&str] = &[
     "disasm",
     "emulate",
     "decompile",
+    "functions",
     "hexdump",
 ];
 

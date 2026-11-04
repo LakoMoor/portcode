@@ -1,6 +1,7 @@
 //! Rendering: home screen, session view (transcript + prompt + footer + sidebar), popups, permission dialog.
 use super::app::{summarize, App, Item, ToolState, SLASH};
 use super::theme::*;
+use super::workbench::Tab;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
@@ -837,6 +838,11 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
 pub fn draw(f: &mut Frame, app: &mut App) {
     let area = f.area();
     f.render_widget(Block::new().style(Style::new().bg(BG).fg(TEXT)), area);
+    if app.wb.is_some() {
+        workbench(f, app, area);
+        permission(f, app, area);
+        return;
+    }
     if app.items.is_empty() {
         home(f, app, area);
         permission(f, app, area);
@@ -891,4 +897,418 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     }
     permission(f, app, area);
     let _ = SLASH;
+}
+
+const C_KW: [&str; 14] = [
+    "void", "int", "long", "char", "if", "else", "do", "while", "for", "return", "uint", "short",
+    "double", "struct",
+];
+
+/// Colour one line of code for the tab it came from. Cheap and tolerant: a wrong colour is cosmetic, never an error.
+fn code_line(tab: Tab, raw: &str, num: Option<usize>) -> Line<'static> {
+    let mut spans: Vec<Span<'static>> = Vec::new();
+    if let Some(n) = num {
+        spans.push(Span::styled(format!("{n:>4}  "), Style::new().fg(BORDER)));
+    }
+    match tab {
+        Tab::Disasm => {
+            // "100000460: d10683ff   sub sp, sp, #0x1a0"
+            let (a, rest) = raw.split_once(": ").unwrap_or(("", raw));
+            let mut it = rest.split_whitespace();
+            let bytes = it.next().unwrap_or("");
+            let mnem = it.next().unwrap_or("");
+            let ops = it.collect::<Vec<_>>().join(" ");
+            spans.push(Span::styled(format!("{a:<10} "), muted()));
+            spans.push(Span::styled(
+                format!("{bytes:<18}"),
+                Style::new().fg(BORDER),
+            ));
+            spans.push(Span::styled(format!("{mnem:<7} "), Style::new().fg(BLUE)));
+            spans.push(Span::styled(ops, Style::new().fg(TEXT)));
+        }
+        Tab::Hex => {
+            let (off, rest) = raw.split_once("  ").unwrap_or(("", raw));
+            let (hex, asc) = rest.split_once("  |").unwrap_or((rest, ""));
+            spans.push(Span::styled(format!("{off}  "), muted()));
+            spans.push(Span::styled(format!("{hex}  "), Style::new().fg(TEAL)));
+            if !asc.is_empty() {
+                spans.push(Span::styled(format!("|{asc}"), Style::new().fg(MUTED)));
+            }
+        }
+        Tab::Pseudo => {
+            let t = raw.trim_start();
+            if t.starts_with("//") || t.starts_with("/*") {
+                spans.push(Span::styled(
+                    raw.to_string(),
+                    Style::new().fg(MUTED).add_modifier(Modifier::ITALIC),
+                ));
+            } else {
+                // split into words and punctuation, colour keywords, numbers and strings
+                let (mut cur, mut in_str) = (String::new(), false);
+                let flush = |cur: &mut String, spans: &mut Vec<Span<'static>>, in_str: bool| {
+                    if cur.is_empty() {
+                        return;
+                    }
+                    let c = std::mem::take(cur);
+                    let st = if in_str {
+                        Style::new().fg(GREEN)
+                    } else if C_KW.contains(&c.as_str()) {
+                        Style::new().fg(PURPLE)
+                    } else if c.starts_with(|x: char| x.is_ascii_digit()) {
+                        Style::new().fg(YELLOW)
+                    } else {
+                        Style::new().fg(TEXT)
+                    };
+                    spans.push(Span::styled(c, st));
+                };
+                for ch in raw.chars() {
+                    if ch == '"' {
+                        if in_str {
+                            cur.push(ch);
+                            flush(&mut cur, &mut spans, true);
+                            in_str = false;
+                        } else {
+                            flush(&mut cur, &mut spans, false);
+                            cur.push(ch);
+                            in_str = true;
+                        }
+                    } else if in_str || ch.is_alphanumeric() || ch == '_' {
+                        cur.push(ch);
+                    } else {
+                        flush(&mut cur, &mut spans, false);
+                        spans.push(Span::styled(ch.to_string(), Style::new().fg(MUTED)));
+                    }
+                }
+                flush(&mut cur, &mut spans, in_str);
+            }
+        }
+    }
+    Line::from(spans)
+}
+
+/// Word wrap for plain text (hard breaks only inside words longer than the width).
+fn word_wrap(text: &str, width: usize) -> Vec<String> {
+    let width = width.max(8);
+    let (mut out, mut cur) = (Vec::new(), String::new());
+    for w in text.split_whitespace() {
+        let need = cur.chars().count() + w.chars().count() + usize::from(!cur.is_empty());
+        if need > width && !cur.is_empty() {
+            out.push(std::mem::take(&mut cur));
+        }
+        if w.chars().count() > width {
+            let mut parts = hard_wrap(w, width);
+            if let Some(last) = parts.pop() {
+                out.extend(parts);
+                cur = last;
+            }
+            continue;
+        }
+        if !cur.is_empty() {
+            cur.push(' ');
+        }
+        cur.push_str(w);
+    }
+    if !cur.is_empty() {
+        out.push(cur);
+    }
+    out
+}
+
+fn clip_to(s: &str, w: usize) -> String {
+    if s.chars().count() <= w {
+        s.to_string()
+    } else {
+        format!(
+            "{}…",
+            s.chars().take(w.saturating_sub(1)).collect::<String>()
+        )
+    }
+}
+
+/// The deep-mode workbench: functions | code | evidence, with the agent underneath.
+fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
+    let Some(wb) = app.wb.as_ref() else {
+        return;
+    };
+    let ph = prompt_height(app, area.width.saturating_sub(2));
+    let rows = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(1),
+            Constraint::Min(6),
+            Constraint::Length(3),
+            Constraint::Length(ph),
+            Constraint::Length(1),
+        ])
+        .split(area);
+    // header
+    let mut head = vec![
+        Span::styled(" workbench ", bold(ACCENT)),
+        Span::styled(format!(" {} ", wb.file), text()),
+        Span::styled(
+            format!("{} {}  ", wb.format.to_lowercase(), wb.arch),
+            muted(),
+        ),
+    ];
+    head.extend(mode_chip(app));
+    f.render_widget(Paragraph::new(Line::from(head)), rows[0]);
+
+    let right_w: u16 = if area.width >= 120 { 38 } else { 0 };
+    let cols = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Length(30),
+            Constraint::Min(30),
+            Constraint::Length(right_w),
+        ])
+        .split(rows[1]);
+
+    // functions
+    let vis = wb.visible();
+    let lw = cols[0].width.saturating_sub(2) as usize;
+    let mut lines: Vec<Line> = vec![
+        Line::from(vec![
+            Span::styled(" Functions ", bold(TEXT)),
+            Span::styled(
+                format!("{}", wb.funcs.len()),
+                Style::new().fg(MUTED).bg(PANEL2),
+            ),
+        ]),
+        Line::from(Span::styled(
+            format!(
+                " {}{}",
+                if wb.filter.is_empty() && wb.focus != super::workbench::Focus::Filter {
+                    "/ filter…".to_string()
+                } else {
+                    format!(
+                        "/ {}{}",
+                        wb.filter,
+                        if wb.focus == super::workbench::Focus::Filter {
+                            "▏"
+                        } else {
+                            ""
+                        }
+                    )
+                },
+                ""
+            ),
+            if wb.focus == super::workbench::Focus::Filter {
+                text()
+            } else {
+                muted()
+            },
+        )),
+        Line::from(""),
+    ];
+    if let Some(st) = &wb.status {
+        lines.push(Line::from(Span::styled(
+            format!(" {st}"),
+            Style::new().fg(YELLOW),
+        )));
+    }
+    let per = (cols[0].height as usize).saturating_sub(lines.len()) / 2;
+    let first = wb.sel.saturating_sub(per.saturating_sub(1));
+    for (n, &i) in vis.iter().enumerate().skip(first).take(per.max(1)) {
+        let Some(fu) = wb.funcs.get(i) else { continue };
+        let on = n == wb.sel;
+        let bg = if on { PANEL2 } else { BG };
+        let size = if fu.size > 0 {
+            format!("size {}", fu.size)
+        } else {
+            String::new()
+        };
+        let a = format!("0x{:x}", fu.addr);
+        let gap = lw.saturating_sub(a.len().min(lw) + size.len() + 1);
+        lines.push(Line::from(vec![
+            Span::styled(
+                format!(" {}", clip_to(&a, lw)),
+                Style::new().fg(if on { BLUE } else { MUTED }).bg(bg),
+            ),
+            Span::styled(" ".repeat(gap), Style::new().bg(bg)),
+            Span::styled(format!("{size} "), Style::new().fg(MUTED).bg(bg)),
+        ]));
+        lines.push(Line::from(Span::styled(
+            format!(
+                " {}{}",
+                clip_to(&fu.name, lw.saturating_sub(1)),
+                " ".repeat(lw.saturating_sub(fu.name.chars().count() + 1))
+            ),
+            Style::new().fg(if on { ACCENT } else { TEXT }).bg(bg),
+        )));
+    }
+    f.render_widget(
+        Paragraph::new(lines).block(
+            Block::new()
+                .borders(Borders::RIGHT)
+                .border_style(Style::new().fg(RULE)),
+        ),
+        cols[0],
+    );
+
+    // code
+    let cw = cols[1].width.saturating_sub(2) as usize;
+    let mut tabs: Vec<Span> = vec![Span::raw(" ")];
+    for (i, t) in Tab::ALL.iter().enumerate() {
+        let st = if *t == wb.tab {
+            bold(ACCENT).add_modifier(Modifier::UNDERLINED)
+        } else {
+            muted()
+        };
+        tabs.push(Span::styled(format!("{} {}", i + 1, t.label()), st));
+        tabs.push(Span::raw("   "));
+    }
+    let mut code: Vec<Line> = vec![Line::from(tabs)];
+    if let Some(fu) = wb.current() {
+        code.push(Line::from(vec![
+            Span::styled(format!(" {}", fu.name), bold(TEXT)),
+            Span::styled(
+                format!(
+                    "  0x{:x}{}{}",
+                    fu.addr,
+                    if fu.size > 0 {
+                        format!(" · {} bytes", fu.size)
+                    } else {
+                        String::new()
+                    },
+                    fu.offset
+                        .map(|o| format!(" · file offset {o}"))
+                        .unwrap_or_default()
+                ),
+                muted(),
+            ),
+        ]));
+    }
+    code.push(Line::from(""));
+    let avail = (cols[1].height as usize).saturating_sub(code.len());
+    match wb.body() {
+        Some(super::workbench::Body::Text(t)) => {
+            let all: Vec<&str> = t.lines().collect();
+            let max = all.len().saturating_sub(avail);
+            let sc = wb.scroll.min(max);
+            let numbered = wb.tab == Tab::Pseudo;
+            for (i, l) in all.iter().enumerate().skip(sc).take(avail) {
+                let mut ln = code_line(wb.tab, l, if numbered { Some(i + 1) } else { None });
+                if !numbered {
+                    ln.spans.insert(0, Span::raw(" "));
+                }
+                code.push(ln);
+            }
+        }
+        Some(super::workbench::Body::Err(e)) => {
+            for l in hard_wrap(e, cw) {
+                code.push(Line::from(Span::styled(
+                    format!(" {l}"),
+                    Style::new().fg(RED),
+                )));
+            }
+        }
+        Some(super::workbench::Body::Loading) => {
+            let sp = SPIN[app.spinner / 2 % SPIN.len()];
+            code.push(Line::from(Span::styled(
+                if wb.tab == Tab::Pseudo {
+                    format!(" {sp} Ghidra is decompiling. The first function of a binary also analyses it, which can take a while.")
+                } else {
+                    format!(" {sp} reading…")
+                },
+                muted(),
+            )));
+        }
+        None => code.push(Line::from(Span::styled(" select a function", muted()))),
+    }
+    f.render_widget(Paragraph::new(code), cols[1]);
+
+    // evidence
+    if right_w > 0 {
+        let ew = cols[2].width.saturating_sub(5) as usize;
+        let mut ev: Vec<Line> = vec![
+            Line::from(vec![
+                Span::styled(" Evidence ", bold(TEXT)),
+                Span::styled(
+                    format!("{}", wb.notes.len()),
+                    Style::new().fg(MUTED).bg(PANEL2),
+                ),
+            ]),
+            Line::from(""),
+        ];
+        if wb.notes.is_empty() {
+            for l in hard_wrap(
+                "nothing recorded yet. Press a to ask the agent about this function.",
+                ew,
+            ) {
+                ev.push(Line::from(Span::styled(format!(" {l}"), muted())));
+            }
+        }
+        let me = wb.current().map(|f| f.name.clone()).unwrap_or_default();
+        for n in &wb.notes {
+            let col = match n.kind {
+                "observation" => GREEN,
+                "inference" => YELLOW,
+                _ => RED,
+            };
+            let hot = !me.is_empty() && n.text.contains(&me);
+            ev.push(Line::from(vec![
+                Span::styled(" ● ", Style::new().fg(col)),
+                Span::styled(n.id.clone(), bold(if hot { ACCENT } else { TEXT })),
+                Span::styled(format!("  {}", n.kind), Style::new().fg(col)),
+            ]));
+            for l in word_wrap(&n.text, ew).into_iter().take(4) {
+                ev.push(Line::from(Span::styled(
+                    format!("   {l}"),
+                    Style::new().fg(MUTED),
+                )));
+            }
+            ev.push(Line::from(""));
+        }
+        f.render_widget(
+            Paragraph::new(ev).block(
+                Block::new()
+                    .borders(Borders::LEFT)
+                    .border_style(Style::new().fg(RULE)),
+            ),
+            cols[2],
+        );
+    }
+
+    // the agent's last answer and the prompt
+    let mut ans: Vec<Line> = vec![Line::from("")];
+    if app.busy {
+        ans.push(Line::from(Span::styled(
+            format!(
+                " {} {} is working…",
+                SPIN[app.spinner / 2 % SPIN.len()],
+                cap(&app.agent)
+            ),
+            Style::new().fg(agent_color(&app.agent)),
+        )));
+    } else if let Some(Item::Assistant(t)) = app
+        .items
+        .iter()
+        .rev()
+        .find(|i| matches!(i, Item::Assistant(_)))
+    {
+        for l in hard_wrap(t.trim(), area.width.saturating_sub(4) as usize)
+            .into_iter()
+            .take(2)
+        {
+            ans.push(Line::from(Span::styled(format!(" {l}"), text())));
+        }
+    }
+    f.render_widget(Paragraph::new(ans), rows[2]);
+    let pa = Rect {
+        x: rows[3].x + 1,
+        y: rows[3].y,
+        width: rows[3].width.saturating_sub(2),
+        height: rows[3].height,
+    };
+    let chat = wb.focus == super::workbench::Focus::Chat;
+    prompt(f, app, pa, chat);
+    let hints = if chat {
+        " enter send · esc back to the code"
+    } else {
+        " j/k function · 1 2 3 view · / filter · a ask the agent · i chat · r reload · q close"
+    };
+    f.render_widget(
+        Paragraph::new(Line::from(Span::styled(hints, muted()))),
+        rows[4],
+    );
 }

@@ -83,6 +83,12 @@ enum Cmd {
         typed: Option<String>,
         #[arg(long)]
         cwd_label: Option<String>,
+        /// Open the deep workbench on this binary ("auto" picks the first one in original/)
+        #[arg(long)]
+        workbench: Option<String>,
+        /// Workbench view: pseudo, disasm or hex
+        #[arg(long, default_value = "pseudo")]
+        wb_tab: String,
     },
     /// Run one prompt non-interactively
     Run {
@@ -306,6 +312,8 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             until_permission,
             ref typed,
             ref cwd_label,
+            ref workbench,
+            ref wb_tab,
         }) => {
             let (w, h) = size
                 .split_once('x')
@@ -323,6 +331,8 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     prompt: prompt.clone(),
                     until_permission,
                     typed: typed.clone(),
+                    workbench: workbench.clone(),
+                    wb_tab: wb_tab.clone(),
                 },
             )
             .await

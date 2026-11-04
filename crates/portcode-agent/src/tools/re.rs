@@ -350,6 +350,78 @@ impl Tool for Decompile {
     }
 }
 
+pub struct Functions;
+#[async_trait]
+impl Tool for Functions {
+    fn name(&self) -> String {
+        "functions".into()
+    }
+    fn description(&self) -> String {
+        "Deep mode. List the functions of a Mach-O, ELF or PE file (address, size, file offset, name) without a full decompile. Use it to pick what to disasm, hexdump or decompile next. Sizes come from the distance to the next symbol, so treat them as estimates.".into()
+    }
+    fn example(&self) -> String {
+        r#"{"file": "original/app", "limit": 200}"#.into()
+    }
+    fn schema(&self) -> Value {
+        obj(
+            json!({"file":{"type":"string"},"limit":{"type":"integer","description":"max functions, default 500"}}),
+            &["file"],
+        )
+    }
+    async fn run(&self, ctx: &Ctx, args: Value) -> ToolResult {
+        ctx.need_deep("functions")?;
+        let a = Args {
+            v: &args,
+            tool: "functions",
+            example: &self.example(),
+        };
+        let file = ctx.path(&a.str("file")?, false).await?;
+        let limit = a.opt_u64("limit").unwrap_or(500);
+        let req = json!({"file": file.display().to_string(), "limit": limit});
+        let v = py_helper(ctx, "functions.py", &req, "lief").await?;
+        if let Some(e) = v.get("error").and_then(|e| e.as_str()) {
+            return err(e.to_string());
+        }
+        let arch = match v["arch"].as_str().unwrap_or("").to_uppercase().as_str() {
+            "ARM64" | "AARCH64" => "arm64",
+            "X86_64" | "AMD64" | "X64" => "x64",
+            "X86" | "I386" | "I686" => "x86",
+            "ARM" => "arm",
+            "MIPS" => "mips",
+            "RISCV" => "riscv64",
+            _ => "unknown",
+        };
+        let mut s = format!(
+            "format={} arch={} entry=0x{:x} total={}\n",
+            v["format"].as_str().unwrap_or("?"),
+            arch,
+            v["entry"].as_u64().unwrap_or(0),
+            v["total"]
+        );
+        for f in v["functions"]
+            .as_array()
+            .map(|f| f.as_slice())
+            .unwrap_or(&[])
+        {
+            let off = f["offset"]
+                .as_u64()
+                .map(|o| o.to_string())
+                .unwrap_or_else(|| "-".into());
+            s.push_str(&format!(
+                "0x{:x} {} {} {}\n",
+                f["addr"].as_u64().unwrap_or(0),
+                f["size"].as_u64().unwrap_or(0),
+                off,
+                f["name"].as_str().unwrap_or("?")
+            ));
+        }
+        Ok(Out::new(
+            "functions",
+            format!("{}{NOTE}", clip(&s, ctx.output_limit)),
+        ))
+    }
+}
+
 pub struct Hexdump;
 #[async_trait]
 impl Tool for Hexdump {
@@ -492,6 +564,7 @@ mod tests {
             (Box::new(Emulate), json!({"hex":"90","arch":"x64"})),
             (Box::new(Decompile), json!({"file":"x","mode":"list"})),
             (Box::new(Hexdump), json!({"file":"x"})),
+            (Box::new(Functions), json!({"file":"x"})),
         ] {
             let e = t.run(&c, a).await.unwrap_err().0;
             assert!(e.contains("clean-room") && e.contains("--deep"), "{e}");

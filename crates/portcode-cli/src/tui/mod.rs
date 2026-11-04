@@ -5,6 +5,7 @@ pub mod app;
 pub mod svg;
 pub mod theme;
 pub mod view;
+pub mod workbench;
 
 use app::{App, Cmd, Msg, PermAsk};
 use async_trait::async_trait;
@@ -162,6 +163,41 @@ async fn start(
     app.refresh_ledger();
     tokio::spawn(runner_task(runner, ctx_rx, mtx.clone()));
     Ok((app, mrx, mtx))
+}
+
+/// Run the tool calls the workbench asked for; results come back as `Msg::Wb`.
+fn pump(app: &mut App, mtx: &mpsc::UnboundedSender<Msg>) {
+    use workbench::{Req, WbMsg};
+    let reqs = match app.wb.as_mut() {
+        Some(w) => std::mem::take(&mut w.req),
+        None => return,
+    };
+    for r in reqs {
+        let (ctx, root) = app.tool_ctx();
+        let tx = mtx.clone();
+        tokio::spawn(async move {
+            let reg = portcode_agent::tools::builtin(portcode_agent::skills::discover(&root));
+            let (tool, args) = match &r {
+                Req::Functions { file } => {
+                    ("functions", serde_json::json!({"file": file, "limit": 500}))
+                }
+                Req::Load { tool, args, .. } => (tool.as_str(), args.clone()),
+            };
+            let res = match reg.get(tool) {
+                Some(t) => t.run(&ctx, args).await.map(|o| o.text).map_err(|e| e.0),
+                None => Err(format!("tool {tool} is not available")),
+            };
+            let m = match r {
+                Req::Functions { .. } => WbMsg::Functions(res),
+                Req::Load { addr, tab, .. } => WbMsg::Body {
+                    addr,
+                    tab,
+                    res: res.map(|t| workbench::clean_body(&t)),
+                },
+            };
+            let _ = tx.send(Msg::Wb(m));
+        });
+    }
 }
 
 /// Remote-control state owned by the event loop.
@@ -334,6 +370,7 @@ pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
         if let Some(arg) = app.remote_req.take() {
             remote.command(&mut app, &mtx, &arg).await;
         }
+        pump(&mut app, &mtx);
         remote.publish(&mut app);
         app.tick();
         if app.quit {
@@ -350,6 +387,8 @@ pub struct Snap {
     pub prompt: Option<String>,
     pub until_permission: bool,
     pub typed: Option<String>,
+    pub workbench: Option<String>,
+    pub wb_tab: String,
 }
 
 /// Headless render of the real UI into an SVG file (no terminal needed). Drives the real runner if `prompt` is set.
@@ -379,6 +418,44 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
             app.on_msg(m);
         }
     }
+    if let Some(file) = &s.workbench {
+        app.input = "/deep".to_string();
+        app.submit();
+        app.input = if file == "auto" {
+            "/workbench".into()
+        } else {
+            format!("/workbench {file}")
+        };
+        app.submit();
+        if let Some(wb) = app.wb.as_mut() {
+            wb.tab = match s.wb_tab.as_str() {
+                "disasm" => workbench::Tab::Disasm,
+                "hex" => workbench::Tab::Hex,
+                _ => workbench::Tab::Pseudo,
+            };
+        }
+        let deadline = Instant::now() + Duration::from_secs(300);
+        loop {
+            pump(&mut app, &_mtx);
+            while let Ok(m) = rx.try_recv() {
+                app.on_msg(m);
+            }
+            let done = app.wb.as_ref().is_some_and(|w| {
+                w.status.as_ref().is_some_and(|s| !s.starts_with("reading"))
+                    || matches!(
+                        w.body(),
+                        Some(workbench::Body::Text(_) | workbench::Body::Err(_))
+                    )
+            });
+            if done || app.wb.is_none() {
+                break;
+            }
+            if Instant::now() > deadline {
+                return Err("workbench snapshot timed out".into());
+            }
+            tokio::time::sleep(Duration::from_millis(50)).await;
+        }
+    }
     if let Some(t) = &s.typed {
         app.input = t.clone();
         app.cursor = t.chars().count();
@@ -392,7 +469,11 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         term.backend().buffer(),
         &format!(
             "portcode — {}",
-            app.title.clone().unwrap_or_else(|| "home".into())
+            app.title.clone().unwrap_or_else(|| if app.wb.is_some() {
+                "workbench".into()
+            } else {
+                "home".into()
+            })
         ),
     );
     std::fs::write(&s.out, svg).map_err(|e| format!("{}: {e}", s.out))?;

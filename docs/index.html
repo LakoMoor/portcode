@@ -170,6 +170,8 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   </article>
 </div>
 <p class="cap">Every number on these cards is real: the decompiler lines, instructions, emulator registers and header bytes come from running the tools on the bundled wordstat binary.</p>
+<div class="bento" style="margin-top:14px"><div class="t g-violet s8 h340 shotile"><img src="screenshots/tui-workbench.svg" alt="The workbench: functions, Ghidra pseudo-C, evidence ledger and the agent"></div>
+<div class="t g-dark s4 tc"><h3 style="color:#fff">Workbench</h3><p>Type <code style="background:rgba(255,255,255,.12)">/workbench</code> in deep mode. Functions on the left, Pseudo-C, disassembly or hex in the middle, the evidence ledger on the right, the agent underneath. <code style="background:rgba(255,255,255,.12)">a</code> asks it to explain the function and record what it finds.</p></div></div>
 <div class="bento" style="margin-top:14px"><div class="t g-dark s8"><div class="framed mid"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></div></div>
 <div class="t g-peach s4 tc"><h3>Two sessions, one wall</h3><p>Reverse in deep, write <code>docs/SPEC.md</code>, then port in clean-room from the spec alone.</p>
 <pre style="margin:auto 0 0;font-size:12.5px"><code>portcode engines install core

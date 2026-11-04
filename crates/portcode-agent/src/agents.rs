@@ -54,6 +54,7 @@ const REVERSE: &[&str] = &[
     "disasm",
     "emulate",
     "decompile",
+    "functions",
     "hexdump",
     "read",
     "ls",

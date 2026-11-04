@@ -56,7 +56,8 @@ Deep mode drives real engines — **Capstone**, **Unicorn**, **Ghidra** (headles
 ```sh
 portcode engines install core          # capstone + unicorn + lief
 portcode engines install ghidra imhex  # Ghidra needs a JDK
-portcode --deep -a reverse             # tools: disasm · emulate · decompile · hexdump
+portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump
+# in the UI: /workbench — functions, Pseudo-C, disassembly, hex and the evidence ledger side by side
 ```
 For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and ledger entries in your own words, then `port --clean-room` to build from those only. Details: [docs/ENGINES.md](docs/ENGINES.md).
 
@@ -64,6 +65,10 @@ For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and l
 <sub>Every line on these cards comes from running the tools on the bundled wordstat binary. Marks belong to their projects ([sources](docs/assets/engines/SOURCES.md)). Regenerate: `scripts/make_toolkit_png.sh`.</sub>
 
 ![deep mode](docs/screenshots/tui-deep.svg)
+
+**Workbench** (`/workbench`, deep only): a function list, Pseudo-C from Ghidra, Capstone disassembly and a hex view, the evidence ledger on the right and the agent underneath. `j/k` move, `1 2 3` switch view, `/` filters, `a` asks the agent to explain the function and record it, `q` closes. Everything on screen is real tool output.
+
+![workbench](docs/screenshots/tui-workbench.svg)
 <sub>Deep mode on the bundled example: strings, ARM64 disassembly and a Unicorn run of the prologue (real tools; scripted model).</sub>
 
 ## Keys (full-screen UI)
