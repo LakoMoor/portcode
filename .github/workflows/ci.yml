@@ -2,10 +2,9 @@ name: ci
 on: [push, pull_request]
 jobs:
   test:
-    strategy: { matrix: { os: [ubuntu-latest, macos-latest] } }
+    strategy: { matrix: { os: [ubuntu-latest] } }
     runs-on: ${{ matrix.os }}
-    # GitHub's macOS arm64 runners are often unavailable; that must not turn the whole run red.
-    continue-on-error: ${{ matrix.os == 'macos-latest' }}
+    # macOS is built and tested by release.yml; GitHub's macOS runners are often unavailable and never start.
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
