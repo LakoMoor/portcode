@@ -60,6 +60,9 @@ portcode --deep -a reverse             # tools: disasm · emulate · decompile �
 ```
 For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and ledger entries in your own words, then `port --clean-room` to build from those only. Details: [docs/ENGINES.md](docs/ENGINES.md).
 
+![The engines deep mode drives](docs/screenshots/deep-toolkit.png)
+<sub>Every line on these cards comes from running the tools on the bundled wordstat binary. Marks belong to their projects ([sources](docs/assets/engines/SOURCES.md)). Regenerate: `scripts/make_toolkit_png.sh`.</sub>
+
 ![deep mode](docs/screenshots/tui-deep.svg)
 <sub>Deep mode on the bundled example: strings, ARM64 disassembly and a Unicorn run of the prologue (real tools; scripted model).</sub>
 

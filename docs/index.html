@@ -3,7 +3,8 @@
 <title>PortCode — port anything to Rust, with proof. Runs on your own LLMs.</title>
 <meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='11' fill='%23ff8700'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23111'%3Epc%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css"></head><body>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="toolkit.css"></head><body>
 <nav><div class="wrap"><a class="brand" href="#">Port<b>Code</b></a><a class="l" href="#install">Install</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#skill">Skill</a><a class="l" href="#ports">Ports</a><a class="l" href="#cli">CLI</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
 <main class="wrap">
 <header class="hero">
@@ -34,6 +35,111 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 
 <section id="deep"><h2><small>Reverse engineering</small>Clean-room by default, deep when you say so</h2>
 <p>In clean-room mode PortCode only observes the original from outside, and refuses disassemblers, decompilers and raw-byte tools. Switch to <code>deep</code> and it drives Capstone, Unicorn, Ghidra and ImHex, installed into an <code>engines/</code> folder next to the binary after you approve each one.</p>
+<div class="tk" role="list">
+  <article class="tile t-ghidra" role="listitem">
+    <div class="head"><span class="mark "><img src="assets/engines/ghidra.png" alt=""></span><h3>Ghidra reads the whole function. <span>The default is recorded as an inference until a golden from the original agrees.</span></h3></div>
+    <div class="pane win" aria-label="Decompiler output of the original wordstat binary">
+      <div class="bar"><i></i><i></i><i></i><b>Decompile: entry</b><span style="margin-left:auto">original/wordstat</span></div>
+      <div class="code mono">
+<div class="ln"><s>1</s><span><span class="k">void</span> entry(<span class="k">int</span> param_1,<span class="k">long</span> param_2)</span></div>
+<div class="ln"><s>2</s><span> </span></div>
+<div class="ln"><s>3</s><span>{</span></div>
+<div class="ln"><s>⋮</s><span class="c"></span></div>
+<div class="ln"><s>27</s><span>    iVar3 = <span class="n">1</span>;</span></div>
+<div class="ln hot"><s>28</s><span>    uVar1 = <span class="n">10</span>;</span><span class="ev"><b>inference</b> --top defaults to 10</span></div>
+<div class="ln"><s>29</s><span>    uVar17 = <span class="n">1</span>;</span></div>
+<div class="ln"><s>30</s><span>    pcVar9 = (<span class="k">char</span> *)<span class="n">0x0</span>;</span></div>
+<div class="ln"><s>31</s><span>    <span class="k">do</span> {</span></div>
+<div class="ln"><s>32</s><span>      pcVar14 = *(<span class="k">char</span> **)(param_2 + (<span class="k">long</span>)(<span class="k">int</span>)uVar17 * <span class="n">8</span>);</span></div>
+<div class="ln"><s>33</s><span>      iVar2 = <span class="f">_strcmp</span>(pcVar14,<span class="s">"--top"</span>);</span></div>
+<div class="ln"><s>34</s><span>      uVar15 = (<span class="k">long</span>)(<span class="k">int</span>)uVar17 + <span class="n">1</span>;</span></div>
+<div class="ln"><s>35</s><span>      <span class="k">if</span> (iVar2 == <span class="n">0</span> &amp;&amp; (<span class="k">int</span>)uVar15 &lt; param_1) {</span></div>
+<div class="ln"><s>36</s><span>        uVar1 = <span class="f">_atoi</span>(*(<span class="k">char</span> **)(param_2 + uVar15 * <span class="n">8</span>));</span></div>
+<div class="ln"><s>37</s><span>        uVar17 = uVar15;</span></div>
+<div class="ln"><s>38</s><span>        pcVar14 = pcVar9;</span></div>
+<div class="ln"><s>39</s><span>      }</span></div>
+<div class="ln"><s>40</s><span>      <span class="k">else</span> {</span></div>
+<div class="ln"><s>41</s><span>        iVar2 = <span class="f">_strcmp</span>(pcVar14,<span class="s">"--min-len"</span>);</span></div>
+<div class="ln"><s>42</s><span>        <span class="k">if</span> (iVar2 == <span class="n">0</span> &amp;&amp; (<span class="k">int</span>)uVar15 &lt; param_1) {</span></div>
+<div class="ln"><s>43</s><span>          iVar3 = <span class="f">_atoi</span>(*(<span class="k">char</span> **)(param_2 + uVar15 * <span class="n">8</span>));</span></div>
+<div class="ln"><s>44</s><span>          uVar17 = uVar15;</span></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="tile t-capstone" role="listitem">
+    <div class="head"><span class="mark "><img src="assets/engines/capstone.png" alt=""></span><h3>Capstone <span>shows the first instructions: a 416-byte stack frame is reserved.</span></h3></div>
+    <div class="pane dis mono" aria-label="ARM64 disassembly">
+      <div class="hot"><span class="a">100000460</span><span><span class="m">sub</span> <span class="o">sp, sp, #0x1a0</span></span></div>
+      <div><span class="a">100000464</span><span><span class="m">stp</span> <span class="o">x28, x27, [sp, #0x140]</span></span></div>
+      <div><span class="a">100000468</span><span><span class="m">stp</span> <span class="o">x26, x25, [sp, #0x150]</span></span></div>
+      <div><span class="a">10000046c</span><span><span class="m">stp</span> <span class="o">x24, x23, [sp, #0x160]</span></span></div>
+      <div><span class="a">100000470</span><span><span class="m">stp</span> <span class="o">x22, x21, [sp, #0x170]</span></span></div>
+      <div><span class="a">100000474</span><span><span class="m">stp</span> <span class="o">x20, x19, [sp, #0x180]</span></span></div>
+      <div><span class="a">10000047c</span><span><span class="m">add</span> <span class="o">x29, sp, #0x190</span></span></div>
+      <div><span class="a">100000480</span><span><span class="m">adrp</span> <span class="o">x8, #0x100004000</span></span></div>
+      <div><span class="a">100000484</span><span><span class="m">ldr</span> <span class="o">x8, [x8, #0x18]</span></span></div>
+    </div>
+  </article>
+
+  <article class="tile t-unicorn" role="listitem">
+    <div class="head"><span class="mark wide"><img src="assets/engines/unicorn.svg" alt=""></span><h3>Unicorn <span>runs it.</span></h3></div>
+    <div class="pane reg mono" aria-label="Emulator result">
+      <div><div class="r">sp before</div><div class="v">0x800ef000</div></div>
+      <div><div class="r">sp after</div><div class="big">0x800eee60</div></div>
+      <hr>
+      <div class="d">8 instructions · frame 0x1a0 bytes</div>
+    </div>
+  </article>
+
+  <article class="tile t-stat" role="listitem">
+    <div class="top"><p class="lead">PortCode drives</p>
+    <div class="num">17</div></div>
+    <p class="lab">engines. Each installs beside the binary only after you approve it.</p>
+  </article>
+  <article class="tile t-imhex" role="listitem">
+    <div class="head"><span class="mark "><img src="assets/engines/imhex.svg" alt=""></span><h3>ImHex documents the format. <span>The agent writes the pattern, you inspect it.</span></h3></div>
+    <div class="pane hex mono" aria-label="Mach-O header bytes with a pattern">
+      <div class="bytes">
+        <span class="off">0000</span><span class="by"><span class="f1">cf</span><span class="f1">fa</span><span class="f1">ed</span><span class="f1">fe</span><span class="f2">0c</span><span class="f2">00</span><span class="f2">00</span><span class="f2">01</span></span>
+        <span class="off">0008</span><span class="by"><span class="f3">00</span><span class="f3">00</span><span class="f3">00</span><span class="f3">00</span><span class="f4">02</span><span class="f4">00</span><span class="f4">00</span><span class="f4">00</span></span>
+        <span class="off">0010</span><span class="by"><span class="f5">11</span><span class="f5">00</span><span class="f5">00</span><span class="f5">00</span><span class="f1">20</span><span class="f1">04</span><span class="f1">00</span><span class="f1">00</span></span>
+        <span class="off">0018</span><span class="by"><span class="f2">85</span><span class="f2">00</span><span class="f2">20</span><span class="f2">00</span><span>00</span><span>00</span><span>00</span><span>00</span></span>
+      </div>
+      <div class="pat">
+        <div><span><i class="f1"></i><span class="t">u32</span> magic</span><span class="cm">0xFEEDFACF</span></div>
+        <div><span><i class="f2"></i><span class="t">u32</span> cputype</span><span class="cm">ARM64</span></div>
+        <div><span><i class="f3"></i><span class="t">u32</span> cpusubtype</span><span class="cm">0</span></div>
+        <div><span><i class="f4"></i><span class="t">u32</span> filetype</span><span class="cm">EXECUTE</span></div>
+        <div><span><i class="f5"></i><span class="t">u32</span> ncmds</span><span class="cm">17</span></div>
+        <div><span><i class="f1"></i><span class="t">u32</span> sizeofcmds</span><span class="cm">1056</span></div>
+        <div><span><i class="f2"></i><span class="t">u32</span> flags</span><span class="cm">0x200085</span></div>
+      </div>
+    </div>
+  </article>
+
+
+  <article class="tile t-rest" role="listitem">
+    <h3>Around them <span>rizin, radare2, YARA, Frida, LIEF, capa and Detect It Easy.</span></h3>
+    <div class="marks">
+      <span class="mark"><img src="assets/engines/radare2.png" alt="radare2"></span>
+      <span class="mark"><img src="assets/engines/rizin.png" alt="Rizin"></span>
+      <span class="mark wide yara"><img src="assets/engines/yara.svg" alt="YARA"></span>
+      <span class="mark wide"><img src="assets/engines/frida.svg" alt="Frida"></span>
+      <span class="mark"><img src="assets/engines/lief.png" alt="LIEF"></span>
+      <span class="mark"><img src="assets/engines/capa.png" alt="capa"></span>
+      <span class="mark"><img src="assets/engines/die.png" alt="Detect It Easy"></span>
+    </div>
+    <div class="names"><span>angr</span><span>Keystone</span><span>binwalk</span><span>jadx</span><span>wabt</span><span>upx</span></div>
+  </article>
+
+  <article class="tile t-mode" role="listitem">
+    <div><h3>Nothing looks inside until you say so.</h3>
+    <p>Clean-room is the default. Deep is a switch you flip, in the terminal or from the remote page.</p></div>
+    <div class="chips"><span class="chip">▣ clean-room</span><span class="chip deep">◉ deep</span></div>
+  </article>
+</div>
+<p class="cap">Every number on these cards is real: the decompiler lines, instructions, emulator registers and header bytes come from running the tools on the bundled wordstat binary.</p>
 <figure class="shot"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></figure>
 <p class="cap">Deep mode on the wordstat example: real <code>hexdump</code>, <code>disasm</code> and <code>emulate</code> calls; the model is a scripted replay.</p>
 <pre><code>portcode engines install core          # capstone + unicorn + lief
