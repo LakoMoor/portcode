@@ -40,6 +40,9 @@ portcode completions zsh > ~/.zfunc/_portcode
 ```
 Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bash` tool is Unix-only for now).
 
+## Finishing 1:1
+The `port` agent cannot stop early. When it tries to, PortCode checks three things: every behaviour of the original is a todo item, every todo is completed, and the last `parity` run passed on the final code (an edit after parity re-opens it). If not, the agent is sent back with the open items, and it gets extra steps when the budget runs out unfinished. The only way out is `blocked`, for a decision only you can make. Parity still compares against goldens captured from the original, so "done" means "proven", not "claimed".
+
 ## Clean-room and deep mode
 | | clean-room (default) | deep |
 |---|---|---|

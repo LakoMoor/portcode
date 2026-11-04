@@ -289,3 +289,88 @@ async fn port_workflow_tools_produce_ledger_and_site() {
             .contains("hello\u{a0}from\u{a0}original")
     );
 }
+
+#[tokio::test]
+async fn port_agent_is_sent_back_until_it_is_really_done() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![
+            // claims it is done with no todos and no parity run
+            Turn {
+                text: "All done!".into(),
+                ..Default::default()
+            },
+            // after the nudge it plans, but then tries to stop again with an open item
+            Turn {
+                tool_calls: vec![call(
+                    "todowrite",
+                    json!({"todos":[{"content":"--top option","status":"in_progress"}]}),
+                )],
+                ..Default::default()
+            },
+            Turn {
+                text: "Finished.".into(),
+                ..Default::default()
+            },
+            // only the user can decide this one
+            Turn {
+                tool_calls: vec![call(
+                    "blocked",
+                    json!({"reason":"need a golden for --top 0"}),
+                )],
+                ..Default::default()
+            },
+        ],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, ui) = runner(d.path(), &m.url, "port", Reply::Once).await;
+    let out = r.send("port it").await.unwrap();
+    assert_eq!(
+        out.steps, 4,
+        "two premature stops must each be answered with another step"
+    );
+    assert!(
+        out.text.starts_with("Blocked, needs you: need a golden"),
+        "{}",
+        out.text
+    );
+    let infos: Vec<String> =
+        ui.0.lock()
+            .unwrap()
+            .iter()
+            .filter_map(|e| match e {
+                UiEvent::Info(s) => Some(s.clone()),
+                _ => None,
+            })
+            .collect();
+    assert!(
+        infos
+            .iter()
+            .any(|s| s.contains("not finished: no todo list")),
+        "{infos:?}"
+    );
+    assert!(
+        infos
+            .iter()
+            .any(|s| s.contains("todo not done: --top option")),
+        "{infos:?}"
+    );
+}
+
+#[tokio::test]
+async fn build_agent_is_not_gated() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![Turn {
+            text: "ok".into(),
+            ..Default::default()
+        }],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, _) = runner(d.path(), &m.url, "build", Reply::Once).await;
+    assert_eq!(r.send("hi").await.unwrap().steps, 1);
+}

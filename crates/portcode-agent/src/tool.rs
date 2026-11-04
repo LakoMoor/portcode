@@ -47,6 +47,12 @@ pub struct State {
     pub read: HashMap<PathBuf, SystemTime>,
     pub todos: Vec<Todo>,
     pub loaded_skills: HashSet<String>,
+    /// Last `parity` verdict (`None` = never run).
+    pub parity: Option<bool>,
+    /// Port code changed since the last parity run.
+    pub dirty: bool,
+    /// The agent needs a decision from the user and may stop.
+    pub blocked: Option<String>,
 }
 
 /// Runs a sub-agent for the `task` tool (implemented by the agent loop; kept as a trait to avoid a cycle).

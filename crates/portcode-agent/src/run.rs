@@ -190,6 +190,50 @@ impl Runner {
     pub fn messages(&self) -> &[Message] {
         &self.messages
     }
+    /// Remember what the last tool calls mean for "is it finished".
+    fn track(&self, name: &str, result: &str) {
+        let mut st = lock(&self.ctx.state);
+        match name {
+            "parity" => {
+                st.parity = Some(result.contains("RESULT: PASS"));
+                st.dirty = false;
+            }
+            "write" | "edit" | "scaffold" if !result.starts_with("Error") => st.dirty = true,
+            _ => {}
+        }
+    }
+
+    /// What still stands between a gated agent (the `port` agent) and "done"; empty = finished.
+    /// 1:1 means every behaviour is on the todo list, every todo is done, and the last parity run passed on the final code.
+    pub fn gaps(&self) -> Vec<String> {
+        if !self.agent.gate {
+            return vec![];
+        }
+        let st = lock(&self.ctx.state);
+        let mut g = Vec::new();
+        if st.todos.is_empty() {
+            g.push("no todo list: call todowrite with one item per behaviour of the original (options, outputs, exit codes, errors) so nothing is skipped".to_string());
+        }
+        for t in st.todos.iter().filter(|t| t.status != "completed") {
+            g.push(format!("todo not done: {}", t.content));
+        }
+        match st.parity {
+            None => g.push(
+                "parity has not been run: capture goldens from the ORIGINAL and run `parity`"
+                    .into(),
+            ),
+            Some(false) => g.push(
+                "the last parity run FAILED: fix the port (never the goldens) and run parity again"
+                    .into(),
+            ),
+            Some(true) if st.dirty => {
+                g.push("code changed after the last parity run: run parity again".into())
+            }
+            Some(true) => {}
+        }
+        g
+    }
+
     pub fn todos(&self) -> Vec<Todo> {
         lock(&self.ctx.state).todos.clone()
     }
@@ -374,7 +418,7 @@ impl Runner {
     pub async fn send(&mut self, text: &str) -> Result<Outcome, String> {
         self.messages.push(Message::user(text));
         self.ctx.cancel.store(false, Ordering::Relaxed);
-        let max_steps = self
+        let base_steps = self
             .cfg
             .agent
             .get(self.agent.name)
@@ -382,10 +426,16 @@ impl Runner {
             .or(self.cfg.max_steps)
             .unwrap_or(self.agent.steps)
             .max(2);
+        let mut limit = base_steps;
+        let (mut extensions, mut gate_nudges) = (0u32, 0u32);
+        lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut total = Usage::default();
         let mut last_text = String::new();
-        for step in 0..max_steps {
+        for step in 0..base_steps * 4 {
+            if step >= limit {
+                break;
+            }
             if self.ctx.cancelled() {
                 self.save();
                 return Ok(Outcome {
@@ -396,7 +446,16 @@ impl Runner {
                 });
             }
             self.fit_context().await;
-            let final_step = step + 1 == max_steps;
+            if step + 1 == limit && extensions < 2 && !self.gaps().is_empty() {
+                // out of steps but visibly unfinished: grant more instead of stopping short
+                extensions += 1;
+                limit += (base_steps / 2).max(10);
+                self.ui.event(UiEvent::Info(format!(
+                    "not finished after {step} steps; continuing ({} open)",
+                    self.gaps().len()
+                )));
+            }
+            let final_step = step + 1 == limit;
             let tools = if final_step { vec![] } else { self.defs() };
             let mut msgs = vec![self.system()];
             msgs.extend(self.messages.iter().cloned());
@@ -453,6 +512,29 @@ impl Runner {
                     }));
                     continue;
                 }
+                if self.agent.gate && !final_step {
+                    let gaps = self.gaps();
+                    if !gaps.is_empty() {
+                        if gate_nudges < 6 {
+                            gate_nudges += 1;
+                            self.ui.event(UiEvent::Info(format!(
+                                "not finished: {} ({} open)",
+                                gaps.first().cloned().unwrap_or_default(),
+                                gaps.len()
+                            )));
+                            self.messages.push(Message::user(format!(
+                                "Not finished. Open items:\n- {}\nDo not summarise yet. Continue with a tool call. If only the user can unblock you, call `blocked` with the reason.",
+                                gaps.join("\n- ")
+                            )));
+                            continue;
+                        }
+                        self.ui.event(UiEvent::Info(format!(
+                            "stopped with {} open item(s): {}",
+                            gaps.len(),
+                            gaps.join("; ")
+                        )));
+                    }
+                }
                 self.save();
                 return Ok(Outcome {
                     text: last_text,
@@ -472,6 +554,7 @@ impl Runner {
                     self.exec(&call.function.name, &call.function.arguments)
                         .await
                 };
+                self.track(&call.function.name, &result);
                 self.messages.push(Message::tool(call.id.clone(), result));
                 if repeats >= 2 {
                     self.save();
@@ -487,12 +570,21 @@ impl Runner {
             if !todos.is_empty() {
                 self.ui.event(UiEvent::Todos(todos));
             }
+            if let Some(why) = lock(&self.ctx.state).blocked.clone() {
+                self.save();
+                return Ok(Outcome {
+                    text: format!("Blocked, needs you: {why}"),
+                    steps: step + 1,
+                    usage: total,
+                    status: Status::Done,
+                });
+            }
             self.save();
         }
         self.save();
         Ok(Outcome {
             text: last_text,
-            steps: max_steps,
+            steps: limit,
             usage: total,
             status: Status::MaxSteps,
         })
@@ -586,6 +678,7 @@ const BUILTIN_NAMES: &[&str] = &[
     "screenshot",
     "site_build",
     "scaffold",
+    "blocked",
     "re_status",
     "re_install",
     "disasm",

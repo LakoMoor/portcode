@@ -39,11 +39,11 @@
 <text x="18" y="666"><tspan>    </tspan><tspan opacity="0.6">RESULT: PASS</tspan></text>
 <text x="18" y="685"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">todowrite</tspan><tspan> </tspan><tspan opacity="0.6">{"todos":[{"content":"pin + survey original","status":"completed"},{"content":"golden cases (6)","</tspan></text>
 <text x="18" y="704"><tspan opacity="0.6">status":"completed"},{"content":"parity PASS","status":"comple</tspan></text>
-<text x="18" y="723"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">1 open</tspan></text>
+<text x="18" y="723"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">0 open</tspan></text>
 <text x="18" y="742"><tspan>    </tspan><tspan opacity="0.6">[x] pin + survey original</tspan></text>
 <text x="18" y="761"><tspan>    </tspan><tspan opacity="0.6">[x] golden cases (6)</tspan></text>
 <text x="18" y="780"><tspan>    </tspan><tspan opacity="0.6">[x] parity PASS</tspan></text>
-<text x="18" y="799"><tspan>    </tspan><tspan opacity="0.6">[~] screenshots + site</tspan></text>
+<text x="18" y="799"><tspan>    </tspan><tspan opacity="0.6">[x] screenshots + site</tspan></text>
 <text x="18" y="818"><tspan>Parity is PASS on all 6 golden cases. One unknown remains open (E-0002: locale). Next: attach screenshots for </tspan></text>
 <text x="18" y="837"><tspan>each feature and build the site with `site_build`.</tspan></text>
 <text x="18" y="856"><tspan opacity="0.6">— 6 step(s) · 1320 in / 180 out tokens · Done</tspan></text>

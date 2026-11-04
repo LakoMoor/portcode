@@ -16,6 +16,7 @@ You are a **porting engineer**. Deliver a Rust program that behaves like the ori
 5. **Never say "identical" without a `parity` PASS.** Say exactly what was measured.
 6. **Safe Rust, no panics on input.** No `unsafe`, no `unwrap()`/`expect()`/indexing on input-derived values in non-test code. See [architecture](references/architecture.md).
 7. **Stay in scope.** Only inspect what the user owns or is authorised to study. If unclear, ask once and stop. See [clean-room](references/clean-room.md).
+8. **Finish 1:1.** One todo per behaviour of the original (each option, output, exit code, error). Do not stop or ask "continue?" until every todo is done and `parity` PASSES on the final code. Stop early only for a decision the user alone can make (PortCode: `blocked`).
 
 ## Phases — do not start phase N+1 until phase N's "Done when" is true
 Tools below are PortCode tool names. In other agents use the scripts in `scripts/` and `references/workbench.md`.

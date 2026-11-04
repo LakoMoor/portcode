@@ -219,6 +219,36 @@ impl Tool for Task {
     }
 }
 
+pub struct Blocked;
+#[async_trait]
+impl Tool for Blocked {
+    fn name(&self) -> String {
+        "blocked".into()
+    }
+    fn description(&self) -> String {
+        "Stop because you need a decision or input only the user can give (licence, missing file, ambiguous requirement, permission refused). The port is NOT finished; say exactly what you need. Do not use this to avoid hard work.".into()
+    }
+    fn example(&self) -> String {
+        r#"{"reason": "inputs/ has no case for --min-len 0; the original crashes. Should the port crash too or return an error?"}"#.into()
+    }
+    fn schema(&self) -> Value {
+        obj(json!({"reason": {"type":"string"}}), &["reason"])
+    }
+    async fn run(&self, ctx: &Ctx, args: Value) -> ToolResult {
+        let a = Args {
+            v: &args,
+            tool: "blocked",
+            example: &self.example(),
+        };
+        let r = a.str("reason")?;
+        lock(&ctx.state).blocked = Some(r.clone());
+        Ok(Out::new(
+            "blocked",
+            format!("Stopped, waiting for the user: {r}"),
+        ))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

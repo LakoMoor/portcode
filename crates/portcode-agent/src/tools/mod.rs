@@ -22,6 +22,7 @@ pub fn builtin(skills: Vec<crate::skills::Skill>) -> Registry {
         Arc::new(misc::WebFetch),
         Arc::new(misc::SkillTool(skills)),
         Arc::new(misc::Task),
+        Arc::new(misc::Blocked),
         Arc::new(port::Survey),
         Arc::new(port::PinTool),
         Arc::new(port::EvidenceAdd),
