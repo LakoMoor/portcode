@@ -48,3 +48,14 @@ Use only on software you own or may examine. PortCode never bypasses DRM, logins
 | bottom | the agent's last answer and the prompt | the current session |
 
 Keys: `j`/`k` move, `1 2 3` or `h`/`l` switch view, `PgUp`/`PgDn` scroll, `/` filter, `a` ask the agent to explain the function and record it as an inference, `i` type to the agent, `r` reload, `q` close. The first Pseudo-C of a binary includes Ghidra's analysis, so it can take a while; later functions reuse the project. Sizes are the distance to the next symbol, so treat them as estimates. The workbench makes the same tool calls an agent would, and it refuses to open in clean-room mode.
+
+## Unity and C# / .NET
+
+| tool | does | needs |
+|---|---|---|
+| `unity` | surveys a game folder or `.app`: Unity version, **Mono or IL2CPP**, managed DLLs, native library, asset and bundle counts, next steps | nothing |
+| `dotnet` | `info`, `types`, `type`, `strings`, `refs` (assembly refs and P/Invoke) of any .NET assembly, including Unity's `Assembly-CSharp.dll` | `dnfile` (pip) |
+| `dotnet` mode=`decompile` | C# source of one type | `ilspy` (`dotnet tool install -g ilspycmd`, needs the .NET SDK) |
+| `unity_assets` | `info`, `list`, `text`, `tree` of `.assets`, `levelN`, `globalgamemanagers`, bundles: scenes, TextAssets, MonoBehaviour values | `unitypy` (pip) |
+
+Install: `portcode engines install dnfile unitypy`. Mono games keep their C# in `Managed/*.dll`, so `dotnet` reads it directly. IL2CPP games compile C# to native code: run **Il2CppDumper** (engine `il2cppdumper`, installed by you) on `GameAssembly` and `global-metadata.dat`, then point `dotnet` at the DummyDll files it writes, and use `functions`, `decompile` and `disasm` on the native library. Obfuscated names (`a`, `b`) are normal; `strings` and `refs` orient you. As everywhere, this is deep mode: record what you see as `inference`, and port from the ledger, not from decompiled code.

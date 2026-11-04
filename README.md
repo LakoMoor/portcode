@@ -56,7 +56,7 @@ Deep mode drives real engines — **Capstone**, **Unicorn**, **Ghidra** (headles
 ```sh
 portcode engines install core          # capstone + unicorn + lief
 portcode engines install ghidra imhex  # Ghidra needs a JDK
-portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump
+portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump · unity · dotnet · unity_assets
 # in the UI: /workbench — functions, Pseudo-C, disassembly, hex and the evidence ledger side by side
 ```
 For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and ledger entries in your own words, then `port --clean-room` to build from those only. Details: [docs/ENGINES.md](docs/ENGINES.md).

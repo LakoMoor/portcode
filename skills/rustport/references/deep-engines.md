@@ -7,6 +7,9 @@ Look inside only in deep mode and only for software you own or may examine. Chec
 | What does this code do? | `disasm` (Capstone) | file offset, not virtual address; set `base` |
 | What is the whole function? | `decompile` (Ghidra headless) | list → func; first call analyses (minutes) |
 | What does it compute for input X? | `emulate` (Unicorn) | set regs, run `start`..`end`, read regs/memory |
+| Unity game? Mono or IL2CPP? | `unity` (survey), then `dotnet` / `unity_assets` | Mono: C# in `Managed/*.dll`; IL2CPP: Il2CppDumper first, then `dotnet` on its DummyDll |
+| C# / .NET assembly (Unity or not) | `dotnet` mode=types → type → strings → refs; `decompile` via ILSpy | obfuscated names (a, b) are normal: strings and P/Invoke refs orient you |
+| Scenes, TextAssets, MonoBehaviour values | `unity_assets` mode=list → text / tree | needs the type tree; stripped games need the assembly too |
 | Binary file format? | ImHex `.hexpat` + `lief` | write the pattern in `docs/formats/`, open it in ImHex |
 | Symbolic / path questions | `angr` | heavy; last resort |
 | Live process | `frida` | only with approval to run the original |

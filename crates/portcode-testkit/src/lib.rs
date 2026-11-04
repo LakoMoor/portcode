@@ -14,6 +14,8 @@ pub struct Turn {
     pub tool_calls: Vec<ScriptedCall>,
     /// Emit tool calls as Qwen/Hermes text instead of structured deltas (exercises the text fallback).
     pub as_text: bool,
+    /// The model hit its output limit: tool-call JSON stops half way and `finish_reason` is `length`.
+    pub truncated: bool,
 }
 #[derive(Debug, Clone, Deserialize)]
 pub struct ScriptedCall {
@@ -56,14 +58,17 @@ fn render(turn: &Turn, n: usize) -> String {
                 json!({"choices":[{"delta":{"tool_calls":[{"index":i,"id":format!("call_{n}_{i}"),"function":{"name":c.name,"arguments":""}}]}}]}),
             );
             let (a, b) = args.split_at(args.len() / 2);
-            for part in [a, b] {
+            let parts: &[&str] = if turn.truncated { &[a] } else { &[a, b] };
+            for part in parts {
                 out += &sse(
                     json!({"choices":[{"delta":{"tool_calls":[{"index":i,"function":{"arguments":part}}]}}]}),
                 );
             }
         }
     }
-    let finish = if turn.tool_calls.is_empty() || turn.as_text {
+    let finish = if turn.truncated {
+        "length"
+    } else if turn.tool_calls.is_empty() || turn.as_text {
         "stop"
     } else {
         "tool_calls"

@@ -61,6 +61,15 @@ impl Message {
             reasoning_content: None,
         }
     }
+    pub fn assistant_text(t: impl Into<String>) -> Self {
+        Self {
+            role: Role::Assistant,
+            content: Some(t.into()),
+            tool_calls: vec![],
+            tool_call_id: None,
+            reasoning_content: None,
+        }
+    }
     pub fn tool(id: impl Into<String>, t: impl Into<String>) -> Self {
         Self {
             role: Role::Tool,

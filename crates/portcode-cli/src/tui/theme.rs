@@ -39,7 +39,8 @@ pub fn agent_color(name: &str) -> Color {
 /// Colour of a tool name in the transcript: what kind of evidence it produces.
 pub fn tool_color(name: &str) -> Color {
     match name {
-        "disasm" | "emulate" | "decompile" | "hexdump" | "re_install" | "re_status" => YELLOW,
+        "disasm" | "emulate" | "decompile" | "hexdump" | "functions" | "unity" | "dotnet"
+        | "unity_assets" | "re_install" | "re_status" => YELLOW,
         "evidence_add" | "evidence_list" | "pin" | "parity" => GREEN,
         "write" | "edit" | "scaffold" => ACCENT,
         _ => TEXT,

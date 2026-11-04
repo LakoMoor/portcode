@@ -37,6 +37,9 @@ pub fn builtin(skills: Vec<crate::skills::Skill>) -> Registry {
         Arc::new(re::Emulate),
         Arc::new(re::Decompile),
         Arc::new(re::Functions),
+        Arc::new(re::Unity),
+        Arc::new(re::Dotnet),
+        Arc::new(re::UnityAssets),
         Arc::new(re::Hexdump),
     ] {
         r.add(t);

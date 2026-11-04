@@ -7,6 +7,8 @@ use std::path::{Path, PathBuf};
 
 pub const DISASM_PY: &str = include_str!("../re/disasm.py");
 pub const FUNCTIONS_PY: &str = include_str!("../re/functions.py");
+pub const DOTNET_PY: &str = include_str!("../re/dotnet.py");
+pub const UNITY_PY: &str = include_str!("../re/unityassets.py");
 pub const EMULATE_PY: &str = include_str!("../re/emulate.py");
 pub const DECOMPILE_JAVA: &str = include_str!("../re/PcDecompile.java");
 
@@ -46,6 +48,10 @@ pub const ENGINES: &[Engine] = &[
     Engine { id: "binwalk", what: "find and extract embedded files and firmware images", license: "MIT", url: "https://github.com/ReFirmLabs/binwalk", how: How::System("binwalk", "brew install binwalk  |  cargo install binwalk"), core: false },
     Engine { id: "die", what: "Detect It Easy: packers, compilers, protectors", license: "MIT", url: "https://github.com/horsicq/Detect-It-Easy", how: How::System("diec", "brew install detect-it-easy"), core: false },
     Engine { id: "capa", what: "identify capabilities in executables (Mandiant)", license: "Apache-2.0", url: "https://github.com/mandiant/capa", how: How::System("capa", "pip install flare-capa  |  brew install capa"), core: false },
+    Engine { id: "dnfile", what: ".NET / C# / Unity Mono assembly metadata: types, methods, strings, P/Invoke", license: "MIT", url: "https://github.com/malwarefrank/dnfile", how: How::Pip("dnfile", "dnfile"), core: false },
+    Engine { id: "unitypy", what: "Unity asset files and bundles: objects, TextAssets, MonoBehaviour data", license: "MIT", url: "https://github.com/K0lb3/UnityPy", how: How::Pip("UnityPy", "UnityPy"), core: false },
+    Engine { id: "ilspy", what: "ILSpy command line: decompile .NET / Unity Mono assemblies back to C#", license: "MIT", url: "https://github.com/icsharpcode/ILSpy", how: How::System("ilspycmd", "dotnet tool install -g ilspycmd   (needs the .NET SDK)"), core: false },
+    Engine { id: "il2cppdumper", what: "Unity IL2CPP: rebuild type and method names from global-metadata.dat", license: "MIT", url: "https://github.com/Perfare/Il2CppDumper", how: How::System("Il2CppDumper", "download a release from the project page and put it on PATH (needs .NET)"), core: false },
     Engine { id: "jadx", what: "Android DEX/APK → Java decompiler", license: "Apache-2.0", url: "https://github.com/skylot/jadx", how: How::System("jadx", "brew install jadx"), core: false },
     Engine { id: "wabt", what: "WebAssembly binary toolkit (wasm2wat, wasm-decompile)", license: "Apache-2.0", url: "https://github.com/WebAssembly/wabt", how: How::System("wasm2wat", "brew install wabt"), core: false },
     Engine { id: "upx", what: "detect/unpack UPX-packed executables", license: "GPL-2.0", url: "https://upx.github.io", how: How::System("upx", "brew install upx"), core: false },
@@ -221,6 +227,8 @@ pub fn write_helpers() -> Result<PathBuf, String> {
     for (n, body) in [
         ("disasm.py", DISASM_PY),
         ("functions.py", FUNCTIONS_PY),
+        ("dotnet.py", DOTNET_PY),
+        ("unityassets.py", UNITY_PY),
         ("emulate.py", EMULATE_PY),
         ("PcDecompile.java", DECOMPILE_JAVA),
     ] {

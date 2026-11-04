@@ -731,7 +731,7 @@ impl App {
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
-            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile functions hexdump (+ MCP)".into())),
+            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile functions hexdump unity dotnet unity_assets (+ MCP)".into())),
             ("ledger", _) => {
                 self.refresh_ledger();
                 let (o, i, u) = self.ledger;
@@ -751,7 +751,10 @@ pub fn summarize(name: &str, args: &str) -> String {
         let end = rest.find('"').unwrap_or(rest.len());
         Some(rest.get(..end)?.to_string())
     };
-    if matches!(name, "disasm" | "emulate" | "hexdump" | "decompile") {
+    if matches!(
+        name,
+        "disasm" | "emulate" | "hexdump" | "decompile" | "dotnet" | "unity_assets" | "unity"
+    ) {
         let what = pick("file").unwrap_or_else(|| "hex bytes".into());
         let how: Vec<String> = ["arch", "mode", "query"]
             .iter()

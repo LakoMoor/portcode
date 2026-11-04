@@ -366,7 +366,7 @@ impl Tool for Write {
         "write".into()
     }
     fn description(&self) -> String {
-        "Create a file or fully replace one. For existing files you must `read` them first; prefer `edit` for small changes.".into()
+        "Create a file or fully replace one. For existing files you must `read` them first; prefer `edit` for small changes. Long file? Write the first part, then call again with append=true for each next part (keep each call under about 80 lines).".into()
     }
     fn example(&self) -> String {
         r#"{"path": "src/lib.rs", "content": "pub fn add(a: i32, b: i32) -> i32 { a + b }\n"}"#
@@ -374,7 +374,7 @@ impl Tool for Write {
     }
     fn schema(&self) -> Value {
         obj(
-            json!({"path": {"type":"string"}, "content": {"type":"string","description":"Complete file content"}}),
+            json!({"path": {"type":"string"}, "content": {"type":"string","description":"Complete file content, or the next part when append is true"}, "append": {"type":"boolean","description":"add to the end of the file instead of replacing it"}}),
             &["path", "content"],
         )
     }
@@ -385,14 +385,22 @@ impl Tool for Write {
             example: &self.example(),
         };
         let path = ctx.path(&a.str("path")?, true).await?;
-        let content = a.str("content")?;
-        stale(ctx, &path)?;
+        let part = a.str("content")?;
+        let append = args.get("append").and_then(Value::as_bool).unwrap_or(false);
         let old = std::fs::read_to_string(&path).unwrap_or_default();
+        if !append {
+            stale(ctx, &path)?;
+        }
+        let content = if append { format!("{old}{part}") } else { part };
         ctx.permit(
             "edit",
             &ctx.rel(&path),
             Decision::Ask,
-            &format!("write {} bytes", content.len()),
+            &format!(
+                "{} {} bytes",
+                if append { "append" } else { "write" },
+                content.len() - old.len().min(content.len())
+            ),
         )
         .await?;
         write_atomic(&path, &content)?;

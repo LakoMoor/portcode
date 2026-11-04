@@ -35,6 +35,15 @@ Keys: env var (`api_key_env`), or `portcode auth set <provider>` (`~/.config/por
 ## Profiles (`ModelProfile`)
 `temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full), tool_output_limit`. Built-in families by substring: `deepseek*`, `qwen*` (smaller output/context for `flash`, `mini`, `4b/7b/8b`), generic open families. **These are starting points, not measured claims.** Newer releases may want different values — override under `"models"`.
 
+### Small context windows and short outputs
+
+Many local servers run with a 4k to 16k window and cut replies early. PortCode accounts for it:
+- It never asks for more output than half the window, nor more than fits next to the prompt (vLLM rejects `prompt + max_tokens > window`).
+- Tool results are capped at about an eighth of the window (`result_chars`), and old turns are compacted to stay under `window - output - 256` tokens.
+- A reply that stops at the output limit (`finish_reason: length`) is continued ("continue exactly where you stopped") and the pieces are joined. A **tool call** cut by the limit is never run, even if its JSON could be repaired: the model is told to make it smaller and gets a larger output budget (up to 3x).
+- `write` accepts `append: true`, so a long file is written in parts.
+- If the instructions alone take more than a third of the window, PortCode says so once. Set the real server window in `portcode.json`: `"models": {"<id>": {"context_window": 8192, "max_tokens": 1024}}`.
+
 ## Prompt design for open models
 - Rules are numbered one-liners, most important first; a short style block last.
 - One worked example in the system prompt; one `Example arguments:` per tool.

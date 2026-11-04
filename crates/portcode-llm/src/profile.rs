@@ -46,6 +46,25 @@ impl Default for ModelProfile {
     }
 }
 
+impl ModelProfile {
+    /// Output tokens to ask for. Never more than half the window: with a 4k window and `max_tokens` 4096 there is no room for the prompt.
+    pub fn out_tokens(&self) -> u32 {
+        self.max_tokens.min(self.context_window / 2).max(128)
+    }
+    /// Prompt tokens to stay under before compacting, leaving room for the answer.
+    pub fn input_budget(&self) -> u64 {
+        let w = u64::from(self.context_window);
+        let room = w.saturating_sub(u64::from(self.out_tokens()) + 256);
+        room.min(w * 3 / 4).max(w / 4)
+    }
+    /// Bytes of one tool result kept in context: at most the configured limit and about an eighth of the window.
+    pub fn result_chars(&self) -> usize {
+        self.tool_output_limit
+            .min(self.context_window as usize * 33 / 80)
+            .max(600)
+    }
+}
+
 /// Built-in profile for a model id such as `deepseek-chat`, `Qwen/Qwen3-Coder-30B`, `qwen3:14b`.
 pub fn profile_for(model: &str) -> ModelProfile {
     let m = model.to_lowercase();
@@ -98,5 +117,21 @@ mod tests {
                 && !flash.parallel_tool_calls
         );
         assert_eq!(profile_for("gpt-x").family, "generic");
+    }
+
+    #[test]
+    fn small_windows_get_room_for_the_prompt() {
+        let p = ModelProfile {
+            context_window: 4096,
+            max_tokens: 4096,
+            ..Default::default()
+        };
+        assert_eq!(p.out_tokens(), 2048);
+        assert!(p.input_budget() <= 4096 - 2048 && p.input_budget() >= 1024);
+        assert!(p.result_chars() <= 1700 && p.result_chars() >= 600);
+        let big = ModelProfile::default();
+        assert_eq!(big.out_tokens(), 4096);
+        assert_eq!(big.result_chars(), 12_000);
+        assert_eq!(big.input_budget(), 24_576);
     }
 }

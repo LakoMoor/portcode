@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Providers, models and open-weight tuning — PortCode</title><meta property="og:title" content="Providers, models and open-weight tuning — PortCode"><link rel="stylesheet" href="../style.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="../"><i>pc</i>PortCode</a><a class="l" href="../guide/ARCHITECTURE.html">Architecture</a><a class="l" href="../guide/PROVIDERS.html">Providers</a><a class="l" href="../guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="../guide/ENGINES.html">Engines</a><a class="l" href="../guide/ROADMAP.html">Roadmap</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Providers, models and open-weight tuning — PortCode</title><meta property="og:title" content="Providers, models and open-weight tuning — PortCode"><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="../guide/ARCHITECTURE.html">Architecture</a><a class="l" href="../guide/PROVIDERS.html">Providers</a><a class="l" href="../guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="../guide/ENGINES.html">Engines</a><a class="l" href="../guide/ROADMAP.html">Roadmap</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="doc">
 <h1>Providers, models and open-weight tuning</h1>
 <h2>Configuration</h2>
@@ -33,6 +33,15 @@
 </tbody></table>
 <h2>Profiles (<code>ModelProfile</code>)</h2>
 <p><code>temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full), tool_output_limit</code>. Built-in families by substring: <code>deepseek*</code>, <code>qwen*</code> (smaller output/context for <code>flash</code>, <code>mini</code>, <code>4b/7b/8b</code>), generic open families. <strong>These are starting points, not measured claims.</strong> Newer releases may want different values — override under <code>&quot;models&quot;</code>.</p>
+<h3>Small context windows and short outputs</h3>
+<p>Many local servers run with a 4k to 16k window and cut replies early. PortCode accounts for it:</p>
+<ul>
+<li>It never asks for more output than half the window, nor more than fits next to the prompt (vLLM rejects <code>prompt + max_tokens &gt; window</code>).</li>
+<li>Tool results are capped at about an eighth of the window (<code>result_chars</code>), and old turns are compacted to stay under <code>window - output - 256</code> tokens.</li>
+<li>A reply that stops at the output limit (<code>finish_reason: length</code>) is continued (&quot;continue exactly where you stopped&quot;) and the pieces are joined. A <strong>tool call</strong> cut by the limit is never run, even if its JSON could be repaired: the model is told to make it smaller and gets a larger output budget (up to 3x).</li>
+<li><code>write</code> accepts <code>append: true</code>, so a long file is written in parts.</li>
+<li>If the instructions alone take more than a third of the window, PortCode says so once. Set the real server window in <code>portcode.json</code>: <code>&quot;models&quot;: {&quot;&lt;id&gt;&quot;: {&quot;context_window&quot;: 8192, &quot;max_tokens&quot;: 1024}}</code>.</li>
+</ul>
 <h2>Prompt design for open models</h2>
 <ul>
 <li>Rules are numbered one-liners, most important first; a short style block last.</li>

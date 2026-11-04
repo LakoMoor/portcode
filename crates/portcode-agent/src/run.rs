@@ -148,7 +148,7 @@ impl Runner {
         );
         ctx.readonly = agent_def.readonly.into();
         ctx.deep = (cfg.mode.as_deref() == Some("deep")).into();
-        ctx.output_limit = resolved.profile.tool_output_limit;
+        ctx.output_limit = resolved.profile.result_chars();
         ctx.allowed_dirs = cfg
             .allowed_dirs
             .iter()
@@ -308,11 +308,9 @@ impl Runner {
 
     /// Shrink old tool output first (cheap), then summarise older turns with the model if still too big.
     async fn fit_context(&mut self) {
-        let window = u64::from(self.resolved.profile.context_window);
+        let budget = self.resolved.profile.input_budget();
         let sys = self.system();
-        let over = |s: &Self, sys: &Message| {
-            s.est_tokens(sys).max(s.last_prompt_tokens) * 100 > window * 75
-        };
+        let over = |s: &Self, sys: &Message| s.est_tokens(sys).max(s.last_prompt_tokens) > budget;
         if !over(self, &sys) {
             return;
         }
@@ -432,6 +430,17 @@ impl Runner {
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut total = Usage::default();
         let mut last_text = String::new();
+        // output-length handling for small windows and models that stop early
+        let (mut cut_nudges, mut boost, mut pieces) = (0u32, 1u32, String::new());
+        {
+            let sys_tokens = self.est_tokens(&self.system());
+            let window = u64::from(self.resolved.profile.context_window);
+            if sys_tokens * 100 > window * 35 {
+                self.ui.event(UiEvent::Info(format!(
+                    "the context window is small ({window} tokens) and the instructions already take about {sys_tokens}. Raise the server's context size, or set \"context_window\" for this model in portcode.json."
+                )));
+            }
+        }
         for step in 0..base_steps * 4 {
             if step >= limit {
                 break;
@@ -463,11 +472,18 @@ impl Runner {
                 msgs.push(Message::user("Step limit reached. Do not call tools. Summarise what is done, what is not, and the next step."));
             }
             let ui = self.ui.clone();
+            // ask for as much output as fits next to this prompt (servers such as vLLM reject prompt + max_tokens > window)
+            let mut prof = self.resolved.profile.clone();
+            let prompt_est = self.est_tokens(&msgs[0]).max(self.last_prompt_tokens);
+            let room = u64::from(prof.context_window).saturating_sub(prompt_est + 128);
+            prof.max_tokens = (u64::from(prof.out_tokens()) * u64::from(boost))
+                .min(room.max(128))
+                .max(128) as u32;
             let res = self
                 .client
                 .chat(
                     &self.resolved.model,
-                    &self.resolved.profile,
+                    &prof,
                     &msgs,
                     &tools,
                     &mut |e| match e {
@@ -492,6 +508,34 @@ impl Runner {
                 self.last_prompt_tokens = u.prompt_tokens;
                 self.ui.event(UiEvent::Usage(u));
             }
+            let mut a = a;
+            if a.finish_reason.as_deref() == Some("length") {
+                // the reply hit the output limit: a tool call whose JSON is not whole must not run
+                // the client may have "repaired" the cut JSON into something valid but incomplete, so the last call is never trusted
+                let broken = !a.tool_calls.is_empty();
+                if broken {
+                    a.tool_calls.pop();
+                }
+                if broken && a.tool_calls.is_empty() && cut_nudges < 4 && !final_step {
+                    cut_nudges += 1;
+                    if boost < 3 {
+                        boost += 1;
+                    }
+                    self.ui.event(UiEvent::Info(
+                        "the tool call was cut off by the output limit; asking for a smaller one"
+                            .into(),
+                    ));
+                    if !a.text.is_empty() {
+                        self.messages.push(a.clone().into_message());
+                    } else {
+                        self.messages.push(Message::assistant_text("(cut off)"));
+                    }
+                    self.messages.push(Message::user(
+                        "Your tool call was cut off by the output limit, so it did not run. Make it smaller: write a file in parts (first call creates it, later calls use `write` with append true), or use `edit` for one small change.",
+                    ));
+                    continue;
+                }
+            }
             let (calls, finish, reply) = (
                 a.tool_calls.clone(),
                 a.finish_reason.clone(),
@@ -500,17 +544,32 @@ impl Runner {
             if !reply.is_empty() {
                 last_text = reply.clone();
             }
+            let cut_text = calls.is_empty() && finish.as_deref() == Some("length");
             self.messages.push(a.into_message());
             if calls.is_empty() {
                 let empty = reply.trim().is_empty();
-                if (empty || finish.as_deref() == Some("length")) && nudges < 2 && !final_step {
-                    nudges += 1;
-                    self.messages.push(Message::user(if empty {
-                        "Your reply was empty. Continue: call a tool, or give the final answer."
-                    } else {
-                        "Your reply was cut off. Continue briefly from where you stopped."
-                    }));
+                if cut_text && cut_nudges < 4 && !final_step {
+                    // keep what we have and ask for the rest, so a short output limit does not lose the end of an answer
+                    cut_nudges += 1;
+                    pieces.push_str(&reply);
+                    if boost < 3 {
+                        boost += 1;
+                    }
+                    self.messages.push(Message::user(
+                        "Your reply was cut off by the output limit. Continue exactly where you stopped, without repeating anything.",
+                    ));
                     continue;
+                }
+                if empty && nudges < 2 && !final_step {
+                    nudges += 1;
+                    self.messages.push(Message::user(
+                        "Your reply was empty. Continue: call a tool, or give the final answer.",
+                    ));
+                    continue;
+                }
+                if !pieces.is_empty() {
+                    last_text = format!("{pieces}{reply}");
+                    pieces.clear();
                 }
                 if self.agent.gate && !final_step {
                     let gaps = self.gaps();
@@ -642,7 +701,7 @@ impl Runner {
         let ctx = self.ctx.clone();
         let t2 = tool.clone();
         let joined = tokio::spawn(async move { t2.run(&ctx, args).await }).await;
-        let limit = self.resolved.profile.tool_output_limit;
+        let limit = self.resolved.profile.result_chars();
         let (ok, title, text) = match joined {
             Ok(Ok(o)) => (true, o.title, clip(&o.text, limit)),
             Ok(Err(e)) => (false, String::new(), format!("Error: {}", clip(&e.0, limit))),
@@ -685,6 +744,9 @@ const BUILTIN_NAMES: &[&str] = &[
     "emulate",
     "decompile",
     "functions",
+    "unity",
+    "dotnet",
+    "unity_assets",
     "hexdump",
 ];
 

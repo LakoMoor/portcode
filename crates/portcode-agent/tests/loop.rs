@@ -374,3 +374,125 @@ async fn build_agent_is_not_gated() {
     let (mut r, _) = runner(d.path(), &m.url, "build", Reply::Once).await;
     assert_eq!(r.send("hi").await.unwrap().steps, 1);
 }
+
+#[tokio::test]
+async fn a_tool_call_cut_by_the_output_limit_does_not_run() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![
+            Turn {
+                tool_calls: vec![call(
+                    "write",
+                    json!({"path":"big.txt","content":"x".repeat(400)}),
+                )],
+                truncated: true,
+                ..Default::default()
+            },
+            Turn {
+                tool_calls: vec![call(
+                    "write",
+                    json!({"path":"big.txt","content":"part one\n"}),
+                )],
+                ..Default::default()
+            },
+            Turn {
+                tool_calls: vec![call(
+                    "write",
+                    json!({"path":"big.txt","content":"part two\n","append":true}),
+                )],
+                ..Default::default()
+            },
+            Turn {
+                text: "done".into(),
+                ..Default::default()
+            },
+        ],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, ui) = runner(d.path(), &m.url, "build", Reply::Once).await;
+    let out = r.send("write a big file").await.unwrap();
+    assert_eq!(out.text, "done");
+    assert_eq!(
+        std::fs::read_to_string(d.path().join("big.txt")).unwrap(),
+        "part one\npart two\n",
+        "the cut-off call must not have written a truncated file, and append must extend"
+    );
+    let reqs = m.requests.lock().unwrap();
+    let second = serde_json::to_string(&reqs[1]["messages"]).unwrap();
+    assert!(second.contains("cut off by the output limit"));
+    assert!(ui
+        .0
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|e| matches!(e, UiEvent::Info(t) if t.contains("cut off"))));
+}
+
+#[tokio::test]
+async fn a_cut_off_answer_is_continued_and_joined() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![
+            Turn {
+                text: "Hello wor".into(),
+                truncated: true,
+                ..Default::default()
+            },
+            Turn {
+                text: "ld".into(),
+                ..Default::default()
+            },
+        ],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, _ui) = runner(d.path(), &m.url, "build", Reply::Once).await;
+    let out = r.send("say hello").await.unwrap();
+    assert_eq!(out.text, "Hello world");
+}
+
+#[tokio::test]
+async fn a_small_window_limits_how_much_output_is_requested() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![Turn {
+            text: "ok".into(),
+            ..Default::default()
+        }],
+        0,
+    )
+    .await
+    .unwrap();
+    let mut c = cfg(&m.url);
+    c.models.insert(
+        "mock-model".into(),
+        json!({"context_window": 1536, "max_tokens": 4096}),
+    );
+    let ui = Arc::new(Rec(Mutex::new(vec![])));
+    let mut r = Runner::new(
+        d.path().to_path_buf(),
+        c,
+        None,
+        "build",
+        Arc::new(AutoGate(Reply::Once)),
+        ui.clone(),
+    )
+    .await
+    .unwrap();
+    r.send("hi").await.unwrap();
+    let reqs = m.requests.lock().unwrap();
+    let max = reqs[0]["max_tokens"].as_u64().unwrap();
+    assert!(
+        max <= 2048,
+        "asked for {max} output tokens in a 4096 window"
+    );
+    assert!(ui
+        .0
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|e| matches!(e, UiEvent::Info(t) if t.contains("context window is small"))));
+}

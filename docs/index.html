@@ -2,10 +2,11 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PortCode — port anything to Rust, with proof. Runs on your own LLMs.</title>
 <meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='13' fill='%23ff7a1a'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23fff'%3Epc%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="#"><i>pc</i>PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="top"><div>
@@ -124,7 +125,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 
   <article class="tile t-stat" role="listitem">
     <div class="top"><p class="lead">PortCode drives</p>
-    <div class="num">17</div></div>
+    <div class="num">21</div></div>
     <p class="lab">engines. Each installs beside the binary only after you approve it.</p>
   </article>
   <article class="tile t-imhex" role="listitem">
@@ -150,7 +151,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 
 
   <article class="tile t-rest" role="listitem">
-    <h3>Around them <span>rizin, radare2, YARA, Frida, LIEF, capa and Detect It Easy.</span></h3>
+    <h3>Around them <span>rizin, radare2, YARA, Frida, LIEF, capa and Detect It Easy, plus ILSpy, Il2CppDumper, dnfile and UnityPy for Unity and C#.</span></h3>
     <div class="marks">
       <span class="mark"><img src="assets/engines/radare2.png" alt="radare2"></span>
       <span class="mark"><img src="assets/engines/rizin.png" alt="Rizin"></span>
@@ -166,7 +167,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   <article class="tile t-mode" role="listitem">
     <div><h3>Nothing looks inside until you say so.</h3>
     <p>Clean-room is the default. Deep is a switch you flip, in the terminal or from the remote page.</p></div>
-    <div class="chips"><span class="chip">▣ clean-room</span><span class="chip deep">◉ deep</span></div>
+    <div class="chips"><span class="chip"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8-7 10-4-2-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg> clean-room</span><span class="chip deep"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> deep</span></div>
   </article>
 </div>
 <p class="cap">Every number on these cards is real: the decompiler lines, instructions, emulator registers and header bytes come from running the tools on the bundled wordstat binary.</p>
