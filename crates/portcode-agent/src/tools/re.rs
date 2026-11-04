@@ -492,6 +492,34 @@ fn unity_data_dir(root: &std::path::Path) -> Option<std::path::PathBuf> {
     None
 }
 
+/// One line about a Unity game folder ("Unity 2021.3.5f1 · Mono"), or `None` when it is not one. No engines needed.
+pub fn unity_summary(root: &std::path::Path) -> Option<String> {
+    let data = unity_data_dir(root)?;
+    let version = ["globalgamemanagers", "data.unity3d", "mainData"]
+        .iter()
+        .find_map(|n| {
+            std::fs::read(data.join(n))
+                .ok()
+                .and_then(|b| unity_version(&b))
+        });
+    let il2cpp = data
+        .join("il2cpp_data/Metadata/global-metadata.dat")
+        .is_file()
+        || data.join("Managed/Metadata/global-metadata.dat").is_file();
+    let mono = data.join("Managed/Assembly-CSharp.dll").is_file();
+    let backend = if il2cpp {
+        "IL2CPP"
+    } else if mono {
+        "Mono"
+    } else {
+        "backend unknown"
+    };
+    Some(format!(
+        "Unity {} · {backend}",
+        version.unwrap_or_else(|| "version unknown".into())
+    ))
+}
+
 pub struct Unity;
 #[async_trait]
 impl Tool for Unity {

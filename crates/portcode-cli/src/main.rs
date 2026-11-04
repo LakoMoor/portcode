@@ -86,6 +86,9 @@ enum Cmd {
         /// Open the deep workbench on this binary ("auto" picks the first one in original/)
         #[arg(long)]
         workbench: Option<String>,
+        /// Show the /create screen: website|app|game|format|fresh, optionally `kind:source`, `look-` prefix for "just look inside"
+        #[arg(long)]
+        create: Option<String>,
         /// Workbench view: pseudo, disasm or hex
         #[arg(long, default_value = "pseudo")]
         wb_tab: String,
@@ -314,6 +317,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             ref cwd_label,
             ref workbench,
             ref wb_tab,
+            ref create,
         }) => {
             let (w, h) = size
                 .split_once('x')
@@ -333,6 +337,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     typed: typed.clone(),
                     workbench: workbench.clone(),
                     wb_tab: wb_tab.clone(),
+                    create: create.clone(),
                 },
             )
             .await

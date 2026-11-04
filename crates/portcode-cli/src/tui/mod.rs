@@ -5,6 +5,7 @@ pub mod app;
 pub mod svg;
 pub mod theme;
 pub mod view;
+pub mod wizard;
 pub mod workbench;
 
 use app::{App, Cmd, Msg, PermAsk};
@@ -389,6 +390,7 @@ pub struct Snap {
     pub typed: Option<String>,
     pub workbench: Option<String>,
     pub wb_tab: String,
+    pub create: Option<String>,
 }
 
 /// Headless render of the real UI into an SVG file (no terminal needed). Drives the real runner if `prompt` is set.
@@ -456,6 +458,30 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
             tokio::time::sleep(Duration::from_millis(50)).await;
         }
     }
+    if let Some(spec) = &s.create {
+        use wizard::{Field, Kind, Wizard};
+        let (head, src) = spec.split_once(':').unwrap_or((spec.as_str(), ""));
+        let (look, kind) = match head.strip_prefix("look-") {
+            Some(k) => (true, k),
+            None => (false, head),
+        };
+        let mut w = Wizard {
+            look_only: look,
+            deep: look,
+            kind: match kind {
+                "app" => Kind::App,
+                "game" => Kind::Game,
+                "format" => Kind::Format,
+                "fresh" => Kind::Fresh,
+                _ => Kind::Website,
+            },
+            source: src.to_string(),
+            focus: Field::Text,
+            ..Default::default()
+        };
+        w.inspect(app.root_path(), &[]);
+        app.wiz = Some(w);
+    }
     if let Some(t) = &s.typed {
         app.input = t.clone();
         app.cursor = t.chars().count();
@@ -469,7 +495,9 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         term.backend().buffer(),
         &format!(
             "portcode — {}",
-            app.title.clone().unwrap_or_else(|| if app.wb.is_some() {
+            app.title.clone().unwrap_or_else(|| if app.wiz.is_some() {
+                "new project".into()
+            } else if app.wb.is_some() {
                 "workbench".into()
             } else {
                 "home".into()

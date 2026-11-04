@@ -1,22 +1,26 @@
 <h1 align="center">PortCode</h1>
-<p align="center"><b>Port anything to Rust — and show the proof.</b><br>
-An open-source terminal agent for reverse engineering and Rust ports that runs on <i>your</i> models:
+<p align="center"><b>Port a program to Rust and check it behaves the same.</b><br>
+An open-source terminal agent that studies a program, rewrites it in Rust and compares the result with the original. It works with models you run yourself:
 <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p align="center"><a href="https://lakomoor.github.io/portcode/">Site</a> · <a href="https://lakomoor.github.io/portcode/ports/wordstat/">Example port</a> · <a href="README.ru.md">Русский</a> · <a href="docs/ARCHITECTURE.md">Architecture</a></p>
 
 ![PortCode full-screen UI](docs/screenshots/tui-session.svg)
-<sub>The full-screen UI (OpenCode-style) running the `port` agent on the bundled example. The model is a **scripted replay** (`portcode-mock-llm`) so the run is reproducible; the UI and tools (pin, survey, bash, parity, ledger) are real — the picture is the real UI rendered headlessly. Regenerate: `scripts/make_screenshots.sh`.</sub>
+<sub>The terminal UI running the `port` agent on the bundled example. The model is a **scripted replay** (`portcode-mock-llm`) so the run can be reproduced; the UI and the tools (pin, survey, bash, parity, ledger) are real, and the picture is the real UI rendered without a terminal. Regenerate with `scripts/make_screenshots.sh`.</sub>
 
 | Home | Slash commands | Permission dialog |
 |---|---|---|
 | ![home](docs/screenshots/tui-home.svg) | ![slash](docs/screenshots/tui-slash.svg) | ![permission](docs/screenshots/tui-permission.svg) |
 
 ## What it does
-1. **Studies** the original: pins the exact build (sha256), surveys the tree, records facts in an append-only **evidence ledger** as `observation` / `inference` / `unknown`.
-2. **Ports** slice by slice against **golden outputs captured from the original**.
-3. **Proves** it: `parity` (numeric tolerance, PNG diff), differential fuzz, a terminal **screenshot per feature**, and a generated **GitHub Pages site** (plan + evidence + screenshots).
+1. **Studies** the original: pins the exact build (sha256), looks through the files, and records facts in an append-only **evidence ledger** as `observation`, `inference` or `unknown`.
+2. **Ports** one slice at a time, checking each against **golden output captured from the original**.
+3. **Checks** the result: `parity` (numeric tolerance, PNG diff), differential fuzzing, a terminal **screenshot per feature**, and a generated **GitHub Pages site** (plan, evidence, screenshots).
 
-It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, sessions, skills, MCP) fused with the [rustport](skills/rustport) skill. See [docs/OPENCODE_MAPPING.md](docs/OPENCODE_MAPPING.md) for exactly what is and isn't covered.
+Start with `/create`: it asks what to recreate (a website, a program, a game, a file format, or nothing yet), how closely PortCode may look at it, what to build with and what you want, then starts the right agent in the right mode.
+
+![/create](docs/screenshots/tui-create.svg)
+
+It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, sessions, skills, MCP) combined with the [rustport](skills/rustport) skill. See [docs/OPENCODE_MAPPING.md](docs/OPENCODE_MAPPING.md) for exactly what is and isn't covered.
 
 ## Install
 ```sh

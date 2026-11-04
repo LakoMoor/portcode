@@ -37,3 +37,6 @@ ls "$OUT"
   && "$P" tool evidence_add '{"kind":"unknown","subject":"cli.locale","confidence":"low","tool":"decompile","args":"main","statement":"does main call setlocale? not seen in the first 40 lines"}' >/dev/null \
   && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a reverse -m mock/mock-model snapshot "$OUT/tui-workbench.svg" --size 150x42 --workbench auto --wb-tab pseudo $L >/dev/null \
   && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a reverse -m mock/mock-model snapshot "$OUT/tui-workbench-asm.svg" --size 150x42 --workbench auto --wb-tab disasm $L >/dev/null )
+# /create: the guided start (real UI; the source is inspected on disk)
+( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create.svg" --size 124x42 --create "website:https://example.com" $L >/dev/null \
+  && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create-look.svg" --size 124x42 --create "look-app:original/wordstat" $L >/dev/null )

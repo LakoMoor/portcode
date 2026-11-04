@@ -3,7 +3,7 @@ use super::app::{summarize, App, Item, ToolState, SLASH};
 use super::theme::*;
 use super::workbench::Tab;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
-use ratatui::style::{Modifier, Style};
+use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Borders, Clear, Paragraph};
 use ratatui::Frame;
@@ -838,6 +838,10 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
 pub fn draw(f: &mut Frame, app: &mut App) {
     let area = f.area();
     f.render_widget(Block::new().style(Style::new().bg(BG).fg(TEXT)), area);
+    if app.wiz.is_some() {
+        wizard(f, app, area);
+        return;
+    }
     if app.wb.is_some() {
         workbench(f, app, area);
         permission(f, app, area);
@@ -1310,5 +1314,312 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
     f.render_widget(
         Paragraph::new(Line::from(Span::styled(hints, muted()))),
         rows[4],
+    );
+}
+
+/// `/create`: the guided start, drawn as one scrollable column of lines.
+fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
+    use super::wizard::{Field, Kind};
+    let Some(w) = app.wiz.as_ref() else {
+        return;
+    };
+    let width = (area.width as usize).saturating_sub(4).clamp(40, 104);
+    let left = area.x + (area.width.saturating_sub(width as u16)) / 2;
+    let on = |c: bool| {
+        if c {
+            Style::new()
+                .fg(TEXT)
+                .bg(Color::Rgb(22, 38, 78))
+                .add_modifier(Modifier::BOLD)
+        } else {
+            Style::new().fg(MUTED).bg(PANEL2)
+        }
+    };
+    let focus_mark = |fld: Field| {
+        if w.focus == fld {
+            Span::styled("▎", Style::new().fg(ACCENT))
+        } else {
+            Span::raw(" ")
+        }
+    };
+    let mut lines: Vec<Line> = Vec::new();
+    let mut focus_line = 0usize;
+    let mark = |lines: &Vec<Line>, fld: Field, fl: &mut usize| {
+        if w.focus == fld {
+            *fl = lines.len();
+        }
+    };
+    lines.push(Line::from(vec![
+        Span::styled("New project", bold(TEXT)),
+        Span::styled(
+            "   enter or ctrl+s starts · tab moves · esc closes",
+            muted(),
+        ),
+    ]));
+    lines.push(Line::from(""));
+    // goal
+    mark(&lines, Field::Goal, &mut focus_line);
+    lines.push(Line::from(vec![
+        focus_mark(Field::Goal),
+        Span::styled(" Make my own version ", on(!w.look_only)),
+        Span::raw(" "),
+        Span::styled(" Just look inside ", on(w.look_only)),
+    ]));
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        if w.look_only {
+            "What do you want to look into?"
+        } else {
+            "What do you want to make?"
+        },
+        bold(TEXT),
+    )));
+    lines.push(Line::from(Span::styled(
+        if w.look_only {
+            "Pick it, then press Start. You get docs/SPEC.md and the evidence ledger, no port code."
+        } else {
+            "Choose what to recreate, say what you want, then press Start."
+        },
+        muted(),
+    )));
+    lines.push(Line::from(""));
+    // 1
+    lines.push(Line::from(vec![
+        Span::styled(" 1 ", Style::new().fg(TEXT).bg(PANEL2)),
+        Span::styled(
+            if w.look_only {
+                "  What do you want to look into?"
+            } else {
+                "  What do you want to recreate?"
+            },
+            bold(TEXT),
+        ),
+    ]));
+    lines.push(Line::from(""));
+    mark(&lines, Field::Kind, &mut focus_line);
+    let mut row: Vec<Span> = vec![focus_mark(Field::Kind)];
+    for (i, k) in Kind::ALL.iter().enumerate() {
+        let sel = *k == w.kind;
+        row.push(Span::styled(
+            format!(
+                " {} {}{} ",
+                k.icon(),
+                k.label(),
+                if sel { " ✓" } else { "" }
+            ),
+            on(sel),
+        ));
+        row.push(Span::raw(" "));
+        let _ = i;
+    }
+    lines.push(Line::from(row));
+    if let Some(lbl) = w.kind.source_label() {
+        lines.push(Line::from(""));
+        lines.push(Line::from(Span::styled(format!(" {lbl}"), muted())));
+        mark(&lines, Field::Source, &mut focus_line);
+        let shown = if w.source.is_empty() {
+            Span::styled(format!(" {}", w.kind.placeholder()), muted())
+        } else {
+            Span::styled(format!(" {}", w.source), text())
+        };
+        let mut sp = vec![focus_mark(Field::Source), shown];
+        if w.focus == Field::Source {
+            sp.push(Span::styled("▏", Style::new().fg(ACCENT)));
+        }
+        let used: usize = sp.iter().map(|s| s.content.chars().count()).sum();
+        sp.push(Span::styled(
+            " ".repeat(width.saturating_sub(used).min(60)),
+            Style::new().bg(PANEL2),
+        ));
+        lines.push(Line::from(sp).style(Style::new().bg(PANEL2)));
+        if let Some(n) = &w.note {
+            lines.push(Line::from(Span::styled(
+                format!("  {n}"),
+                Style::new().fg(if n.contains("outside") || n.contains("not found") {
+                    YELLOW
+                } else {
+                    TEAL
+                }),
+            )));
+        }
+    }
+    lines.push(Line::from(""));
+    // closeness
+    lines.push(Line::from(Span::styled(
+        if w.look_only {
+            " How closely may we look at it? Looking inside means deep."
+        } else {
+            " How closely may we look at it?"
+        },
+        muted(),
+    )));
+    mark(&lines, Field::Look, &mut focus_line);
+    let cw = (width.saturating_sub(4)) / 2;
+    let card = |sel: bool, title: &str, body: &[&str]| -> Vec<String> {
+        let mut v = vec![format!(
+            " {} {}{}",
+            if title.starts_with("Clean") {
+                "▣"
+            } else {
+                "◉"
+            },
+            title,
+            if sel { " ✓" } else { "" }
+        )];
+        for b in body {
+            v.push(format!("   {b}"));
+        }
+        v.into_iter()
+            .map(|s| format!("{:<cw$}", clip_to(&s, cw)))
+            .collect()
+    };
+    let clean = card(
+        !w.deep,
+        "Clean room",
+        &[
+            "Nothing inside it is read. We work from",
+            "what you can see: running it, its output.",
+        ],
+    );
+    let deep = card(
+        w.deep,
+        "Deep",
+        &[
+            "We read its code and files with every tool:",
+            "Ghidra, Capstone, dotnet. For private use.",
+        ],
+    );
+    for i in 0..3 {
+        let a = clean.get(i).cloned().unwrap_or_default();
+        let b = deep.get(i).cloned().unwrap_or_default();
+        lines.push(Line::from(vec![
+            focus_mark(Field::Look),
+            Span::styled(a, on(!w.deep).remove_modifier(Modifier::BOLD)),
+            Span::raw(" "),
+            Span::styled(b, on(w.deep).remove_modifier(Modifier::BOLD)),
+        ]));
+    }
+    lines.push(Line::from(""));
+    // stack
+    mark(&lines, Field::Stack, &mut focus_line);
+    let mut st: Vec<Span> = vec![
+        focus_mark(Field::Stack),
+        Span::styled(" Build with  ", muted()),
+    ];
+    for (i, (l, _)) in w.kind.stacks().iter().enumerate() {
+        st.push(Span::styled(format!(" {l} "), on(i == w.stack)));
+        st.push(Span::raw(" "));
+    }
+    lines.push(Line::from(st));
+    mark(&lines, Field::Options, &mut focus_line);
+    if !w.look_only {
+        let box_ = |b: bool| if b { "[x]" } else { "[ ]" };
+        lines.push(Line::from(vec![
+            focus_mark(Field::Options),
+            Span::styled(
+                format!(" 1 {} Its own design and art ", box_(w.own_art)),
+                Style::new().fg(if w.own_art { TEXT } else { MUTED }),
+            ),
+            Span::styled(
+                format!("  2 {} Screenshots and a site ", box_(w.proof)),
+                Style::new().fg(if w.proof { TEXT } else { MUTED }),
+            ),
+        ]));
+        lines.push(Line::from(Span::styled(
+            if w.own_art {
+                "   Same features, new look. Nothing from the original's assets, text or code."
+            } else {
+                "   1:1: goldens from the original, parity PASS before it counts as done."
+            },
+            muted(),
+        )));
+    }
+    lines.push(Line::from(""));
+    // 2
+    lines.push(Line::from(vec![
+        Span::styled(" 2 ", Style::new().fg(TEXT).bg(PANEL2)),
+        Span::styled("  Say what you want", bold(TEXT)),
+    ]));
+    lines.push(Line::from(""));
+    mark(&lines, Field::Text, &mut focus_line);
+    let body = if w.text.is_empty() {
+        w.placeholder_text().to_string()
+    } else {
+        w.text.clone()
+    };
+    let body_style = if w.text.is_empty() { muted() } else { text() };
+    let shown: Vec<String> = hard_wrap(&body, width.saturating_sub(4));
+    for (i, l) in shown.iter().take(5).enumerate() {
+        let mut sp = vec![
+            focus_mark(Field::Text),
+            Span::styled(format!(" {l}"), body_style),
+        ];
+        if i + 1 == shown.len().min(5) && w.focus == Field::Text {
+            sp.push(Span::styled("▏", Style::new().fg(ACCENT)));
+        }
+        lines.push(Line::from(sp).style(Style::new().bg(PANEL2)));
+    }
+    lines.push(Line::from(Span::styled(
+        "  Enter to start · Alt+Enter for a new line",
+        muted(),
+    )));
+    lines.push(Line::from(""));
+    mark(&lines, Field::Start, &mut focus_line);
+    let who = if w.kind == Kind::Fresh {
+        "build"
+    } else if w.look_only {
+        "reverse"
+    } else {
+        "port"
+    };
+    lines.push(Line::from(vec![
+        focus_mark(Field::Start),
+        Span::styled(" Built by ", muted()),
+        Span::styled(format!("{}/{}", app.provider, app.model), text()),
+        Span::styled(
+            format!("  agent {who}  "),
+            Style::new().fg(agent_color(who)),
+        ),
+        Span::styled(
+            if w.look_only || w.deep {
+                " ◉ deep "
+            } else {
+                " ▣ clean-room "
+            },
+            if w.look_only || w.deep {
+                Style::new().fg(BG).bg(YELLOW).add_modifier(Modifier::BOLD)
+            } else {
+                Style::new().fg(TEAL)
+            },
+        ),
+        Span::raw("   "),
+        Span::styled(
+            "  ✦ Start  ",
+            if w.focus == Field::Start {
+                Style::new().fg(BG).bg(TEXT).add_modifier(Modifier::BOLD)
+            } else {
+                Style::new().fg(TEXT).bg(PANEL2)
+            },
+        ),
+    ]));
+    if let Some(e) = &w.error {
+        lines.push(Line::from(Span::styled(
+            format!(" {e}"),
+            Style::new().fg(RED),
+        )));
+    }
+    let h = area.height as usize;
+    let off = focus_line
+        .saturating_sub(h.saturating_sub(6))
+        .min(lines.len().saturating_sub(h));
+    let vis: Vec<Line> = lines.into_iter().skip(off).take(h).collect();
+    f.render_widget(
+        Paragraph::new(vis),
+        Rect {
+            x: left,
+            y: area.y,
+            width: width as u16,
+            height: area.height,
+        },
     );
 }

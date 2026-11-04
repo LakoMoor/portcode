@@ -85,6 +85,10 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("engines", "installed reverse-engineering engines"),
     (
+        "create",
+        "guided start: what to recreate, how closely to look, what to build with",
+    ),
+    (
         "workbench",
         "deep: functions, pseudo-C, disassembly, hex and evidence side by side",
     ),
@@ -121,6 +125,7 @@ pub struct App {
     pub spinner: usize,
     pub quit: bool,
     pub wb: Option<super::workbench::Wb>,
+    pub wiz: Option<super::wizard::Wizard>,
     pub auto_allow: bool,
     /// Deep mode (may look inside the original); default is clean-room.
     pub deep: bool,
@@ -183,6 +188,7 @@ impl App {
             spinner: 0,
             quit: false,
             wb: None,
+            wiz: None,
             auto_allow: false,
             deep,
             remote_on: false,
@@ -250,6 +256,10 @@ impl App {
         );
         c.deep.store(self.deep, Ordering::Relaxed);
         (c, self.root.clone())
+    }
+
+    pub fn root_path(&self) -> &std::path::Path {
+        &self.root
     }
 
     fn open_workbench(&mut self, arg: Option<&str>) {
@@ -535,6 +545,31 @@ impl App {
             }
             return;
         }
+        if let Some(wz) = self.wiz.as_mut() {
+            use super::wizard::Act;
+            let allowed = self.cfg.allowed_dirs.clone();
+            match wz.on_key(k, &self.root, &allowed) {
+                Act::Cancel => self.wiz = None,
+                Act::Start(l) => {
+                    if self.busy {
+                        wz.error = Some("The agent is still working. Press esc to close this, interrupt it, then try again.".into());
+                    } else {
+                        self.wiz = None;
+                        if self.agent != l.agent {
+                            self.agent = l.agent.into();
+                            let _ = self.cmd_tx.send(Cmd::SetAgent(l.agent.into()));
+                        }
+                        self.deep = l.deep;
+                        let _ = self.cmd_tx.send(Cmd::SetDeep(l.deep));
+                        self.input = l.prompt;
+                        self.cursor = self.len_chars();
+                        self.submit();
+                    }
+                }
+                Act::None => {}
+            }
+            return;
+        }
         if let Some(wb) = self.wb.as_mut() {
             use super::workbench::{Act, Focus};
             if wb.focus == Focus::Chat {
@@ -727,6 +762,7 @@ impl App {
                 let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
                 self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
             }
+            ("create" | "new", _) => self.wiz = Some(super::wizard::Wizard::default()),
             ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
