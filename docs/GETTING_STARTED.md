@@ -29,6 +29,8 @@ Inside the app:
 | `/model <provider>/<model>` | picks a model |
 | `/setup` | prints these steps again |
 
+The model you pick with `/model` or `/provider` is remembered for the next start (`-m` and `PORTCODE_MODEL` still win).
+
 In the `/` menu use ↑ and ↓ to choose, `tab` or `enter` to complete.
 
 ## 3. Check it works

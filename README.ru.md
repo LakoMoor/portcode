@@ -19,7 +19,7 @@
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 # или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 ```
-Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc` прервать · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode --plain` — построчный режим. Windows: через WSL.
+Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc` прервать · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode chat --plain` — построчный режим. Windows: через WSL.
 
 ```sh
 portcode init && export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor

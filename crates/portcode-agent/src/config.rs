@@ -58,6 +58,29 @@ pub fn global_dir() -> Option<PathBuf> {
     dirs::config_dir().map(|d| d.join("portcode"))
 }
 
+fn state_path() -> Option<PathBuf> {
+    global_dir().map(|d| d.join("state.json"))
+}
+
+fn read_last_model(p: &Path) -> Option<String> {
+    let v: Value = serde_json::from_str(&std::fs::read_to_string(p).ok()?).ok()?;
+    v.get("model")?
+        .as_str()
+        .filter(|m| !m.is_empty())
+        .map(String::from)
+}
+
+fn write_last_model(p: &Path, model: &str) -> Result<(), String> {
+    std::fs::create_dir_all(p.parent().ok_or("bad path")?).map_err(|e| e.to_string())?;
+    std::fs::write(p, serde_json::json!({ "model": model }).to_string()).map_err(|e| e.to_string())
+}
+
+/// Remember the model picked in the app (`/model`, `/provider`) so the next start uses it.
+/// `-m` and `PORTCODE_MODEL` still win.
+pub fn save_last_model(model: &str) -> Result<(), String> {
+    write_last_model(&state_path().ok_or("no config directory")?, model)
+}
+
 fn merge(base: &mut Value, over: Value) {
     match (base, over) {
         (Value::Object(b), Value::Object(o)) => {
@@ -102,6 +125,9 @@ impl Config {
         }
         let mut c: Config =
             serde_json::from_value(v).map_err(|e| format!("invalid config: {e}"))?;
+        if let Some(m) = state_path().and_then(|p| read_last_model(&p)) {
+            c.model = Some(m);
+        }
         if let Ok(m) = std::env::var("PORTCODE_MODEL") {
             if !m.is_empty() {
                 c.model = Some(m);
@@ -247,6 +273,15 @@ pub fn all_key_envs() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn last_model_round_trips() {
+        let d = tempfile::tempdir().unwrap();
+        let p = d.path().join("sub/state.json");
+        assert_eq!(read_last_model(&p), None);
+        write_last_model(&p, "ollama/qwen3:14b").unwrap();
+        assert_eq!(read_last_model(&p).as_deref(), Some("ollama/qwen3:14b"));
+    }
+
     #[test]
     fn resolves_provider_model_and_profile() {
         let r = Config::default().resolve(Some("ollama/qwen3:14b")).unwrap();

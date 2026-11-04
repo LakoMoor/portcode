@@ -351,6 +351,7 @@ impl Drop for Guard {
 pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
     let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
     app.welcome();
+    app.persist = true;
     let mut remote = Remote::default();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |i| {

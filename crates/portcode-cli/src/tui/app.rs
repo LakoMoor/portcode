@@ -147,6 +147,8 @@ pub struct App {
     pub auto_allow: bool,
     /// Highlighted row of the `/` menu (arrows move it).
     pub slash_sel: usize,
+    /// Remember `/model` choices for the next start (only the real terminal UI turns this on).
+    pub persist: bool,
     /// Model ids the provider reported (for `/model` completion).
     pub models: Vec<String>,
     /// One-line notice on the home screen (no API key yet).
@@ -217,6 +219,7 @@ impl App {
             wiz: None,
             auto_allow: false,
             slash_sel: 0,
+            persist: false,
             models: vec![],
             hint: None,
             key_for: None,
@@ -1011,7 +1014,7 @@ impl App {
             ("agent", Some(a)) => { if self.agents.iter().any(|x| x == a) { if !self.busy { self.agent = a.into(); let _ = self.cmd_tx.send(Cmd::SetAgent(a.into())); } } else { self.items.push(Item::Error(format!("unknown agent '{a}'. Try: {}", self.agents.join(", ")))); } }
             ("agents", _) | ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
             ("model", Some(m)) => match self.cfg.resolve(Some(m)) {
-                Ok(r) => { self.model = r.model; self.provider = r.provider.name; self.ctx_window = r.profile.context_window; let _ = self.cmd_tx.send(Cmd::SetModel(m.into())); }
+                Ok(r) => { self.model = r.model; self.provider = r.provider.name; self.ctx_window = r.profile.context_window; if self.persist && m.contains('/') { let _ = portcode_agent::config::save_last_model(m); } let _ = self.cmd_tx.send(Cmd::SetModel(m.into())); }
                 Err(e) => self.items.push(Item::Error(e)),
             },
             ("model", None) => self.items.push(Item::Info(format!("{}/{} (context {} tokens)", self.provider, self.model, self.ctx_window))),

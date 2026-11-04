@@ -45,7 +45,7 @@ Then:
 portcode init                 # writes portcode.json
 export LAKOMOOR_API_KEY=...   # or: portcode auth set lakomoor   (local models need no key)
 portcode doctor               # providers, toolchain, optional engines
-portcode                      # full-screen UI;  portcode --plain for a line-based chat
+portcode                      # full-screen UI;  portcode chat --plain for a line-based chat
 portcode completions zsh > ~/.zfunc/_portcode
 ```
 Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bash` tool is Unix-only for now).
