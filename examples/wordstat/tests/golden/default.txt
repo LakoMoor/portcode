@@ -1,0 +1,19 @@
+$ wordstat inputs/sample.txt
+--- stdout
+file: inputs/sample.txt
+words: 63
+unique: 44
+avg word length: 3.778
+top 10:
+  the             11
+  proof            3
+  and              2
+  as               2
+  dog              2
+  fox              2
+  is               2
+  measure          2
+  port             2
+  a                1
+--- stderr
+--- exit 0

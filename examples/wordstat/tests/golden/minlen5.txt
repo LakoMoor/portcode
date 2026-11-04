@@ -1,0 +1,13 @@
+$ wordstat --min-len 5 --top 4 inputs/sample.txt
+--- stdout
+file: inputs/sample.txt
+words: 16
+unique: 13
+avg word length: 5.750
+top 4:
+  proof            3
+  measure          2
+  barks            1
+  brown            1
+--- stderr
+--- exit 0

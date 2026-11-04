@@ -1,0 +1,6 @@
+/target
+.portcode/
+reference.lock.json
+*.sqlite*
+.env
+.DS_Store

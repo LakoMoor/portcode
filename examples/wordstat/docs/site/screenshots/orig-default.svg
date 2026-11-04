@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="564" height="366" viewBox="0 0 564 366" role="img" aria-label="orig-default — exit 0">
+<rect width="564" height="366" rx="10" fill="#0d1117"/>
+<rect width="564" height="30" rx="10" fill="#161b22"/><rect y="20" width="564" height="10" fill="#161b22"/>
+<circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
+<text x="282" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">orig-default — exit 0</text>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
+<text x="18" y="58"><tspan fill="#7ee787">$ original/wordstat inputs/sample.txt</tspan></text>
+<text x="18" y="77"><tspan>file: inputs/sample.txt</tspan></text>
+<text x="18" y="96"><tspan>words: 63</tspan></text>
+<text x="18" y="115"><tspan>unique: 44</tspan></text>
+<text x="18" y="134"><tspan>avg word length: 3.778</tspan></text>
+<text x="18" y="153"><tspan>top 10:</tspan></text>
+<text x="18" y="172"><tspan>  the             11</tspan></text>
+<text x="18" y="191"><tspan>  proof            3</tspan></text>
+<text x="18" y="210"><tspan>  and              2</tspan></text>
+<text x="18" y="229"><tspan>  as               2</tspan></text>
+<text x="18" y="248"><tspan>  dog              2</tspan></text>
+<text x="18" y="267"><tspan>  fox              2</tspan></text>
+<text x="18" y="286"><tspan>  is               2</tspan></text>
+<text x="18" y="305"><tspan>  measure          2</tspan></text>
+<text x="18" y="324"><tspan>  port             2</tspan></text>
+<text x="18" y="343"><tspan>  a                1</tspan></text>
+</g>
+</svg>

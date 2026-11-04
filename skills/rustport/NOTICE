@@ -1,0 +1,17 @@
+rustport
+Copyright 2026 LakoMoor and contributors
+
+Original rustport material is licensed under the Apache License, Version 2.0.
+
+Third-party material:
+The example in examples/binary-name-slice contains assembly evidence from the
+openMMD v0.1.0-preview.2 macOS arm64 release and a Rust reconstruction of one
+validation helper. Upstream: https://github.com/LakoMoor/openMMD
+Copyright (c) 2026 openMMD contributors.
+The upstream MIT copyright and permission notice is retained verbatim at
+examples/binary-name-slice/evidence/ORIGINAL-LICENSE.
+Rustport additions and modifications are covered by Apache-2.0; upstream material
+remains subject to its original MIT notice.
+
+REA, Codex, Claude Code, OpenCode, Pi, DeepSeek Harness and Hermes are referenced
+as independent tools. Their names do not imply affiliation or endorsement.

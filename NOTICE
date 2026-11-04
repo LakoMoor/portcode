@@ -1,0 +1,19 @@
+PortCode
+Copyright (c) 2026 LakoMoor — MIT (see LICENSE)
+
+PortCode is a Rust rewrite inspired by, and structured after, OpenCode
+(https://github.com/anomalyco/opencode, MIT, Copyright (c) 2025 opencode):
+the agent/tool/permission/session/skill/MCP architecture and the build/plan/subagent
+model are re-implemented from its public design. No TypeScript source is copied.
+The OpenCode MIT notice is reproduced here as required for derived work:
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this
+  software and associated documentation files, to deal in the Software without restriction,
+  provided the above copyright notice and this permission notice are included in all copies
+  or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY
+  OF ANY KIND.
+
+skills/rustport is the author's rustport skill (Apache-2.0, see skills/rustport/LICENSE),
+extended here with ideas from Craft Anything (https://github.com/storytold/craft-anything,
+MIT OR Apache-2.0): evidence records with honest confidence, clean-room vs deep mode,
+never-crash rules and layered architecture. Those are concepts; no code or wording was copied.

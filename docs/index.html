@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PortCode — port anything to Rust, with proof. Runs on your own LLMs.</title>
+<meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/session-port-agent.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='11' fill='%23ff8700'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23111'%3Epc%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="#">Port<b>Code</b></a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#skill">Skill</a><a class="l" href="#ports">Ports</a><a class="l" href="#cli">CLI</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
+<main class="wrap">
+<header class="hero">
+<div class="eyebrow">Open source · 100% Rust · local-first</div>
+<h1>Port anything to Rust.<br><em>Show the proof.</em></h1>
+<p class="lead">PortCode is a terminal agent that studies an original program, records what it learns as evidence, ports it to Rust slice by slice, and proves it with golden tests, parity checks, screenshots and a generated documentation site. It talks to <strong>your</strong> models — <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM — not to a vendor you did not choose.</p>
+<div class="cmd"><span>$</span> cargo install --git https://github.com/LakoMoor/portcode portcode-cli &amp;&amp; portcode init &amp;&amp; portcode</div>
+<div class="btns"><a class="btn" href="#how">See how it works</a><a class="btn ghost" href="ports/wordstat/">Example port with evidence</a><a class="btn ghost" href="https://github.com/LakoMoor/portcode">Source</a></div>
+<figure class="shot"><img src="screenshots/session-port-agent.svg" alt="PortCode port agent session: pin, survey, evidence, parity PASS"></figure>
+<p class="cap">The <code>port</code> agent on the wordstat example. The model here is a scripted replay (<code>portcode-mock-llm</code>) so the run is reproducible; the tools — pin, survey, bash, parity, ledger — are real. <a href="https://github.com/LakoMoor/portcode/blob/main/scripts/make_screenshots.sh">Regenerate it yourself</a>.</p>
+</header>
+
+<section id="how"><h2><small>Workflow</small>Evidence first, code second</h2>
+<div class="grid">
+<div class="card"><h3>Study</h3><p>Pin the exact build, survey the tree, trace the main loop. Static findings are labelled <code>inference</code>; only things you ran are <code>observation</code>.</p></div>
+<div class="card"><h3>Record</h3><p>An append-only ledger of facts with ids (<code>E-0007</code>), sources, hashes and open unknowns. Every rule in the port cites one.</p></div>
+<div class="card"><h3>Port</h3><p>One small slice at a time against golden outputs captured from the original — never from your reading of its code.</p></div>
+<div class="card"><h3>Prove</h3><p><code>parity</code> and differential fuzz decide equality. Each feature gets a screenshot, and a site is generated from plan + ledger + images.</p></div>
+</div></section>
+
+<section id="llm"><h2><small>Models</small>Built for local and self-hosted LLMs</h2>
+<p>One OpenAI-compatible client with the quirks of open-weight models handled for you: <code>reasoning_content</code> and inline <code>&lt;think&gt;</code>, tool calls written as text (<code>&lt;tool_call&gt;</code>, fenced JSON), broken or truncated tool-argument JSON, quoted numbers, servers that reject optional sampling fields, stalled streams.</p>
+<table><tr><th>Provider</th><th>Default endpoint</th><th>Key</th></tr>
+<tr><td><code>lakomoor</code></td><td>https://lakomoor.com/v1</td><td><code>LAKOMOOR_API_KEY</code></td></tr>
+<tr><td><code>ollama</code></td><td>http://localhost:11434/v1</td><td>—</td></tr>
+<tr><td><code>lmstudio</code></td><td>http://localhost:1234/v1</td><td>—</td></tr>
+<tr><td><code>llamacpp</code> · <code>vllm</code> · <code>sglang</code></td><td>:8080 · :8000 · :30000</td><td>optional</td></tr>
+<tr><td><code>deepseek</code> · <code>openrouter</code></td><td>hosted, same protocol</td><td>env var</td></tr></table>
+<p>Model profiles (sampling, context window, one-tool-at-a-time, tool-output limits, prompt style) exist for the DeepSeek and Qwen families — including small and “flash” variants — and any field is overridable per model in <code>portcode.json</code>. Prompts are short numbered rules with a worked example and a byte-stable prefix so llama.cpp / vLLM prefix caches hit.</p>
+<div class="note"><strong>Honest status.</strong> The client, repair logic and agent loop are tested end-to-end against a scripted server. The profiles are conservative starting points, not benchmark results: run <code>portcode eval</code> against your model (chat, tool-call JSON, read→edit round-trip) and tune.</div>
+<pre><code>$ portcode models -p lakomoor
+$ portcode -m lakomoor/deepseek-chat
+$ portcode -m ollama/qwen3:14b -a port</code></pre></section>
+
+<section id="agents"><h2><small>Agents</small>Six agents, one permission model</h2>
+<div class="grid">
+<div class="card"><h3>build</h3><p>Default. Implements changes end to end.</p></div>
+<div class="card"><h3>port</h3><p>The rustport workflow with the porting tools. Phases with “Done when”.</p></div>
+<div class="card"><h3>reverse</h3><p>Evidence-first analysis; no code edits. Uses MCP engines such as REA when configured.</p></div>
+<div class="card"><h3>plan</h3><p>Read-only investigation and plan.</p></div>
+<div class="card"><h3>explore · general</h3><p>Sub-agents with fresh context, called via <code>task</code>.</p></div>
+</div>
+<p>Edits and commands ask first (allow / always / deny), patterns are configurable, dangerous commands are always refused, file tools stay inside the project, shell runs with closed stdin, a deadline, capped output and whole-process-group kill.</p></section>
+
+<section id="skill"><h2><small>Skill</small>rustport — the workflow as a portable skill</h2>
+<p>The skill ships inside the binary and also works in Claude Code, Codex, OpenCode and others (<code>portcode skill export ~/.claude/skills</code>). It is a ~100-line router with phases, loading detail from references only when a phase needs it — the shape open-weight models follow best.</p>
+<ol class="phases">
+<li><b>Intake</b> <span>fidelity, platforms, clean-room vs deep, licence → <code>docs/PORT.md</code></span></li>
+<li><b>Pin + survey</b> <span>exact build hash, inventory, unknowns recorded</span></li>
+<li><b>Plan</b> <span>module map leaves-first; rewrite / bind / drop per module</span></li>
+<li><b>Golden harness</b> <span>deterministic scenarios captured from the original</span></li>
+<li><b>Port core</b> <span>slice → test → clippy → parity; bisect, never widen tolerance</span></li>
+<li><b>Platform / rendering</b> <span>only if GUI; wgpu behind traits, offscreen PNG compare</span></li>
+<li><b>Prove it</b> <span>screenshots per feature, perf, <code>site_build</code></span></li></ol></section>
+
+<section id="ports"><h2><small>Proof</small>A port you can look at</h2>
+<div class="ports">
+<div class="port"><a href="ports/wordstat/"><img src="ports/wordstat/screenshots/port-minlen5.svg" alt="wordstat port output"></a><div><h3>wordstat — C → Rust</h3><p>Real C original, 6 golden cases, 400 random differential-fuzz runs, 11 evidence records, one open unknown.</p><span class="tag ok">parity 6/6</span><span class="tag ok">fuzz 400/400</span><span class="tag">1 unknown</span> <a href="ports/wordstat/">Open the generated site →</a></div></div>
+<div class="port"><a href="screenshots/ledger.svg"><img src="screenshots/ledger.svg" alt="evidence ledger in the terminal"></a><div><h3>The ledger, in the terminal</h3><p><code>portcode port ledger</code> lists what is observed, inferred and unknown for the port above.</p></div></div>
+</div></section>
+
+<section id="cli"><h2><small>CLI</small>Everything is a tool</h2>
+<p>The terminal UI, the agent and scripts call the same tools. Anything the model can do, you can run by hand with <code>portcode tool &lt;name&gt; '{json}'</code>.</p>
+<figure class="shot"><img src="screenshots/help.svg" alt="portcode --help"></figure>
+<table><tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>portcode</code></td><td>Interactive chat (<code>/agent</code>, <code>/model</code>, <code>/tools</code>, <code>/ledger</code>)</td></tr>
+<tr><td><code>portcode run "…" -a port -y --json</code></td><td>One-shot, scriptable, JSON-lines output</td></tr>
+<tr><td><code>portcode doctor</code> · <code>eval</code></td><td>Check providers/toolchain/engines · probe a model</td></tr>
+<tr><td><code>portcode port survey|pin|parity|scaffold|shot|site|ledger</code></td><td>The porting workbench, no LLM needed</td></tr>
+<tr><td><code>portcode skill export &lt;dir&gt;</code></td><td>Install the rustport skill into another agent</td></tr></table></section>
+
+<section><h2><small>Lineage</small>Where this comes from</h2>
+<p>PortCode re-implements the architecture of <a href="https://github.com/anomalyco/opencode">OpenCode</a> (agents, tools, permissions, sessions, skills, MCP) in Rust, and fuses it with the <a href="https://github.com/LakoMoor/rustport-skill">rustport</a> skill plus ideas from <a href="https://github.com/storytold/craft-anything">Craft Anything</a> (evidence, clean-room discipline, never-crash rules). It is a rewrite, not a fork: see <a href="https://github.com/LakoMoor/portcode/blob/main/docs/OPENCODE_MAPPING.md">the mapping</a> for what is covered and what is not yet.</p></section>
+</main>
+<footer><div class="wrap">MIT licensed · OpenCode is © its authors (MIT), see NOTICE · Screenshots are captured from real runs and never edited.</div></footer>
+</body></html>

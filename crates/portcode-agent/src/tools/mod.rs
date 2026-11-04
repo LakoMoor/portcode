@@ -1,0 +1,36 @@
+pub mod fs;
+pub mod misc;
+pub mod port;
+pub mod shell;
+
+use crate::tool::Registry;
+use std::sync::Arc;
+
+/// All built-in tools. `skills` feeds the `skill` tool's description.
+pub fn builtin(skills: Vec<crate::skills::Skill>) -> Registry {
+    let mut r = Registry::default();
+    for t in [
+        Arc::new(fs::Read) as Arc<dyn crate::tool::Tool>,
+        Arc::new(fs::Ls),
+        Arc::new(fs::GlobTool),
+        Arc::new(fs::Grep),
+        Arc::new(fs::Write),
+        Arc::new(fs::Edit),
+        Arc::new(shell::Bash),
+        Arc::new(misc::TodoWrite),
+        Arc::new(misc::WebFetch),
+        Arc::new(misc::SkillTool(skills)),
+        Arc::new(misc::Task),
+        Arc::new(port::Survey),
+        Arc::new(port::PinTool),
+        Arc::new(port::EvidenceAdd),
+        Arc::new(port::EvidenceList),
+        Arc::new(port::Parity),
+        Arc::new(port::Screenshot),
+        Arc::new(port::SiteBuild),
+        Arc::new(port::Scaffold),
+    ] {
+        r.add(t);
+    }
+    r
+}

@@ -1,0 +1,6 @@
+# keep the evidence ledger of this example in git (normally .portcode/ is ignored)
+!.portcode/
+.portcode/sessions/
+.portcode/reference.lock.json
+port/target/
+original/wordstat

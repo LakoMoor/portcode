@@ -1,0 +1,5 @@
+$ wordstat 
+--- stdout
+--- stderr
+usage: wordstat [--top N] [--min-len L] FILE
+--- exit 2

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1005" height="879" viewBox="0 0 1005 879" role="img" aria-label="portcode run -a port  (scripted model replay · real tools)">
+<rect width="1005" height="879" rx="10" fill="#0d1117"/>
+<rect width="1005" height="30" rx="10" fill="#161b22"/><rect y="20" width="1005" height="10" fill="#161b22"/>
+<circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
+<text x="502.5" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode run -a port  (scripted model replay · real tools)</text>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
+<text x="18" y="58"><tspan fill="#7ee787">$ portcode run -a port "Port the wordstat CLI to Rust, following rustport."</tspan></text>
+<text x="18" y="77"><tspan>Phase 1 — pin the exact original and survey it before writing any Rust.</tspan></text>
+<text x="18" y="96"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">pin</tspan><tspan> </tspan><tspan opacity="0.6">{"path":"original/wordstat","version":"1.0"}</tspan></text>
+<text x="18" y="115"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">pin</tspan></text>
+<text x="18" y="134"><tspan>    </tspan><tspan opacity="0.6">Pinned original/wordstat → .portcode/reference.lock.json</tspan></text>
+<text x="18" y="153"><tspan>    </tspan><tspan opacity="0.6">format: Mach-O</tspan></text>
+<text x="18" y="172"><tspan>    </tspan><tspan opacity="0.6">size: 34232</tspan></text>
+<text x="18" y="191"><tspan>    </tspan><tspan opacity="0.6">sha256: ec3f59ff898efa2dbd2af59a7a75322219423368fb9d251f52394089017acf63</tspan></text>
+<text x="18" y="210"><tspan>    </tspan><tspan opacity="0.6">recorded as E-0001</tspan></text>
+<text x="18" y="229"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">survey</tspan><tspan> </tspan><tspan opacity="0.6">{"path":"original"}</tspan></text>
+<text x="18" y="248"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">survey</tspan></text>
+<text x="18" y="267"><tspan>    </tspan><tspan opacity="0.6">== Survey: original (2 files) ==</tspan></text>
+<text x="18" y="286"><tspan>    </tspan></text>
+<text x="18" y="305"><tspan>    </tspan><tspan opacity="0.6">-- Languages (files / LOC)</tspan></text>
+<text x="18" y="324"><tspan>    </tspan><tspan opacity="0.6">  .c           1 files        62 LOC</tspan></text>
+<text x="18" y="343"><tspan>    </tspan></text>
+<text x="18" y="362"><tspan>    </tspan><tspan opacity="0.6">-- Build manifests</tspan></text>
+<text x="18" y="381"><tspan opacity="0.6">    … 8 more lines</tspan></text>
+<text x="18" y="400"><tspan>Recording the gap I already see as an unknown.</tspan></text>
+<text x="18" y="419"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">evidence_add</tspan><tspan> </tspan><tspan opacity="0.6">{"kind":"unknown","subject":"cli.locale","statement":"isalnum()/tolower() are locale-dependent </tspan></text>
+<text x="18" y="438"><tspan opacity="0.6">for bytes &gt;= 128; goldens use the C locale","confidence":"low","t</tspan></text>
+<text x="18" y="457"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">E-0002</tspan></text>
+<text x="18" y="476"><tspan>    </tspan><tspan opacity="0.6">Recorded E-0002 (Unknown, Low) for cli.locale.</tspan></text>
+<text x="18" y="495"><tspan>Capture goldens from the ORIGINAL, then run the same cases on the port.</tspan></text>
+<text x="18" y="514"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">bash</tspan><tspan> </tspan><tspan opacity="0.6">{"command":"./tests/run_cases.sh port/target/release/wordstat /tmp/pc_demo_out","description":"run port</tspan></text>
+<text x="18" y="533"><tspan opacity="0.6"> on golden cases"}</tspan></text>
+<text x="18" y="552"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">run port on golden cases</tspan></text>
+<text x="18" y="571"><tspan>    </tspan></text>
+<text x="18" y="590"><tspan>    </tspan><tspan opacity="0.6">[exit code 0]</tspan></text>
+<text x="18" y="609"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">parity</tspan><tspan> </tspan><tspan opacity="0.6">{"golden":"tests/golden","port":"/tmp/pc_demo_out"}</tspan></text>
+<text x="18" y="628"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">parity PASS</tspan></text>
+<text x="18" y="647"><tspan>    </tspan><tspan opacity="0.6">parity: ok=6 diff=0 missing=0 extra=0</tspan></text>
+<text x="18" y="666"><tspan>    </tspan><tspan opacity="0.6">RESULT: PASS</tspan></text>
+<text x="18" y="685"><tspan fill="#ff8700">▸</tspan><tspan> </tspan><tspan font-weight="700">todowrite</tspan><tspan> </tspan><tspan opacity="0.6">{"todos":[{"content":"pin + survey original","status":"completed"},{"content":"golden cases (6)","</tspan></text>
+<text x="18" y="704"><tspan opacity="0.6">status":"completed"},{"content":"parity PASS","status":"comple</tspan></text>
+<text x="18" y="723"><tspan>  </tspan><tspan fill="#7ee787">✓</tspan><tspan> </tspan><tspan opacity="0.6">1 open</tspan></text>
+<text x="18" y="742"><tspan>    </tspan><tspan opacity="0.6">[x] pin + survey original</tspan></text>
+<text x="18" y="761"><tspan>    </tspan><tspan opacity="0.6">[x] golden cases (6)</tspan></text>
+<text x="18" y="780"><tspan>    </tspan><tspan opacity="0.6">[x] parity PASS</tspan></text>
+<text x="18" y="799"><tspan>    </tspan><tspan opacity="0.6">[~] screenshots + site</tspan></text>
+<text x="18" y="818"><tspan>Parity is PASS on all 6 golden cases. One unknown remains open (E-0002: locale). Next: attach screenshots for </tspan></text>
+<text x="18" y="837"><tspan>each feature and build the site with `site_build`.</tspan></text>
+<text x="18" y="856"><tspan opacity="0.6">— 6 step(s) · 1320 in / 180 out tokens · Done</tspan></text>
+</g>
+</svg>

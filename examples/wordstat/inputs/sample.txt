@@ -1,0 +1,4 @@
+The quick brown fox jumps over the lazy dog. The dog barks; the fox runs away.
+A port is only as good as its proof: run the original, record what it did,
+and make the new program do exactly the same thing. The proof is the test.
+Don't guess. Measure! Measure twice, port once -- and keep the proof next to the code.

@@ -1,0 +1,10 @@
+[package]
+name = "wordstat"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+wordstat-core = { path = "../wordstat-core" }
+
+[lints]
+workspace = true

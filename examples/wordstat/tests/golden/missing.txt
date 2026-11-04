@@ -1,0 +1,5 @@
+$ wordstat inputs/does-not-exist.txt
+--- stdout
+--- stderr
+wordstat: cannot open inputs/does-not-exist.txt
+--- exit 1

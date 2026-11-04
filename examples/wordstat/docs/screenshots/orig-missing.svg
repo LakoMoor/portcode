@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="564" height="100" viewBox="0 0 564 100" role="img" aria-label="orig-missing — exit 1">
+<rect width="564" height="100" rx="10" fill="#0d1117"/>
+<rect width="564" height="30" rx="10" fill="#161b22"/><rect y="20" width="564" height="10" fill="#161b22"/>
+<circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
+<text x="282" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">orig-missing — exit 1</text>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
+<text x="18" y="58"><tspan fill="#7ee787">$ original/wordstat inputs/does-not-exist.txt</tspan></text>
+<text x="18" y="77"><tspan>wordstat: cannot open inputs/does-not-exist.txt</tspan></text>
+</g>
+</svg>

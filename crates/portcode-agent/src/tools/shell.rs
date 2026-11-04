@@ -1,0 +1,257 @@
+use crate::permission::Decision;
+use crate::tool::*;
+use async_trait::async_trait;
+use serde_json::{json, Value};
+use std::process::Stdio;
+use std::time::Duration;
+use tokio::io::AsyncReadExt;
+use tokio::process::Command;
+
+const CAP: usize = 1_000_000;
+
+pub struct Ran {
+    pub code: Option<i32>,
+    pub out: String,
+    pub timed_out: bool,
+    pub cancelled: bool,
+}
+
+async fn drain<R: AsyncReadExt + Unpin>(mut r: R) -> Vec<u8> {
+    let (mut keep, mut buf) = (Vec::new(), vec![0u8; 16384]);
+    while let Ok(n) = r.read(&mut buf).await {
+        if n == 0 {
+            break;
+        }
+        if keep.len() < CAP {
+            keep.extend_from_slice(buf.get(..n).unwrap_or(&[]));
+        } // keep draining so the child never blocks on a full pipe
+    }
+    keep
+}
+
+/// Run `sh -c cmd` non-interactively: stdin closed, own process group, wall-clock deadline, capped output,
+/// whole group killed on timeout/cancel. A missing shell or spawn failure is an `Err`, never a panic.
+pub async fn run_command(ctx: &Ctx, cmd: &str, timeout: Duration) -> Result<Ran, ToolError> {
+    run_command_with(ctx, cmd, timeout, false).await
+}
+
+/// Like [`run_command`]; `color` keeps terminal colours (for screenshots of colourful tools).
+pub async fn run_command_with(
+    ctx: &Ctx,
+    cmd: &str,
+    timeout: Duration,
+    color: bool,
+) -> Result<Ran, ToolError> {
+    let mut c = Command::new("sh");
+    c.arg("-c")
+        .arg(cmd)
+        .current_dir(&ctx.root)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .kill_on_drop(true)
+        .process_group(0)
+        .env("CI", "1")
+        .env("PAGER", "cat")
+        .env("GIT_PAGER", "cat")
+        .env("GIT_TERMINAL_PROMPT", "0");
+    if color {
+        c.env("PORTCODE_FORCE_COLOR", "1")
+            .env("CLICOLOR_FORCE", "1")
+            .env("TERM", "xterm-256color");
+    } else {
+        c.env("TERM", "dumb").env("NO_COLOR", "1");
+    }
+    for k in &ctx.scrub_env {
+        c.env_remove(k);
+    }
+    let mut child = c
+        .spawn()
+        .map_err(|e| ToolError(format!("cannot start shell: {e}")))?;
+    let pid = child.id();
+    let (so, se) = (child.stdout.take(), child.stderr.take());
+    let (ho, he) = (
+        tokio::spawn(async move {
+            match so {
+                Some(s) => drain(s).await,
+                None => vec![],
+            }
+        }),
+        tokio::spawn(async move {
+            match se {
+                Some(s) => drain(s).await,
+                None => vec![],
+            }
+        }),
+    );
+    let start = std::time::Instant::now();
+    let (mut timed_out, mut cancelled) = (false, false);
+    let status = loop {
+        tokio::select! {
+            s = child.wait() => break s.ok(),
+            _ = tokio::time::sleep(Duration::from_millis(150)) => {
+                if ctx.cancelled() { cancelled = true; } else if start.elapsed() >= timeout { timed_out = true; }
+                if cancelled || timed_out {
+                    if let Some(p) = pid { let _ = Command::new("kill").args(["-KILL", &format!("-{p}")]).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).status().await; }
+                    let _ = child.kill().await;
+                    break child.wait().await.ok();
+                }
+            }
+        }
+    };
+    let (o, e) = (ho.await.unwrap_or_default(), he.await.unwrap_or_default());
+    let mut out = String::from_utf8_lossy(&o).to_string();
+    if !e.is_empty() {
+        if !out.is_empty() && !out.ends_with('\n') {
+            out.push('\n');
+        }
+        out += &String::from_utf8_lossy(&e);
+    }
+    Ok(Ran {
+        code: status.and_then(|s| s.code()),
+        out,
+        timed_out,
+        cancelled,
+    })
+}
+
+pub struct Bash;
+#[async_trait]
+impl Tool for Bash {
+    fn name(&self) -> String {
+        "bash".into()
+    }
+    fn description(&self) -> String {
+        "Run one shell command in the project directory (non-interactive, no stdin, default 120s timeout). Use for builds, tests, git, inspecting binaries. Do not use it to read/search files — use read/grep/glob.".into()
+    }
+    fn example(&self) -> String {
+        r#"{"command": "cargo test -p mycrate", "description": "run unit tests"}"#.into()
+    }
+    fn schema(&self) -> Value {
+        obj(
+            json!({"command": {"type":"string"}, "description": {"type":"string","description":"5-10 words: what this does"}, "timeout_ms": {"type":"integer","description":"max 600000"}}),
+            &["command"],
+        )
+    }
+    async fn run(&self, ctx: &Ctx, args: Value) -> ToolResult {
+        let a = Args {
+            v: &args,
+            tool: "bash",
+            example: &self.example(),
+        };
+        let cmd = a.str("command")?;
+        if cmd.trim().is_empty() {
+            return err("command is empty");
+        }
+        let t = Duration::from_millis(
+            a.opt_u64("timeout_ms")
+                .unwrap_or(120_000)
+                .clamp(1_000, 600_000),
+        );
+        ctx.permit(
+            "bash",
+            cmd.trim(),
+            Decision::Ask,
+            &a.opt_str("description").unwrap_or_default(),
+        )
+        .await?;
+        let r = run_command(ctx, &cmd, t).await?;
+        let mut text = clip(r.out.trim_end(), ctx.output_limit);
+        if r.timed_out {
+            text += &format!(
+                "\n[killed: exceeded {}s. Run long jobs in smaller steps or raise timeout_ms.]",
+                t.as_secs()
+            );
+        } else if r.cancelled {
+            text += "\n[cancelled by user]";
+        } else {
+            text += &format!(
+                "\n[exit code {}]",
+                r.code
+                    .map(|c| c.to_string())
+                    .unwrap_or_else(|| "signal".into())
+            );
+        }
+        Ok(Out::new(
+            a.opt_str("description")
+                .unwrap_or_else(|| cmd.chars().take(60).collect()),
+            text,
+        ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::permission::{AutoGate, Reply, Rules};
+    use std::sync::Arc;
+    fn ctx(d: &std::path::Path) -> Ctx {
+        Ctx::new(
+            d.to_path_buf(),
+            Arc::new(AutoGate(Reply::Once)),
+            Rules::default(),
+        )
+    }
+
+    #[tokio::test]
+    async fn runs_captures_and_reports_exit_code() {
+        let d = tempfile::tempdir().unwrap();
+        let o = Bash
+            .run(
+                &ctx(d.path()),
+                json!({"command":"echo out; echo err 1>&2; exit 3"}),
+            )
+            .await
+            .unwrap();
+        assert!(
+            o.text.contains("out") && o.text.contains("err") && o.text.contains("[exit code 3]"),
+            "{}",
+            o.text
+        );
+    }
+    #[tokio::test]
+    async fn stdin_is_closed_and_timeout_kills_group() {
+        let d = tempfile::tempdir().unwrap();
+        let c = ctx(d.path());
+        let o = Bash
+            .run(&c, json!({"command":"cat; echo done"}))
+            .await
+            .unwrap(); // would hang if stdin were inherited
+        assert!(o.text.contains("done"));
+        let t = std::time::Instant::now();
+        let o = Bash
+            .run(
+                &c,
+                json!({"command":"sleep 30 & sleep 30","timeout_ms":1000}),
+            )
+            .await
+            .unwrap();
+        assert!(o.text.contains("killed") && t.elapsed() < Duration::from_secs(8));
+    }
+    #[tokio::test]
+    async fn rejected_and_dangerous_commands_do_not_run() {
+        let d = tempfile::tempdir().unwrap();
+        let c = Ctx::new(
+            d.path().to_path_buf(),
+            Arc::new(AutoGate(Reply::Reject)),
+            Rules::default(),
+        );
+        assert!(Bash.run(&c, json!({"command":"touch x"})).await.is_err());
+        assert!(!d.path().join("x").exists());
+        assert!(Bash
+            .run(&ctx(d.path()), json!({"command":"sudo ls"}))
+            .await
+            .is_err());
+        // read-only commands skip the prompt entirely
+        assert!(Bash.run(&c, json!({"command":"ls"})).await.is_ok());
+    }
+    #[tokio::test]
+    async fn output_is_clipped() {
+        let d = tempfile::tempdir().unwrap();
+        let o = Bash
+            .run(&ctx(d.path()), json!({"command":"yes x | head -c 200000"}))
+            .await
+            .unwrap();
+        assert!(o.text.contains("omitted") && o.text.len() < 14_000);
+    }
+}

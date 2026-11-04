@@ -1,0 +1,8 @@
+[
+ {"text":"Phase 1 — pin the exact original and survey it before writing any Rust.","tool_calls":[{"name":"pin","arguments":{"path":"original/wordstat","version":"1.0"}},{"name":"survey","arguments":{"path":"original"}}]},
+ {"text":"Recording the gap I already see as an unknown.","tool_calls":[{"name":"evidence_add","arguments":{"kind":"unknown","subject":"cli.locale","statement":"isalnum()/tolower() are locale-dependent for bytes >= 128; goldens use the C locale","confidence":"low","tool":"read original/wordstat.c"}}]},
+ {"text":"Capture goldens from the ORIGINAL, then run the same cases on the port.","tool_calls":[{"name":"bash","arguments":{"command":"./tests/run_cases.sh port/target/release/wordstat /tmp/pc_demo_out","description":"run port on golden cases"}}]},
+ {"tool_calls":[{"name":"parity","arguments":{"golden":"tests/golden","port":"/tmp/pc_demo_out"}}]},
+ {"tool_calls":[{"name":"todowrite","arguments":{"todos":[{"content":"pin + survey original","status":"completed"},{"content":"golden cases (6)","status":"completed"},{"content":"parity PASS","status":"completed"},{"content":"screenshots + site","status":"in_progress"}]}}]},
+ {"text":"Parity is PASS on all 6 golden cases. One unknown remains open (E-0002: locale). Next: attach screenshots for each feature and build the site with `site_build`."}
+]

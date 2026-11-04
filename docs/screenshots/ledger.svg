@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1005" height="366" viewBox="0 0 1005 366" role="img" aria-label="portcode port ledger">
+<rect width="1005" height="366" rx="10" fill="#0d1117"/>
+<rect width="1005" height="30" rx="10" fill="#161b22"/><rect y="20" width="1005" height="10" fill="#161b22"/>
+<circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
+<text x="502.5" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode port ledger</text>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
+<text x="18" y="58"><tspan fill="#7ee787">$ portcode port ledger</tspan></text>
+<text x="18" y="77"><tspan>E-0001 [Observation/High] original.build: original/wordstat is Mach-O (34232 bytes), sha256 ec3f59ff898efa2dbd</tspan></text>
+<text x="18" y="96"><tspan>2af59a7a75322219423368fb9d251f52394089017acf63, version 1.0</tspan></text>
+<text x="18" y="115"><tspan>E-0002 [Observation/High] cli.default: original: report for inputs/sample.txt (exit 0)</tspan></text>
+<text x="18" y="134"><tspan>E-0003 [Observation/High] cli.default: port: identical report for inputs/sample.txt (exit 0)</tspan></text>
+<text x="18" y="153"><tspan>E-0004 [Observation/High] cli.options: original: --min-len 5 --top 4</tspan></text>
+<text x="18" y="172"><tspan>E-0005 [Observation/High] cli.options: port: identical output for --min-len 5 --top 4</tspan></text>
+<text x="18" y="191"><tspan>E-0006 [Observation/High] cli.errors: original: missing file -&gt; stderr message, exit 1</tspan></text>
+<text x="18" y="210"><tspan>E-0007 [Observation/High] cli.errors: port: same stderr message and exit code 1</tspan></text>
+<text x="18" y="229"><tspan>E-0008 [Observation/High] parity.golden: parity: ok=6 diff=0 missing=0 extra=0 RESULT: PASS </tspan></text>
+<text x="18" y="248"><tspan>E-0009 [Observation/High] parity.fuzz: differential fuzz: 400/400 identical (stdout, stderr and exit code byte</tspan></text>
+<text x="18" y="267"><tspan>-identical)</tspan></text>
+<text x="18" y="286"><tspan>E-0010 [Inference/Medium] cli.options: A word is kept to at most 255 bytes (char buf[256], wordstat.c:31); lon</tspan></text>
+<text x="18" y="305"><tspan>ger runs still count once. Read from source; the fuzz includes 250-300 byte words and agrees.</tspan></text>
+<text x="18" y="324"><tspan>E-0011 [Unknown/Low] cli.locale: The original calls isalnum()/tolower(), which are locale-dependent for bytes </tspan></text>
+<text x="18" y="343"><tspan>&gt;= 128; all goldens were captured in the C locale. The port assumes ASCII only.</tspan></text>
+</g>
+</svg>

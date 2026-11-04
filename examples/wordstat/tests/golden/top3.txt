@@ -1,0 +1,12 @@
+$ wordstat --top 3 inputs/sample.txt
+--- stdout
+file: inputs/sample.txt
+words: 63
+unique: 44
+avg word length: 3.778
+top 3:
+  the             11
+  proof            3
+  and              2
+--- stderr
+--- exit 0

@@ -1,0 +1,12 @@
+# AGENTS.md — guide for agents and contributors
+
+PortCode: Rust agent for reverse engineering and ports, built for local/self-hosted LLMs. See `docs/ARCHITECTURE.md`.
+
+- Layers: evidence(L0) → port, llm(L1) → agent(L2) → cli(L3). Lower layers never import higher ones.
+- `unsafe` forbidden. No `unwrap`/`expect`/indexing on input-derived values outside tests (lints enforce it in L0–L2 crates).
+- Everything user-visible is a `Tool` (`crates/portcode-agent/src/tools`); the CLI, agent and `portcode tool` share it.
+- Tools must never panic, never prompt on stdin, never hang: deadlines, capped output, errors that tell the model the fix.
+- Prompts (`crates/portcode-agent/prompts`) and `skills/rustport` are for open-weight models: short numbered rules, an example per tool, no time-dependent text before the `date:` line. Tests enforce prompt size and prefix stability.
+- Facts about an original go in the ledger as observation / inference / unknown. Never claim parity without a `parity` PASS.
+- No secrets, no personal paths in code, tests, screenshots or docs. Screenshots come from `scripts/make_screenshots.sh` / `portcode port shot`, never hand-made.
+- Before pushing: `cargo fmt --all && cargo clippy --workspace --all-targets && cargo test --workspace`; if you changed output rendering, rerun `scripts/make_screenshots.sh` and `examples/wordstat/demo.sh`.

@@ -1,0 +1,102 @@
+{
+  "source_sha256": "6af6c7e0f1570c77b04fb82319d4b5f202259d09fd2374aca69bb156daf50369",
+  "fixtures": {
+    "fixture.txt": "17 -9 -2 4294967295\n",
+    "bad.txt": "1 2 nope 4\n",
+    "signed.txt": "-1 +2 0 -1\n",
+    "suffix.txt": "1 2 3 4junk\n"
+  },
+  "cases": {
+    "directions": {
+      "input": "state right tick tick left tick stop tick tick state",
+      "stdout": "0 0 0 12345\n0 0 2 12345\n1 3 2 87628868\n2 5 2 71072467\n2 5 -2 71072467\n3 4 -2 2332836374\n3 4 0 2332836374\n4 4 0 2726892157\n5 3 0 3908547000\n5 3 0 3908547000\n",
+      "stderr": "",
+      "code": 0,
+      "saved": null
+    },
+    "rng_wrap": {
+      "input": "tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick tick",
+      "stdout": "1 1 0 87628868\n2 1 0 71072467\n3 2 0 2332836374\n4 2 0 2726892157\n5 1 0 3908547000\n6 0 0 483019191\n7 -1 0 2129828778\n8 -1 0 2355140353\n9 -1 0 2560230508\n10 -2 0 3364893915\n11 -2 0 171172990\n12 -2 0 3194601925\n13 -2 0 4148119648\n14 -1 0 316399679\n15 -2 0 3004788882\n16 -2 0 1976948425\n17 -1 0 1702883732\n18 -1 0 4121112547\n19 0 0 1744294886\n20 1 0 4092090893\n21 2 0 4267815944\n22 3 0 2850572231\n23 2 0 1816322682\n24 2 0 2147159953\n25 1 0 1233879996\n26 2 0 1818069995\n27 1 0 2900471886\n28 1 0 667024213\n29 0 0 381260976\n30 1 0 3662258255\n31 0 0 1338151266\n32 0 0 30368089\n33 -1 0 1987140324\n34 -1 0 1252747507\n35 -2 0 2460948918\n36 -3 0 4132947357\n37 -4 0 66423384\n38 -3 0 3349023191\n39 -4 0 1298144586\n40 -3 0 1379265569\n41 -2 0 4101641996\n42 -1 0 2348607227\n43 -2 0 2865868830\n44 -1 0 2821642469\n45 -1 0 2677552384\n46 0 0 692560991\n47 -1 0 3990300210\n48 -2 0 3296055273\n49 -2 0 1963087924\n50 -2 0 3116770819\n51 -1 0 1424954246\n52 -1 0 3060815149\n53 -1 0 2474128552\n54 -2 0 3270283239\n55 -1 0 1901546522\n56 -2 0 884616369\n57 -3 0 1962589788\n58 -4 0 2885633547\n59 -4 0 2237719534\n60 -4 0 3748223605\n61 -5 0 1681926480\n62 -5 0 3975605359\n63 -6 0 3187945218\n64 -6 0 613556857\n65 -6 0 2942822788\n66 -7 0 1503946515\n67 -7 0 1538572630\n68 -8 0 3406497981\n69 -9 0 3421418232\n70 -9 0 756341239\n71 -8 0 511012586\n72 -9 0 1735446849\n73 -9 0 3756161452\n74 -8 0 3107301659\n75 -7 0 2301381566\n76 -6 0 1063944197\n77 -7 0 1683386784\n78 -6 0 3736631423\n79 -6 0 3493243858\n80 -6 0 1596807433\n81 -7 0 3575058132\n82 -6 0 2973183011\n83 -5 0 2268930854\n84 -6 0 3846234189\n85 -7 0 2711487816\n86 -7 0 3952601095\n87 -6 0 1648854458\n88 -7 0 3364018641\n89 -6 0 3544598780\n90 -5 0 414257195\n91 -5 0 2651907982\n92 -4 0 2624276885\n93 -3 0 482348528\n94 -4 0 2485995663\n95 -4 0 3818626210\n96 -5 0 395342745\n97 -5 0 1187301412\n98 -4 0 3350164787\n99 -3 0 3137681654\n100 -4 0 1617615837\n",
+      "stderr": "",
+      "code": 0,
+      "saved": null
+    },
+    "missing_save": {
+      "input": "save",
+      "stdout": "",
+      "stderr": "",
+      "code": 2,
+      "saved": null
+    },
+    "missing_load": {
+      "input": "load",
+      "stdout": "",
+      "stderr": "",
+      "code": 2,
+      "saved": null
+    },
+    "unknown": {
+      "input": "state bogus",
+      "stdout": "0 0 0 12345\n",
+      "stderr": "",
+      "code": 5,
+      "saved": null
+    },
+    "long_command": {
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "stdout": "",
+      "stderr": "",
+      "code": 5,
+      "saved": null
+    },
+    "save": {
+      "input": "right tick save saved.txt state",
+      "stdout": "0 0 2 12345\n1 3 2 87628868\n1 3 2 87628868\n1 3 2 87628868\n",
+      "stderr": "",
+      "code": 0,
+      "saved": "1 3 2 87628868\n"
+    },
+    "load": {
+      "input": "load fixture.txt tick state",
+      "stdout": "17 -9 -2 4294967295\n18 -10 -2 1012239698\n18 -10 -2 1012239698\n",
+      "stderr": "",
+      "code": 0,
+      "saved": null
+    },
+    "malformed": {
+      "input": "load bad.txt",
+      "stdout": "",
+      "stderr": "",
+      "code": 4,
+      "saved": null
+    },
+    "missing_file": {
+      "input": "load absent",
+      "stdout": "",
+      "stderr": "",
+      "code": 3,
+      "saved": null
+    },
+    "write_failure": {
+      "input": "save absent/file",
+      "stdout": "",
+      "stderr": "",
+      "code": 3,
+      "saved": null
+    },
+    "signed_save": {
+      "input": "load signed.txt tick",
+      "stdout": "-1 2 0 4294967295\n0 3 0 1012239698\n",
+      "stderr": "",
+      "code": 0,
+      "saved": null
+    },
+    "numeric_suffix": {
+      "input": "load suffix.txt state",
+      "stdout": "1 2 3 4\n1 2 3 4\n",
+      "stderr": "",
+      "code": 0,
+      "saved": null
+    }
+  }
+}
