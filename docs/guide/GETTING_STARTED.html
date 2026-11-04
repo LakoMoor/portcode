@@ -40,7 +40,8 @@ portcode --version
 <p><code>portcode update</code> (or <code>/update</code> in the app) compares your version with the latest release and prints the install command. Once a day the app checks quietly and only says something if a newer version exists. Turn it off with <code>PORTCODE_NO_UPDATE_CHECK=1</code>. Nothing is installed for you.</p>
 <h2>If something is wrong</h2>
 <ul>
-<li>*<code>GLIBC_2.39 not found</code> on Linux* — the <code>v0.1.0</code> binaries were built on a very new Linux. Build your own with <code>cargo install --git https://github.com/LakoMoor/portcode portcode-cli</code>, or use a later release (built for glibc 2.35 and checked in CI).</li>
+<li>*<code>GLIBC_2.39 not found</code> on Linux* — this only affected the first upload of <code>v0.1.0</code>. The current archives need glibc 2.34 or newer (Ubuntu 22.04, Debian 12). If you still see it, run the installer again or build with <code>cargo install --git https://github.com/LakoMoor/portcode portcode-cli</code>.</li>
+<li>*<code>could not set up TLS</code> on a minimal Linux* — install <code>ca-certificates</code>.</li>
 <li>*No API key* — <code>/key</code>, or pick a local provider with <code>/provider</code>.</li>
 <li>*Connection refused* — the local server is not running, or the port in <code>portcode.json</code> differs.</li>
 <li>*Model not found* — <code>/models</code> shows the exact names.</li>

@@ -25,7 +25,7 @@ pub async fn latest() -> Result<String, String> {
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(6))
         .build()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("could not set up TLS ({e}). On a minimal Linux install the ca-certificates package is missing"))?;
     let body = client
         .get(API)
         .header("User-Agent", format!("portcode/{}", current()))
