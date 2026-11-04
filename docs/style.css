@@ -196,3 +196,13 @@ nav button.theme .sun{display:none}[data-theme=dark] nav button.theme .sun{displ
 [data-theme=dark] .ctl{box-shadow:0 1px 0 rgba(255,255,255,.04),0 6px 18px rgba(0,0,0,.35)}
 [data-theme=dark] main.doc img,[data-theme=dark] .framed img{box-shadow:0 14px 40px rgba(0,0,0,.5)}
 html[lang=ru] h1{font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-.035em}
+
+/* phones: wide tables scroll inside their own box instead of pushing the page sideways */
+@media (max-width:700px){
+  table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  td code,th code{overflow-wrap:anywhere}
+  td,th{padding-left:12px;padding-right:12px}
+}
+main.doc{min-width:0}
+main.doc p code,main.doc li code,main.doc td code{overflow-wrap:anywhere}
+main.doc pre{max-width:100%;overflow-x:auto}

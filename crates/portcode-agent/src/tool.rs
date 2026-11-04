@@ -61,6 +61,8 @@ pub trait SubRunner: Send + Sync {
     async fn run(&self, agent: &str, prompt: &str) -> Result<String, String>;
 }
 
+pub type Notify = Arc<dyn Fn(String) + Send + Sync>;
+
 pub struct Ctx {
     pub root: PathBuf,
     pub gate: Arc<dyn Gate>,
@@ -75,6 +77,12 @@ pub struct Ctx {
     pub output_limit: usize,
     pub allowed_dirs: Vec<PathBuf>,
     pub scrub_env: Vec<String>,
+    /// Python virtual environment support (config `venv`, default on).
+    pub venv: AtomicBool,
+    /// Team mode: how many team workers may run at once (0 = team off).
+    pub team_parallel: std::sync::atomic::AtomicUsize,
+    /// Progress lines from tools that run other agents (shown as info in the UI).
+    pub notify: Mutex<Option<Notify>>,
     pub sub: Mutex<Option<Arc<dyn SubRunner>>>,
 }
 
@@ -97,7 +105,16 @@ impl Ctx {
             output_limit: 12_000,
             allowed_dirs: vec![],
             scrub_env: vec![],
+            venv: AtomicBool::new(true),
+            team_parallel: std::sync::atomic::AtomicUsize::new(0),
+            notify: Mutex::new(None),
             sub: Mutex::new(None),
+        }
+    }
+    pub fn say(&self, line: impl Into<String>) {
+        let f = lock(&self.notify).clone();
+        if let Some(f) = f {
+            f(line.into());
         }
     }
     pub fn is_deep(&self) -> bool {

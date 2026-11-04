@@ -19,7 +19,7 @@
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 # или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 ```
-Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc` прервать · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode chat --plain` — построчный режим. Windows: через WSL.
+Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc esc` отменить запрос · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `/yolo` разрешает всё без вопросов (красная метка `allow-all` остаётся на экране; `/yolo off` выключает). `/venv on|off` — агент создаёт и использует Python `.venv` (по умолчанию включено, `"venv"` в конфиге). `/team on` (или `"team": {"enabled": true, "parallel": 3}`) добавляет агента `team`: оркестратор запускает параллельно проджект-менеджера, техлида, исследователей, разработчиков, тестировщика и ревьюера. `portcode chat --plain` — построчный режим. Windows: через WSL.
 
 ```sh
 portcode init && export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor

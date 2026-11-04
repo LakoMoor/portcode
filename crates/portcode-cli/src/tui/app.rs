@@ -63,6 +63,8 @@ pub enum Item {
         text: String,
     },
     Info(String),
+    /// Aligned block: `# heading` lines and `key<TAB>description` rows.
+    Note(String),
     Error(String),
     Footer(String),
 }
@@ -84,6 +86,15 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("key", "enter an API key (hidden); /key <provider>"),
     ("setup", "first-run guide: provider, key, model"),
+    (
+        "team",
+        "multi-agent team (PM, tech lead, workers): on or off",
+    ),
+    ("venv", "Python virtual environments: on or off"),
+    (
+        "yolo",
+        "allow everything without asking (toggle, or on/off)",
+    ),
     ("update", "check for a newer PortCode"),
     ("new", "new session (same as /clear)"),
     ("clear", "new session"),
@@ -138,6 +149,8 @@ pub struct App {
     pub last_prompt: u64,
     pub todos: Vec<Todo>,
     pub perm: Option<PermAsk>,
+    /// Further permission asks that arrived while one is open (parallel team workers).
+    pub perm_queue: std::collections::VecDeque<PermAsk>,
     pub scroll: usize,
     pub show_reasoning: bool,
     pub sidebar: bool,
@@ -152,6 +165,8 @@ pub struct App {
     pub auto_allow: bool,
     /// Highlighted row of the `/` menu (arrows move it).
     pub slash_sel: usize,
+    /// First of two escapes while a request runs; a second within 2 s cancels it.
+    pub esc_at: Option<std::time::Instant>,
     /// Remember `/model` choices for the next start (only the real terminal UI turns this on).
     pub persist: bool,
     /// Model ids the provider reported (for `/model` completion).
@@ -198,9 +213,8 @@ impl App {
             hist_pos: None,
             busy: false,
             agent: agent.into(),
-            agents: portcode_agent::agents::all()
+            agents: portcode_agent::agents::visible(cfg.team_enabled())
                 .iter()
-                .filter(|a| a.primary)
                 .map(|a| a.name.to_string())
                 .collect(),
             model: model.into(),
@@ -223,7 +237,9 @@ impl App {
             wb: None,
             wiz: None,
             auto_allow: false,
+            perm_queue: Default::default(),
             slash_sel: 0,
+            esc_at: None,
             persist: false,
             models: vec![],
             hint: None,
@@ -423,7 +439,11 @@ impl App {
                     if self.remote_on {
                         self.outbox.push(serde_json::json!({"type":"perm","tool":p.req.tool,"target":p.req.target,"reason":p.req.reason}));
                     }
-                    self.perm = Some(p);
+                    if self.perm.is_some() {
+                        self.perm_queue.push_back(p);
+                    } else {
+                        self.perm = Some(p);
+                    }
                 }
             }
             Msg::Info(s) => self.items.push(Item::Info(s)),
@@ -467,7 +487,7 @@ impl App {
             Item::Assistant(t) => serde_json::json!({"k":"assistant","text":t}),
             Item::Reasoning(t) => serde_json::json!({"k":"reasoning","text":t}),
             Item::Tool { name, args, state, title, text } => serde_json::json!({"k":"tool","name":name,"args":args,"state":match state { ToolState::Running => "running", ToolState::Ok => "ok", ToolState::Err => "err" },"title":title,"text":text}),
-            Item::Info(t) => serde_json::json!({"k":"info","text":t}),
+            Item::Info(t) | Item::Note(t) => serde_json::json!({"k":"info","text":t.replace('\t', "  ")}),
             Item::Error(t) => serde_json::json!({"k":"error","text":t}),
             Item::Footer(t) => serde_json::json!({"k":"footer","text":t}),
         }).collect();
@@ -506,6 +526,7 @@ impl App {
                 if let Some(p) = self.perm.take() {
                     let _ = p.reply.send(rep);
                     self.outbox.push(serde_json::json!({"type":"perm_done"}));
+                    self.perm = self.perm_queue.pop_front();
                 }
             }
             Remote::Agent(n) => self.slash(&format!("agent {n}")),
@@ -702,6 +723,12 @@ impl App {
         }
     }
 
+    /// One escape was pressed within the last two seconds.
+    pub fn esc_armed(&self) -> bool {
+        self.esc_at
+            .is_some_and(|t| t.elapsed() < std::time::Duration::from_secs(2))
+    }
+
     fn complete_slash(&mut self) {
         let m = self.menu();
         if let Some(it) = m.get(self.slash_sel.min(m.len().saturating_sub(1))) {
@@ -744,6 +771,7 @@ impl App {
                     if self.remote_on {
                         self.outbox.push(serde_json::json!({"type":"perm_done"}));
                     }
+                    self.perm = self.perm_queue.pop_front();
                 }
                 None => self.perm = Some(p),
             }
@@ -825,7 +853,14 @@ impl App {
             }
             (KeyCode::Esc, ..) => {
                 if self.busy {
-                    self.cancel.store(true, Ordering::Relaxed);
+                    if self.esc_armed() {
+                        self.esc_at = None;
+                        self.cancel.store(true, Ordering::Relaxed);
+                        self.items
+                            .push(Item::Info("cancelling the request…".into()));
+                    } else {
+                        self.esc_at = Some(std::time::Instant::now());
+                    }
                 } else {
                     self.scroll = 0;
                 }
@@ -1022,12 +1057,60 @@ impl App {
                 self.ask_key(&pv);
             }
             ("setup", _) => self.setup_guide(),
+            ("team", a) => match a {
+                Some(v @ ("on" | "off")) => {
+                    let on = v == "on";
+                    if on && !self.agents.iter().any(|x| x == "team") {
+                        self.agents.push("team".into());
+                    }
+                    if !on {
+                        self.agents.retain(|x| x != "team");
+                        if self.agent == "team" && !self.busy {
+                            self.agent = "build".into();
+                            let _ = self.cmd_tx.send(Cmd::SetAgent("build".into()));
+                        }
+                    }
+                    let _ = self.cmd_tx.send(Cmd::Tune("team".into(), v.into()));
+                    if on {
+                        self.items.push(Item::Info("team mode on: press tab to the team agent. A project manager, tech lead and workers run in parallel; set \"team\" in portcode.json to keep it.".into()));
+                    }
+                }
+                _ => self.items.push(Item::Info("/team on or /team off: the orchestrator agent with a PM, tech lead, researchers, developers, tester and reviewer (config \"team\")".into())),
+            },
+            ("venv", a) => match a {
+                Some(v @ ("on" | "off")) => {
+                    let _ = self.cmd_tx.send(Cmd::Tune("venv".into(), v.into()));
+                }
+                _ => self.items.push(Item::Info("/venv on or /venv off: lets the agent create and use a Python .venv (default on; config \"venv\")".into())),
+            },
+            ("yolo" | "allow-all", a) => {
+                let on = match a {
+                    Some("on") => true,
+                    Some("off") => false,
+                    _ => !self.auto_allow,
+                };
+                self.auto_allow = on;
+                let _ = self
+                    .cmd_tx
+                    .send(Cmd::Tune("allow".into(), if on { "on" } else { "off" }.into()));
+                if on {
+                    if let Some(p) = self.perm.take() {
+                        let _ = p.reply.send(Reply::Once);
+                    }
+                    for p in self.perm_queue.drain(..) {
+                        let _ = p.reply.send(Reply::Once);
+                    }
+                    self.items.push(Item::Info("allow-all is ON: every permission request is approved without asking (deny rules still deny). Use it only on a machine and project you trust. /yolo off turns it off.".into()));
+                } else {
+                    self.items.push(Item::Info("allow-all is off: PortCode asks again.".into()));
+                }
+            }
             ("update", _) => {
                 self.items.push(Item::Info("checking for updates…".into()));
                 let _ = self.cmd_tx.send(Cmd::Update);
             }
             ("exit" | "quit" | "q", _) => self.quit = true,
-            ("help", _) => self.items.push(Item::Info("/setup: first-run steps · /provider · /key · tab: switch agent · /workbench: deep code view · enter: send · alt+enter: newline · esc: interrupt · ctrl+t: thinking · ctrl+b: sidebar · pgup/pgdn: scroll · /: commands".into())),
+            ("help", _) => self.items.push(Item::Note(help_text())),
             ("agent", Some(a)) => { if self.agents.iter().any(|x| x == a) { if !self.busy { self.agent = a.into(); let _ = self.cmd_tx.send(Cmd::SetAgent(a.into())); } } else { self.items.push(Item::Error(format!("unknown agent '{a}'. Try: {}", self.agents.join(", ")))); } }
             ("agents", _) | ("agent", None) => self.items.push(Item::Info(format!("agents: {} (tab cycles)", self.agents.join(", ")))),
             ("model", Some(m)) => match self.cfg.resolve(Some(m)) {
@@ -1073,7 +1156,7 @@ impl App {
             }
             ("thinking", _) => self.show_reasoning = !self.show_reasoning,
             ("sidebar", _) => self.sidebar = !self.sidebar,
-            ("tools", _) => self.items.push(Item::Info("tools: read ls glob grep write edit bash todowrite webfetch skill task survey pin evidence_add evidence_list parity screenshot site_build scaffold; deep: re_status re_install disasm emulate decompile functions hexdump unity dotnet unity_assets (+ MCP)".into())),
+            ("tools", _) => self.items.push(Item::Note(tools_text())),
             ("ledger", _) => {
                 self.refresh_ledger();
                 let (o, i, u) = self.ledger;
@@ -1082,6 +1165,43 @@ impl App {
             (other, _) => self.items.push(Item::Error(format!("unknown command /{other}. Press / to see commands"))),
         }
     }
+}
+
+fn help_text() -> String {
+    let mut s = String::from("# Keys\n");
+    for (k, d) in [
+        ("enter", "send"),
+        ("alt+enter", "new line"),
+        ("tab", "switch agent, or complete a / command"),
+        ("up / down", "prompt history, or move in the / menu"),
+        ("esc esc", "cancel the running request"),
+        ("ctrl+c", "clear the prompt, then quit"),
+        ("ctrl+t", "show or hide the model's reasoning"),
+        ("ctrl+b", "show or hide the sidebar"),
+        ("pgup / pgdn", "scroll the transcript"),
+    ] {
+        s += &format!("{k}\t{d}\n");
+    }
+    s += "# Commands\n";
+    for (n, d) in SLASH {
+        s += &format!("/{n}\t{d}\n");
+    }
+    s.trim_end().to_string()
+}
+
+fn tools_text() -> String {
+    let mut s = String::from("# Tools\n");
+    for (k, d) in [
+        ("files", "read  ls  glob  grep  write  edit"),
+        ("run", "bash  venv  todowrite  webfetch  skill  task  team"),
+        ("proof", "survey  pin  evidence_add  evidence_list  parity  screenshot  scaffold  site_build"),
+        ("deep", "re_status  re_install  disasm  emulate  decompile  functions  hexdump  unity  dotnet  unity_assets"),
+        ("more", "tools from MCP servers in portcode.json"),
+    ] {
+        s += &format!("{k}\t{d}\n");
+    }
+    s += "deep tools need /deep. Each agent sees only the tools it needs.";
+    s
 }
 
 /// Short human summary of a tool call's arguments (the preview may be truncated JSON, so extract keys textually).

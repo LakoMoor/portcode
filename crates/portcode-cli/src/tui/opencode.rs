@@ -123,11 +123,20 @@ fn ctrl_c_clears_the_prompt_then_quits_and_interrupts_when_busy() {
 }
 
 #[test]
-fn esc_interrupts_a_running_session_and_ctrl_d_quits_when_empty() {
+fn two_escapes_cancel_a_running_session_and_ctrl_d_quits_when_empty() {
     let (mut a, _rx) = app();
     a.busy = true;
     a.on_key(k(KeyCode::Esc));
-    assert!(a.cancel.load(std::sync::atomic::Ordering::Relaxed));
+    assert!(
+        !a.cancel.load(std::sync::atomic::Ordering::Relaxed),
+        "one esc only arms"
+    );
+    assert!(a.esc_armed());
+    a.on_key(k(KeyCode::Esc));
+    assert!(
+        a.cancel.load(std::sync::atomic::Ordering::Relaxed),
+        "the second esc cancels"
+    );
     a.busy = false;
     a.on_key(ctrl('d'));
     assert!(a.quit);
@@ -337,4 +346,85 @@ fn theme_command_switches_palette_and_rejects_unknown_names() {
     a.input = "/theme neon".into();
     a.on_key(k(KeyCode::Enter));
     assert!(infos(&a).contains("unknown theme"));
+}
+
+#[test]
+fn yolo_approves_requests_and_shows_a_warning_chip() {
+    use portcode_agent::{Reply, Request};
+    let (mut a, mut rx) = app();
+    type_str(&mut a, "/yolo");
+    a.on_key(k(KeyCode::Enter));
+    assert!(a.auto_allow);
+    assert!(matches!(rx.try_recv(), Ok(super::app::Cmd::Tune(w, v)) if w == "allow" && v == "on"));
+    let (tx, mut r) = tokio::sync::oneshot::channel();
+    a.on_msg(super::app::Msg::Perm(super::app::PermAsk {
+        req: Request {
+            tool: "bash".into(),
+            target: "rm x".into(),
+            reason: String::new(),
+        },
+        reply: tx,
+    }));
+    assert_eq!(r.try_recv().ok(), Some(Reply::Once));
+    assert!(a.perm.is_none());
+    assert!(screen(&mut a, 100, 30).contains("allow-all"));
+    type_str(&mut a, "/yolo off");
+    a.on_key(k(KeyCode::Enter));
+    assert!(!a.auto_allow);
+}
+
+#[test]
+fn help_and_tools_print_aligned_blocks() {
+    let (mut a, _rx) = app();
+    type_str(&mut a, "/help");
+    a.on_key(k(KeyCode::Enter));
+    let s = screen(&mut a, 120, 60);
+    assert!(
+        s.contains("Keys") && s.contains("Commands") && s.contains("esc esc"),
+        "{s}"
+    );
+    type_str(&mut a, "/tools");
+    a.on_key(k(KeyCode::Enter));
+    let s = screen(&mut a, 120, 70);
+    assert!(s.contains("Tools") && s.contains("proof"), "{s}");
+}
+
+#[test]
+fn team_command_adds_the_orchestrator_and_parallel_asks_queue_up() {
+    use portcode_agent::{Reply, Request};
+    let (mut a, _rx) = app();
+    assert!(!a.agents.iter().any(|x| x == "team"));
+    type_str(&mut a, "/team on");
+    a.on_key(k(KeyCode::Enter));
+    assert!(a.agents.iter().any(|x| x == "team"));
+    let ask = |t: &str| {
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        (
+            super::app::Msg::Perm(super::app::PermAsk {
+                req: Request {
+                    tool: "bash".into(),
+                    target: t.into(),
+                    reason: String::new(),
+                },
+                reply: tx,
+            }),
+            rx,
+        )
+    };
+    let ((m1, mut r1), (m2, mut r2)) = (ask("one"), ask("two"));
+    a.on_msg(m1);
+    a.on_msg(m2);
+    assert_eq!(
+        a.perm_queue.len(),
+        1,
+        "the second ask waits, it is not dropped"
+    );
+    a.on_key(k(KeyCode::Char('y')));
+    assert_eq!(r1.try_recv().ok(), Some(Reply::Once));
+    assert!(a.perm.as_ref().is_some_and(|p| p.req.target == "two"));
+    a.on_key(k(KeyCode::Char('n')));
+    assert_eq!(r2.try_recv().ok(), Some(Reply::Reject));
+    type_str(&mut a, "/team off");
+    a.on_key(k(KeyCode::Enter));
+    assert!(!a.agents.iter().any(|x| x == "team"));
 }

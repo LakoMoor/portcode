@@ -83,7 +83,7 @@ For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and l
 <sub>Deep mode on the bundled example: strings, ARM64 disassembly and a Unicorn run of the prologue (real tools; scripted model).</sub>
 
 ## Keys (full-screen UI)
-`enter` send · `alt+enter` newline · `tab`/`shift+tab` switch agent · `/` commands · `esc` interrupt · `/deep` · `/clean` switch mode · `ctrl+t` show reasoning · `ctrl+b` sidebar · `pgup/pgdn`/wheel scroll · `ctrl+c` interrupt / clear / quit. Permission dialog: `y` once · `a` always · `n` reject.
+`enter` send · `alt+enter` newline · `tab`/`shift+tab` switch agent · `/` commands · `esc esc` cancel the request · `/deep` · `/clean` switch mode · `ctrl+t` show reasoning · `ctrl+b` sidebar · `pgup/pgdn`/wheel scroll · `ctrl+c` interrupt / clear / quit. Permission dialog: `y` once · `a` always · `n` reject. `/yolo` approves everything without asking (a red `allow-all` chip stays on screen; `/yolo off` ends it). `/venv on|off` lets the agent create and use a Python `.venv` (on by default; config `"venv"`). `/team on` (or `"team": {"enabled": true, "parallel": 3}`) adds the `team` agent: an orchestrator that runs a project manager, tech lead, researchers, developers, a tester and a reviewer in parallel; permission asks from parallel workers queue up in the dialog.
 
 ## Use
 ```sh

@@ -31,8 +31,33 @@ pub struct Config {
     /// Claude Code `--permission-mode` for the `claude-code` provider: `acceptEdits` (default), `plan`,
     /// `bypassPermissions` or `default`. Read-only agents always use `plan`.
     pub cli_permission: Option<String>,
+    /// Multi-agent team: `{ "enabled": true, "parallel": 3 }` adds the `team` orchestrator agent.
+    pub team: Option<TeamCfg>,
+    /// Python virtual environments (`venv` tool; bash runs with `.venv` on PATH). Default on.
+    pub venv: Option<bool>,
     /// Extra directories file tools may touch without asking.
     pub allowed_dirs: Vec<String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TeamCfg {
+    pub enabled: bool,
+    /// Workers that may run at once (default 3, max 8).
+    pub parallel: Option<usize>,
+}
+
+impl Config {
+    pub fn team_enabled(&self) -> bool {
+        self.team.as_ref().is_some_and(|t| t.enabled)
+    }
+    pub fn team_parallel(&self) -> usize {
+        self.team
+            .as_ref()
+            .and_then(|t| t.parallel)
+            .unwrap_or(3)
+            .clamp(1, 8)
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -292,6 +317,10 @@ pub const INIT_TEMPLATE: &str = r#"{
   },
   // "auto" picks the prompt from the model id; or force "compact", "full" or "qwen38".
   "prompt_style": "auto",
+  // Python projects get a .venv (the agent creates it, installs into it, never installs globally).
+  "venv": true,
+  // Team mode: a "team" agent (orchestrator) runs a project manager, tech lead and workers in parallel.
+  "team": { "enabled": false, "parallel": 3 },
   // Override sampling / context per model id (the part after "provider/").
   // Qwen3.8 thinking: "reasoning_effort" is "xhigh", "medium" (default here), "low" or "none" (thinking off).
   "models": {

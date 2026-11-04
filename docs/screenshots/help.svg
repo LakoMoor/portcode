@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1005" height="727" viewBox="0 0 1005 727" role="img" aria-label="portcode --help">
-<rect width="1005" height="727" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1005" height="765" viewBox="0 0 1005 765" role="img" aria-label="portcode --help">
+<rect width="1005" height="765" rx="10" fill="#0d1117"/>
 <rect width="1005" height="30" rx="10" fill="#161b22"/><rect y="20" width="1005" height="10" fill="#161b22"/>
 <circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
 <text x="502.5" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode --help</text>
@@ -17,27 +17,29 @@
 <text x="18" y="248"><tspan>  providers    Show configured and built-in providers</tspan></text>
 <text x="18" y="267"><tspan>  doctor       Check providers, toolchain and optional engines</tspan></text>
 <text x="18" y="286"><tspan>  update       Check whether a newer PortCode is released</tspan></text>
-<text x="18" y="305"><tspan>  eval         Probe a model: chat, tool-calling, JSON validity, edit accuracy</tspan></text>
-<text x="18" y="324"><tspan>  init         Create portcode.json in this directory</tspan></text>
-<text x="18" y="343"><tspan>  auth         Store an API key (mode 0600)</tspan></text>
-<text x="18" y="362"><tspan>  completions  Print shell completions (bash, zsh, fish, powershell, elvish)</tspan></text>
-<text x="18" y="381"><tspan>  agents       List agents</tspan></text>
-<text x="18" y="400"><tspan>  serve        Run a session you can drive from the browser (remote control); see docs/REMOTE.md</tspan></text>
-<text x="18" y="419"><tspan>  remote       Manage remote-control keys</tspan></text>
-<text x="18" y="438"><tspan>  engines      Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path</tspan></text>
-<text x="18" y="457"><tspan>  skill        Skills: list, show, export</tspan></text>
-<text x="18" y="476"><tspan>  port         Porting workbench (survey, pin, parity, scaffold, shot, site, ledger)</tspan></text>
-<text x="18" y="495"><tspan>  tool         Run any built-in tool directly with JSON arguments</tspan></text>
-<text x="18" y="514"><tspan>  help         Print this message or the help of the given subcommand(s)</tspan></text>
-<text x="18" y="533"></text>
-<text x="18" y="552"><tspan>Options:</tspan></text>
-<text x="18" y="571"><tspan>  -m, --model &lt;MODEL&gt;   Model as provider/model, e.g. lakomoor/deepseek-chat or ollama/qwen3:14b</tspan></text>
-<text x="18" y="590"><tspan>  -a, --agent &lt;AGENT&gt;   Agent: build, port, reverse, plan</tspan></text>
-<text x="18" y="609"><tspan>      --show-reasoning  Show the model's reasoning stream</tspan></text>
-<text x="18" y="628"><tspan>      --deep            Deep mode: may disassemble, decompile and emulate the original (you own it or may exam</tspan></text>
-<text x="18" y="647"><tspan>ine it)</tspan></text>
-<text x="18" y="666"><tspan>      --clean-room      Clean-room mode (default): observe the original from outside only</tspan></text>
-<text x="18" y="685"><tspan>  -h, --help            Print help</tspan></text>
-<text x="18" y="704"><tspan>  -V, --version         Print version</tspan></text>
+<text x="18" y="305"><tspan>  mcp          Serve PortCode's tools over MCP (stdio) for Claude Code or Codex; `--print-config` shows how to</tspan></text>
+<text x="18" y="324"><tspan> register it</tspan></text>
+<text x="18" y="343"><tspan>  eval         Probe a model: chat, tool-calling, JSON validity, edit accuracy</tspan></text>
+<text x="18" y="362"><tspan>  init         Create portcode.json in this directory</tspan></text>
+<text x="18" y="381"><tspan>  auth         Store an API key (mode 0600)</tspan></text>
+<text x="18" y="400"><tspan>  completions  Print shell completions (bash, zsh, fish, powershell, elvish)</tspan></text>
+<text x="18" y="419"><tspan>  agents       List agents</tspan></text>
+<text x="18" y="438"><tspan>  serve        Run a session you can drive from the browser (remote control); see docs/REMOTE.md</tspan></text>
+<text x="18" y="457"><tspan>  remote       Manage remote-control keys</tspan></text>
+<text x="18" y="476"><tspan>  engines      Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path</tspan></text>
+<text x="18" y="495"><tspan>  skill        Skills: list, show, export</tspan></text>
+<text x="18" y="514"><tspan>  port         Porting workbench (survey, pin, parity, scaffold, shot, site, ledger)</tspan></text>
+<text x="18" y="533"><tspan>  tool         Run any built-in tool directly with JSON arguments</tspan></text>
+<text x="18" y="552"><tspan>  help         Print this message or the help of the given subcommand(s)</tspan></text>
+<text x="18" y="571"></text>
+<text x="18" y="590"><tspan>Options:</tspan></text>
+<text x="18" y="609"><tspan>  -m, --model &lt;MODEL&gt;   Model as provider/model, e.g. lakomoor/deepseek-chat or ollama/qwen3:14b</tspan></text>
+<text x="18" y="628"><tspan>  -a, --agent &lt;AGENT&gt;   Agent: build, port, reverse, plan</tspan></text>
+<text x="18" y="647"><tspan>      --show-reasoning  Show the model's reasoning stream</tspan></text>
+<text x="18" y="666"><tspan>      --deep            Deep mode: may disassemble, decompile and emulate the original (you own it or may exam</tspan></text>
+<text x="18" y="685"><tspan>ine it)</tspan></text>
+<text x="18" y="704"><tspan>      --clean-room      Clean-room mode (default): observe the original from outside only</tspan></text>
+<text x="18" y="723"><tspan>  -h, --help            Print help</tspan></text>
+<text x="18" y="742"><tspan>  -V, --version         Print version</tspan></text>
 </g>
 </svg>

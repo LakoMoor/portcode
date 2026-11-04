@@ -38,6 +38,13 @@ portcode --version
 <pre><code>Port this CLI to Rust, following rustport
 </code></pre>
 <p>Put the original in <code>original/</code>. PortCode pins its sha256, records what it learns as observation, inference or unknown, and only calls a module done after <code>parity</code> passes.</p>
+<h2>Settings worth knowing</h2>
+<ul>
+<li><strong>Cancel</strong>: press <code>esc</code> twice to stop a running request (the footer says &quot;press esc again&quot;).</li>
+<li><strong>Allow everything</strong>: <code>/yolo</code> approves every permission request without asking; a red <code>allow-all</code> chip stays visible and <code>/yolo off</code> ends it. It is never saved. With Claude Code as the backend it maps to <code>bypassPermissions</code>. Use it only in a project and on a machine you trust.</li>
+<li><strong>Python environments</strong>: <code>&quot;venv&quot;: true</code> (default). The agent creates <code>.venv</code> with the <code>venv</code> tool, installs into it, and <code>bash</code> runs with it first on <code>PATH</code>. <code>/venv off</code> or <code>&quot;venv&quot;: false</code> turns it off.</li>
+<li><strong>Team</strong>: <code>&quot;team&quot;: { &quot;enabled&quot;: true, &quot;parallel&quot;: 3 }</code> or <code>/team on</code> adds the <code>team</code> agent (switch with <code>tab</code>). It plans with a project manager and a tech lead, then runs researchers and developers on different files at once, then a tester and a reviewer, and checks the result itself before it reports. Workers share your permission dialog, so asks queue up.</li>
+</ul>
 <h2>Updates</h2>
 <p><code>portcode update</code> (or <code>/update</code> in the app) compares your version with the latest release and prints the install command. Once a day the app checks quietly and only says something if a newer version exists. Turn it off with <code>PORTCODE_NO_UPDATE_CHECK=1</code>. Nothing is installed for you.</p>
 <h2>If something is wrong</h2>

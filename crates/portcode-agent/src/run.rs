@@ -150,6 +150,14 @@ impl Runner {
         );
         ctx.readonly = agent_def.readonly.into();
         ctx.deep = (cfg.mode.as_deref() == Some("deep")).into();
+        ctx.venv = cfg.venv.unwrap_or(true).into();
+        if cfg.team_enabled() {
+            ctx.team_parallel = cfg.team_parallel().into();
+        }
+        if depth == 0 {
+            let ui2 = ui.clone();
+            *lock(&ctx.notify) = Some(Arc::new(move |s| ui2.event(UiEvent::Info(s))));
+        }
         ctx.output_limit = resolved.profile.result_chars();
         ctx.allowed_dirs = cfg
             .allowed_dirs
@@ -314,6 +322,41 @@ impl Runner {
                     "reasoning effort: {} (sent to the server as chat_template_kwargs; only Qwen3.8-style templates read it)",
                     val
                 ))
+            }
+            "team" => {
+                let on = val == "on";
+                self.ctx.team_parallel.store(
+                    if on { self.cfg.team_parallel() } else { 0 },
+                    Ordering::Relaxed,
+                );
+                Ok(format!(
+                    "team mode {}",
+                    if on {
+                        "on: pick the team agent (tab)"
+                    } else {
+                        "off"
+                    }
+                ))
+            }
+            "venv" => {
+                let on = val == "on";
+                self.ctx.venv.store(on, Ordering::Relaxed);
+                Ok(format!(
+                    "virtual environments {}",
+                    if on { "on" } else { "off" }
+                ))
+            }
+            "allow" => {
+                let on = val == "on";
+                self.cfg.cli_permission = Some(
+                    if on {
+                        "bypassPermissions"
+                    } else {
+                        "acceptEdits"
+                    }
+                    .into(),
+                );
+                Ok(format!("allow-all {}", if on { "on" } else { "off" }))
             }
             _ => Err("unknown setting".into()),
         }
@@ -833,6 +876,8 @@ const BUILTIN_NAMES: &[&str] = &[
     "webfetch",
     "skill",
     "task",
+    "team",
+    "venv",
     "survey",
     "pin",
     "evidence_add",
@@ -864,9 +909,9 @@ struct SubAgents {
 #[async_trait]
 impl SubRunner for SubAgents {
     async fn run(&self, agent: &str, prompt: &str) -> Result<String, String> {
-        let def = agents::find(agent)
-            .filter(|a| !a.primary)
-            .ok_or_else(|| "agent must be 'explore' or 'general'".to_string())?;
+        let def = agents::find(agent).filter(|a| !a.primary).ok_or_else(|| {
+            "agent must be a sub-agent: explore, general or a team role".to_string()
+        })?;
         let gate: Arc<dyn Gate> = if def.readonly {
             Arc::new(DenyAsk)
         } else {

@@ -62,6 +62,11 @@ pub async fn run_command_with(
     } else {
         c.env("TERM", "dumb").env("NO_COLOR", "1");
     }
+    if let Some((v, path)) = super::venv::env_for(ctx) {
+        c.env("VIRTUAL_ENV", v)
+            .env("PATH", path)
+            .env_remove("PYTHONHOME");
+    }
     for k in &ctx.scrub_env {
         c.env_remove(k);
     }

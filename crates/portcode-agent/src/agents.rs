@@ -85,6 +85,7 @@ const GENERAL: &[&str] = &[
     "todowrite",
     "webfetch",
     "bash",
+    "venv",
     "write",
     "edit",
     "survey",
@@ -94,6 +95,60 @@ const GENERAL: &[&str] = &[
     "screenshot",
     "parity",
 ];
+
+const TEAM: &[&str] = &[
+    "read",
+    "ls",
+    "glob",
+    "grep",
+    "bash",
+    "skill",
+    "todowrite",
+    "team",
+    "evidence_add",
+    "evidence_list",
+    "parity",
+];
+
+/// The sub-agent roles the `team` tool can start.
+pub const TEAM_ROLES: &[&str] = &[
+    "pm",
+    "techlead",
+    "researcher",
+    "developer",
+    "tester",
+    "reviewer",
+];
+
+fn role(
+    name: &'static str,
+    description: &'static str,
+    readonly: bool,
+    tools: &'static [&'static str],
+    steps: u32,
+    prompt: &'static str,
+) -> AgentDef {
+    AgentDef {
+        name,
+        description,
+        primary: false,
+        readonly,
+        tools: Some(tools),
+        mcp: !readonly,
+        steps,
+        gate: false,
+        prompt,
+        embed_skill: false,
+    }
+}
+
+/// Primary agents the user can pick; the team orchestrator only when the team is enabled.
+pub fn visible(team: bool) -> Vec<AgentDef> {
+    all()
+        .into_iter()
+        .filter(|a| a.primary && (team || a.name != "team"))
+        .collect()
+}
 
 pub fn all() -> Vec<AgentDef> {
     vec![
@@ -146,6 +201,24 @@ pub fn all() -> Vec<AgentDef> {
             prompt: include_str!("../prompts/plan.md"),
             embed_skill: false,
         },
+        AgentDef {
+            name: "team",
+            description: "Orchestrator: a project manager, tech lead and workers run in parallel (settings: team)",
+            primary: true,
+            readonly: false,
+            tools: Some(TEAM),
+            mcp: false,
+            steps: 80,
+            gate: false,
+            prompt: include_str!("../prompts/team.md"),
+            embed_skill: false,
+        },
+        role("pm", "Team role: plan, steps, done-criteria", true, READ, 15, include_str!("../prompts/team_pm.md")),
+        role("techlead", "Team role: design and file ownership", true, READ, 20, include_str!("../prompts/team_techlead.md")),
+        role("researcher", "Team role: finds facts, read-only", true, EXPLORE, 25, include_str!("../prompts/team_researcher.md")),
+        role("developer", "Team role: implements assigned files", false, GENERAL, 40, include_str!("../prompts/team_developer.md")),
+        role("tester", "Team role: runs and writes tests", false, GENERAL, 30, include_str!("../prompts/team_tester.md")),
+        role("reviewer", "Team role: reviews changes, read-only", true, EXPLORE, 20, include_str!("../prompts/team_reviewer.md")),
         AgentDef {
             name: "explore",
             description: "Sub-agent: fast read-only search",
@@ -380,6 +453,21 @@ mod tests {
             s.len() / 4
         );
     }
+    #[test]
+    fn team_agent_is_hidden_until_enabled_and_roles_are_sub_agents() {
+        assert!(!visible(false).iter().any(|a| a.name == "team"));
+        assert!(visible(true).iter().any(|a| a.name == "team"));
+        for r in TEAM_ROLES {
+            let d = find(r).unwrap_or_else(|| panic!("role {r}"));
+            assert!(!d.primary, "{r} is a sub-agent");
+            assert!(d.prompt.len() < 900, "{r} prompt is short");
+        }
+        assert!(find("pm").is_some_and(|d| d.readonly));
+        assert!(find("developer").is_some_and(|d| !d.readonly));
+        let t = find("team").unwrap();
+        assert!(t.allows("team", true) && !t.allows("write", true) && !t.allows("edit", true));
+    }
+
     #[test]
     fn readonly_agents_cannot_see_write_tools() {
         for n in ["plan", "explore"] {

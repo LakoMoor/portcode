@@ -3,6 +3,8 @@ pub mod misc;
 pub mod port;
 pub mod re;
 pub mod shell;
+pub mod team;
+pub mod venv;
 
 use crate::tool::Registry;
 use std::sync::Arc;
@@ -18,6 +20,8 @@ pub fn builtin(skills: Vec<crate::skills::Skill>) -> Registry {
         Arc::new(fs::Write),
         Arc::new(fs::Edit),
         Arc::new(shell::Bash),
+        Arc::new(venv::Venv),
+        Arc::new(team::Team),
         Arc::new(misc::TodoWrite),
         Arc::new(misc::WebFetch),
         Arc::new(misc::SkillTool(skills)),

@@ -108,7 +108,7 @@ pub async fn chat(
                 ("exit" | "quit" | "q", _) => return Ok(0),
                 ("help" | "?", _) => println!("{}", dim("/agent <build|port|reverse|plan>  /model <provider/model>  /models  /tools  /todos  /ledger  /clear  /resume  /exit")),
                 ("agent", Some(a)) => match r.set_agent(a) { Ok(()) => println!("{}", dim(&format!("agent → {a}"))), Err(e) => println!("{} {e}", red("!")) },
-                ("agent", None) => for a in portcode_agent::agents::all().iter().filter(|a| a.primary) { println!("  {:<8} {}", bold(a.name), a.description); },
+                ("agent", None) => for a in portcode_agent::agents::visible(r.cfg.team_enabled()).iter() { println!("  {:<8} {}", bold(a.name), a.description); },
                 ("model", Some(m)) => match r.set_model(m) { Ok(()) => println!("{}", dim(&format!("model → {}/{}", r.resolved.provider.name, r.resolved.model))), Err(e) => println!("{} {e}", red("!")) },
                 ("model", None) => println!("{}/{}  profile: {:?}", r.resolved.provider.name, r.resolved.model, r.resolved.profile),
                 ("models", _) => { let _ = models(r.cfg.clone(), Some(r.resolved.provider.name.clone())).await; }

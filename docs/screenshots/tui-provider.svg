@@ -5,8 +5,8 @@
 <text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
 <rect x="167.94" y="148.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="167.00" width="9.33" height="19" fill="#1e1e1e"/>
-<rect x="177.27" y="167.00" width="242.58" height="19" fill="#342822"/>
-<rect x="419.85" y="167.00" width="438.51" height="19" fill="#1e1e1e"/>
+<rect x="177.27" y="167.00" width="214.59" height="19" fill="#342822"/>
+<rect x="391.86" y="167.00" width="466.50" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="186.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="205.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="224.00" width="690.42" height="19" fill="#1e1e1e"/>
@@ -23,38 +23,40 @@
 <text x="167.94" y="162.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
 <text x="167.94" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="177.27" y="181.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ▸ </text>
-<text x="205.26" y="181.00" fill="#fab283" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">lakomoor    </text>
-<text x="317.22" y="181.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
+<text x="205.26" y="181.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">lakomoor     </text>
+<text x="326.55" y="181.00" fill="#808080" textLength="65.31" lengthAdjust="spacingAndGlyphs">current</text>
 <text x="849.03" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="200.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">ollama      </text>
-<text x="317.22" y="200.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="200.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">claude-code  </text>
+<text x="326.55" y="200.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">subscription</text>
 <text x="849.03" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">lmstudio    </text>
-<text x="317.22" y="219.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="219.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">codex        </text>
+<text x="326.55" y="219.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">CLI not installed</text>
 <text x="849.03" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="238.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">llamacpp    </text>
-<text x="317.22" y="238.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="238.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">ollama       </text>
+<text x="326.55" y="238.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="257.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">vllm        </text>
-<text x="317.22" y="257.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
+<text x="205.26" y="257.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">lmstudio     </text>
+<text x="326.55" y="257.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">sglang      </text>
-<text x="317.22" y="276.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="276.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">llamacpp     </text>
+<text x="326.55" y="276.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">deepseek    </text>
-<text x="317.22" y="295.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
+<text x="205.26" y="295.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">vllm         </text>
+<text x="326.55" y="295.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
 <text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">openrouter  </text>
-<text x="317.22" y="314.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
+<text x="205.26" y="314.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">sglang       </text>
+<text x="326.55" y="314.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="167.94" y="333.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">└────────────────────────────────────────────────────────────────────────┘</text>
+<text x="167.94" y="333.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">└</text>
+<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/10 </text>
+<text x="233.25" y="333.00" fill="#484848" textLength="625.11" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────────┘</text>
 <text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="177.27" y="371.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs"> /provider                                                                                 </text>

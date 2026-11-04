@@ -14,7 +14,7 @@
 <pre><code>curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 # или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 </code></pre>
-<p>Терминальный интерфейс в стиле OpenCode: <code>enter</code> отправить · <code>alt+enter</code> перенос · <code>tab</code> сменить агента · <code>/</code> команды · <code>esc</code> прервать · <code>ctrl+t</code> рассуждения · <code>ctrl+b</code> боковая панель. <code>portcode chat --plain</code> — построчный режим. Windows: через WSL.</p>
+<p>Терминальный интерфейс в стиле OpenCode: <code>enter</code> отправить · <code>alt+enter</code> перенос · <code>tab</code> сменить агента · <code>/</code> команды · <code>esc esc</code> отменить запрос · <code>ctrl+t</code> рассуждения · <code>ctrl+b</code> боковая панель. <code>/yolo</code> разрешает всё без вопросов (красная метка <code>allow-all</code> остаётся на экране; <code>/yolo off</code> выключает). <code>/venv on|off</code> — агент создаёт и использует Python <code>.venv</code> (по умолчанию включено, <code>&quot;venv&quot;</code> в конфиге). <code>/team on</code> (или <code>&quot;team&quot;: {&quot;enabled&quot;: true, &quot;parallel&quot;: 3}</code>) добавляет агента <code>team</code>: оркестратор запускает параллельно проджект-менеджера, техлида, исследователей, разработчиков, тестировщика и ревьюера. <code>portcode chat --plain</code> — построчный режим. Windows: через WSL.</p>
 <pre><code>portcode init &amp;&amp; export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor
 portcode doctor
 portcode -a port                               # воркфлоу rustport

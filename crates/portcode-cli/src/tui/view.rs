@@ -374,6 +374,49 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     }
                 }
             }
+            Item::Note(t) => {
+                let key_w = t
+                    .lines()
+                    .filter_map(|l| l.split_once('\t').map(|(k, _)| k.chars().count()))
+                    .max()
+                    .unwrap_or(0);
+                let pad = 4 + key_w + 2;
+                out.push(Line::from(""));
+                for l in t.lines() {
+                    if let Some(h) = l.strip_prefix("# ") {
+                        out.push(Line::from(vec![
+                            Span::raw("  "),
+                            Span::styled(h.to_string(), bold(c_accent())),
+                        ]));
+                    } else if let Some((k, d)) = l.split_once('\t') {
+                        let avail = width.saturating_sub(pad).max(10);
+                        let rows = wrap(vec![Span::styled(d.to_string(), muted())], avail, 0);
+                        for (i, row) in rows.into_iter().enumerate() {
+                            let mut v = if i == 0 {
+                                vec![
+                                    Span::raw("    "),
+                                    Span::styled(format!("{k:<key_w$}  "), bold(c_text())),
+                                ]
+                            } else {
+                                vec![Span::raw(" ".repeat(pad))]
+                            };
+                            v.extend(row);
+                            out.push(Line::from(v));
+                        }
+                    } else {
+                        for row in wrap(
+                            vec![Span::styled(l.to_string(), muted())],
+                            width.saturating_sub(4),
+                            0,
+                        ) {
+                            let mut v = vec![Span::raw("    ")];
+                            v.extend(row);
+                            out.push(Line::from(v));
+                        }
+                    }
+                }
+                out.push(Line::from(""));
+            }
             Item::Info(t) => {
                 out.extend(
                     wrap(
@@ -531,17 +574,29 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
 
 /// The mode chip: sealed teal for clean-room, a filled amber chip for deep (it is the riskier mode, so it shouts).
 fn mode_chip(app: &App) -> Vec<Span<'static>> {
+    let mut chips = Vec::new();
+    if app.auto_allow {
+        chips.push(Span::styled(
+            " ⚠ allow-all ",
+            Style::new()
+                .fg(c_bg())
+                .bg(c_red())
+                .add_modifier(Modifier::BOLD),
+        ));
+        chips.push(Span::raw(" "));
+    }
     if app.deep {
-        vec![Span::styled(
+        chips.push(Span::styled(
             " ◉ deep ",
             Style::new()
                 .fg(c_bg())
                 .bg(c_yellow())
                 .add_modifier(Modifier::BOLD),
-        )]
+        ));
     } else {
-        vec![Span::styled("▣ clean-room", Style::new().fg(c_teal()))]
+        chips.push(Span::styled("▣ clean-room", Style::new().fg(c_teal())));
     }
+    chips
 }
 
 /// `▰▰▰▱▱▱` bar for a 0..=100 percentage.
@@ -592,7 +647,11 @@ fn fmt_tokens(n: u64) -> String {
 
 fn footer(f: &mut Frame, app: &App, area: Rect) {
     let hints = if app.busy {
-        "esc interrupt".to_string()
+        if app.esc_armed() {
+            "press esc again to cancel".to_string()
+        } else {
+            "esc esc cancel".to_string()
+        }
     } else {
         "tab agents · / commands · ctrl+b sidebar".to_string()
     };

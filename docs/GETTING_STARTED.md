@@ -54,6 +54,13 @@ Port this CLI to Rust, following rustport
 
 Put the original in `original/`. PortCode pins its sha256, records what it learns as observation, inference or unknown, and only calls a module done after `parity` passes.
 
+## Settings worth knowing
+
+- **Cancel**: press `esc` twice to stop a running request (the footer says "press esc again").
+- **Allow everything**: `/yolo` approves every permission request without asking; a red `allow-all` chip stays visible and `/yolo off` ends it. It is never saved. With Claude Code as the backend it maps to `bypassPermissions`. Use it only in a project and on a machine you trust.
+- **Python environments**: `"venv": true` (default). The agent creates `.venv` with the `venv` tool, installs into it, and `bash` runs with it first on `PATH`. `/venv off` or `"venv": false` turns it off.
+- **Team**: `"team": { "enabled": true, "parallel": 3 }` or `/team on` adds the `team` agent (switch with `tab`). It plans with a project manager and a tech lead, then runs researchers and developers on different files at once, then a tester and a reviewer, and checks the result itself before it reports. Workers share your permission dialog, so asks queue up.
+
 ## Updates
 
 `portcode update` (or `/update` in the app) compares your version with the latest release and prints the install command. Once a day the app checks quietly and only says something if a newer version exists. Turn it off with `PORTCODE_NO_UPDATE_CHECK=1`. Nothing is installed for you.

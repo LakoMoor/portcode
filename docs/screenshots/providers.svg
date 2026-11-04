@@ -1,17 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="705" height="233" viewBox="0 0 705 233" role="img" aria-label="portcode providers">
-<rect width="705" height="233" rx="10" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="705" height="271" viewBox="0 0 705 271" role="img" aria-label="portcode providers">
+<rect width="705" height="271" rx="10" fill="#0d1117"/>
 <rect width="705" height="30" rx="10" fill="#161b22"/><rect y="20" width="705" height="10" fill="#161b22"/>
 <circle cx="18" cy="15" r="5" fill="#ff5f56"/><circle cx="36" cy="15" r="5" fill="#ffbd2e"/><circle cx="54" cy="15" r="5" fill="#27c93f"/>
 <text x="352.5" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode providers</text>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
 <text x="18" y="58"><tspan fill="#7ee787">$ portcode providers</tspan></text>
-<text x="18" y="77"><tspan font-weight="700">lakomoor</tspan><tspan> https://lakomoor.com/v1              </tspan><tspan fill="#e3b341">no key ($LAKOMOOR_API_KEY)</tspan></text>
-<text x="18" y="96"><tspan font-weight="700">ollama</tspan><tspan> http://localhost:11434/v1            </tspan><tspan opacity="0.6">no key needed</tspan></text>
-<text x="18" y="115"><tspan font-weight="700">lmstudio</tspan><tspan> http://localhost:1234/v1             </tspan><tspan opacity="0.6">no key needed</tspan></text>
-<text x="18" y="134"><tspan font-weight="700">llamacpp</tspan><tspan> http://localhost:8080/v1             </tspan><tspan opacity="0.6">no key needed</tspan></text>
-<text x="18" y="153"><tspan font-weight="700">vllm</tspan><tspan> http://localhost:8000/v1             </tspan><tspan fill="#e3b341">no key ($VLLM_API_KEY)</tspan></text>
-<text x="18" y="172"><tspan font-weight="700">sglang</tspan><tspan> http://localhost:30000/v1            </tspan><tspan opacity="0.6">no key needed</tspan></text>
-<text x="18" y="191"><tspan font-weight="700">deepseek</tspan><tspan> https://api.deepseek.com/v1          </tspan><tspan fill="#e3b341">no key ($DEEPSEEK_API_KEY)</tspan></text>
-<text x="18" y="210"><tspan font-weight="700">openrouter</tspan><tspan> https://openrouter.ai/api/v1         </tspan><tspan fill="#e3b341">no key ($OPENROUTER_API_KEY)</tspan></text>
+<text x="18" y="77"><tspan font-weight="700">lakomoor</tspan><tspan> https://lakomoor.com/v1              </tspan><tspan fill="#7ee787">key set</tspan></text>
+<text x="18" y="96"><tspan font-weight="700">claude-code</tspan><tspan> cli://claude                         </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="115"><tspan font-weight="700">codex</tspan><tspan> cli://codex                          </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="134"><tspan font-weight="700">ollama</tspan><tspan> http://localhost:11434/v1            </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="153"><tspan font-weight="700">lmstudio</tspan><tspan> http://localhost:1234/v1             </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="172"><tspan font-weight="700">llamacpp</tspan><tspan> http://localhost:8080/v1             </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="191"><tspan font-weight="700">vllm</tspan><tspan> http://localhost:8000/v1             </tspan><tspan fill="#e3b341">no key ($VLLM_API_KEY)</tspan></text>
+<text x="18" y="210"><tspan font-weight="700">sglang</tspan><tspan> http://localhost:30000/v1            </tspan><tspan opacity="0.6">no key needed</tspan></text>
+<text x="18" y="229"><tspan font-weight="700">deepseek</tspan><tspan> https://api.deepseek.com/v1          </tspan><tspan fill="#e3b341">no key ($DEEPSEEK_API_KEY)</tspan></text>
+<text x="18" y="248"><tspan font-weight="700">openrouter</tspan><tspan> https://openrouter.ai/api/v1         </tspan><tspan fill="#e3b341">no key ($OPENROUTER_API_KEY)</tspan></text>
 </g>
 </svg>
