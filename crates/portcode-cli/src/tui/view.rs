@@ -687,11 +687,15 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
 }
 
 fn popup(f: &mut Frame, app: &App, above: Rect) {
-    let m = app.slash_matches();
+    let m = app.menu();
     if m.is_empty() {
         return;
     }
-    let h = m.len().min(8) as u16 + 2;
+    let sel = app.slash_sel.min(m.len() - 1);
+    let rows = 8usize;
+    // keep the highlighted row inside the visible window
+    let start = sel.saturating_sub(rows - 1);
+    let h = m.len().min(rows) as u16 + 2;
     let area = Rect {
         x: above.x,
         y: above.y.saturating_sub(h),
@@ -699,29 +703,48 @@ fn popup(f: &mut Frame, app: &App, above: Rect) {
         height: h,
     };
     f.render_widget(Clear, area);
+    let w = m
+        .iter()
+        .map(|i| i.label.chars().count())
+        .max()
+        .unwrap_or(8)
+        .clamp(8, 28);
     let lines: Vec<Line> = m
         .iter()
-        .take(8)
         .enumerate()
-        .map(|(i, (n, d))| {
+        .skip(start)
+        .take(rows)
+        .map(|(i, it)| {
+            let on = i == sel;
+            let row = Style::new().bg(if on { SELECT } else { PANEL2 });
             Line::from(vec![
+                Span::styled(if on { " ▸ " } else { "   " }, row.fg(ACCENT)),
                 Span::styled(
-                    format!(" /{n:<10}"),
-                    if i == app.slash_sel.min(m.len() - 1) {
-                        bold(ACCENT)
+                    format!("{:<w$}  ", it.label),
+                    if on {
+                        bold(ACCENT).bg(SELECT)
                     } else {
-                        text()
+                        text().bg(PANEL2)
                     },
                 ),
-                Span::styled((*d).to_string(), muted()),
+                Span::styled(
+                    it.desc.clone(),
+                    muted().bg(if on { SELECT } else { PANEL2 }),
+                ),
             ])
         })
         .collect();
+    let more = if m.len() > rows {
+        format!(" {}/{} ", sel + 1, m.len())
+    } else {
+        String::new()
+    };
     f.render_widget(
         Paragraph::new(lines).block(
             Block::new()
                 .borders(Borders::ALL)
                 .border_style(Style::new().fg(BORDER))
+                .title_bottom(Span::styled(more, muted()))
                 .style(Style::new().bg(PANEL2)),
         ),
         area,
@@ -832,6 +855,19 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     prompt(f, app, pa, true);
     popup(f, app, pa);
     let tips = "tab agents   /deep look inside   /  commands   ctrl+c quit";
+    if let Some(h) = &app.hint {
+        let w = (h.chars().count() as u16).min(area.width.saturating_sub(2));
+        f.render_widget(
+            Paragraph::new(Line::from(Span::styled(h.clone(), Style::new().fg(YELLOW)))),
+            Rect {
+                x: cx(w),
+                y: pa.y + pa.height + 3,
+                width: w,
+                height: 1,
+            }
+            .intersection(area),
+        );
+    }
     f.render_widget(
         Paragraph::new(Line::from(Span::styled(tips, muted()))),
         Rect {

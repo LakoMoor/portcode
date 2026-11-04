@@ -26,6 +26,8 @@ mockrun() { port="$1"; shift; "$MOCK" examples/wordstat/demo-session.json "$port
 "$PC" engines install core >/dev/null 2>&1 || true
 "$PC" snapshot "$OUT/tui-home.svg" --size 110x32 $L >/dev/null
 "$PC" snapshot "$OUT/tui-slash.svg" --size 110x32 --typed "/" $L >/dev/null
+"$PC" snapshot "$OUT/tui-provider.svg" --size 110x32 --typed "/provider " $L >/dev/null
+"$PC" snapshot "$OUT/tui-first-run.svg" --size 110x32 --first-run $L >/dev/null
 mockrun 18081 "$OUT/tui-session.svg" --size 132x56 --prompt "Port the wordstat CLI to Rust, following rustport." >/dev/null
 mockrun 18082 "$OUT/tui-permission.svg" --size 132x56 --until-permission --prompt "Port the wordstat CLI to Rust, following rustport." >/dev/null
 ls "$OUT"

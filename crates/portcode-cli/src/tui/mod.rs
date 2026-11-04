@@ -106,6 +106,7 @@ async fn runner_task(
                 let m = match portcode_llm::Client::new(r.resolved.provider.clone()) {
                     Ok(c) => match c.list_models().await {
                         Ok(ids) if !ids.is_empty() => {
+                            let _ = tx.send(Msg::Models(ids.clone()));
                             format!("models on {}: {}", r.resolved.provider.name, ids.join(", "))
                         }
                         Ok(_) => "no models reported".into(),
@@ -170,7 +171,6 @@ async fn start(
     app.show_reasoning = o.show_reasoning;
     app.auto_allow = gate_auto;
     app.refresh_ledger();
-    app.welcome();
     if !gate_auto {
         let tx = mtx.clone();
         tokio::spawn(async move {
@@ -350,6 +350,7 @@ impl Drop for Guard {
 
 pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
     let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
+    app.welcome();
     let mut remote = Remote::default();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |i| {
@@ -408,6 +409,7 @@ pub struct Snap {
     pub workbench: Option<String>,
     pub wb_tab: String,
     pub create: Option<String>,
+    pub first_run: bool,
 }
 
 /// Headless render of the real UI into an SVG file (no terminal needed). Drives the real runner if `prompt` is set.
@@ -498,6 +500,12 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         };
         w.inspect(app.root_path(), &[]);
         app.wiz = Some(w);
+    }
+    if s.first_run {
+        app.hint = Some(format!(
+            "No API key for {} yet: type /key to enter it, or /provider to pick another (local ones need no key)",
+            app.provider
+        ));
     }
     if let Some(t) = &s.typed {
         app.input = t.clone();

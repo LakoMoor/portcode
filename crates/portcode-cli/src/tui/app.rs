@@ -11,6 +11,7 @@ pub enum Msg {
     Perm(PermAsk),
     Done(Result<Outcome, String>),
     Info(String),
+    Models(Vec<String>),
     Remote(Remote),
     Wb(super::workbench::WbMsg),
 }
@@ -62,6 +63,13 @@ pub enum Item {
     Info(String),
     Error(String),
     Footer(String),
+}
+
+pub struct MenuItem {
+    pub label: String,
+    pub desc: String,
+    pub fill: String,
+    pub exact: bool,
 }
 
 pub const SLASH: &[(&str, &str)] = &[
@@ -139,6 +147,10 @@ pub struct App {
     pub auto_allow: bool,
     /// Highlighted row of the `/` menu (arrows move it).
     pub slash_sel: usize,
+    /// Model ids the provider reported (for `/model` completion).
+    pub models: Vec<String>,
+    /// One-line notice on the home screen (no API key yet).
+    pub hint: Option<String>,
     /// While set, the next input line is an API key for this provider (shown hidden).
     pub key_for: Option<String>,
     /// Deep mode (may look inside the original); default is clean-room.
@@ -205,6 +217,8 @@ impl App {
             wiz: None,
             auto_allow: false,
             slash_sel: 0,
+            models: vec![],
+            hint: None,
             key_for: None,
             deep,
             remote_on: false,
@@ -405,6 +419,7 @@ impl App {
                 }
             }
             Msg::Info(s) => self.items.push(Item::Info(s)),
+            Msg::Models(m) => self.models = m,
             Msg::Done(r) => {
                 self.busy = false;
                 match r {
@@ -511,16 +526,89 @@ impl App {
     }
     /// Called once at startup: a short pointer when nothing is set up yet.
     pub fn welcome(&mut self) {
-        if self.key_missing(&self.provider.clone()) {
-            self.items.push(Item::Info(format!(
-                "No API key for {} yet. Type /key to enter it, /provider to pick another provider (local ones need no key), or /setup for the steps.",
-                self.provider
-            )));
+        let p = self.provider.clone();
+        if self.key_missing(&p) {
+            self.hint = Some(format!(
+                "No API key for {p} yet: type /key to enter it, or /provider to pick another (local ones need no key)"
+            ));
         }
     }
 
     pub fn on_paste(&mut self, s: &str) {
         self.insert(&s.replace('\r', ""));
+    }
+
+    /// Rows of the pop-up above the prompt: commands while you type `/name`, then choices for the
+    /// argument of `/provider`, `/key`, `/agent` and `/model`. `fill` is what tab or enter puts in the prompt.
+    pub fn menu(&self) -> Vec<MenuItem> {
+        let m = self.slash_matches();
+        if !m.is_empty() {
+            return m
+                .into_iter()
+                .map(|(n, d)| MenuItem {
+                    label: format!("/{n}"),
+                    desc: d.to_string(),
+                    fill: format!("/{n} "),
+                    exact: self.input.trim().trim_start_matches('/') == n,
+                })
+                .collect();
+        }
+        let Some(rest) = self.input.strip_prefix('/') else {
+            return vec![];
+        };
+        let mut it = rest.splitn(2, ' ');
+        let (cmd, arg) = (it.next().unwrap_or(""), it.next());
+        let Some(arg) = arg.filter(|a| !a.contains(' ')) else {
+            return vec![];
+        };
+        let rows: Vec<(String, String)> = match cmd {
+            "provider" | "key" => {
+                let mut names: Vec<String> = portcode_llm::presets()
+                    .into_iter()
+                    .map(|p| p.name)
+                    .collect();
+                for k in self.cfg.provider.keys() {
+                    if !names.contains(k) {
+                        names.push(k.clone());
+                    }
+                }
+                names
+                    .into_iter()
+                    .map(|n| {
+                        let d = if self.key_missing(&n) {
+                            "needs a key"
+                        } else if n == self.provider {
+                            "current"
+                        } else {
+                            "ready"
+                        };
+                        (n, d.to_string())
+                    })
+                    .collect()
+            }
+            "agent" => self
+                .agents
+                .iter()
+                .map(|n| (n.clone(), String::new()))
+                .collect(),
+            "model" => self
+                .models
+                .iter()
+                .map(|n| (format!("{}/{n}", self.provider), String::new()))
+                .collect(),
+            _ => vec![],
+        };
+        rows.into_iter()
+            .filter(|(n, _)| {
+                n.starts_with(arg) || n.split_once('/').is_some_and(|(_, m)| m.starts_with(arg))
+            })
+            .map(|(n, d)| MenuItem {
+                fill: format!("/{cmd} {n}{}", if cmd == "provider" { " " } else { "" }),
+                exact: n == arg,
+                label: n,
+                desc: d,
+            })
+            .collect()
     }
 
     pub fn slash_matches(&self) -> Vec<(&'static str, &'static str)> {
@@ -595,12 +683,9 @@ impl App {
     }
 
     fn complete_slash(&mut self) {
-        let m = self.slash_matches();
-        if let Some((n, _)) = m
-            .get(self.slash_sel.min(m.len().saturating_sub(1)))
-            .copied()
-        {
-            self.input = format!("/{n} ");
+        let m = self.menu();
+        if let Some(it) = m.get(self.slash_sel.min(m.len().saturating_sub(1))) {
+            self.input = it.fill.clone();
             self.cursor = self.len_chars();
             self.slash_sel = 0;
         }
@@ -728,16 +813,15 @@ impl App {
             (KeyCode::Enter, _, true) | (KeyCode::Char('j'), true, _) => self.insert("\n"),
             (KeyCode::Enter, ..) => {
                 // A partial command completes to the highlighted one; a full name runs.
-                let m = self.slash_matches();
-                let typed = self.input.trim().trim_start_matches('/');
-                if !m.is_empty() && !m.iter().any(|(n, _)| *n == typed) {
+                let m = self.menu();
+                if !m.is_empty() && !m.iter().any(|i| i.exact) {
                     self.complete_slash();
                 } else {
                     self.submit();
                 }
             }
             (KeyCode::Tab, ..) => {
-                if !self.slash_matches().is_empty() {
+                if !self.menu().is_empty() {
                     self.complete_slash();
                 } else {
                     self.cycle_agent(1);
@@ -781,12 +865,12 @@ impl App {
                     self.input.replace_range(a..b, "");
                 }
             }
-            (KeyCode::Up, ..) if !self.slash_matches().is_empty() => {
-                let n = self.slash_matches().len();
+            (KeyCode::Up, ..) if !self.menu().is_empty() => {
+                let n = self.menu().len();
                 self.slash_sel = (self.slash_sel.min(n - 1) + n - 1) % n;
             }
-            (KeyCode::Down, ..) if !self.slash_matches().is_empty() => {
-                let n = self.slash_matches().len();
+            (KeyCode::Down, ..) if !self.menu().is_empty() => {
+                let n = self.menu().len();
                 self.slash_sel = (self.slash_sel.min(n - 1) + 1) % n;
             }
             (KeyCode::Up, ..) => self.history_step(-1),
@@ -835,6 +919,7 @@ impl App {
             self.cursor = 0;
             match portcode_agent::config::store_key(&prov, &text) {
                 Ok(p) => {
+                    self.hint = None;
                     self.items.push(Item::Info(format!(
                         "saved the key for {prov} in {} (mode 600). Not shown again.",
                         p.display()
@@ -1048,6 +1133,31 @@ mod tests {
             .items
             .iter()
             .any(|i| matches!(i, Item::Info(t) if t.contains("ollama"))));
+    }
+
+    #[test]
+    fn argument_menu_lists_providers_and_completes() {
+        let mut a = app();
+        a.input = "/provider oll".into();
+        let m = a.menu();
+        assert_eq!(m.len(), 1);
+        assert_eq!(m[0].label, "ollama");
+        a.on_key(key(KeyCode::Tab));
+        assert_eq!(a.input, "/provider ollama ");
+        a.input = "/key ".into();
+        assert!(a.menu().len() >= 5, "all providers are offered");
+        a.input = "/provider ollama qwen".into();
+        assert!(a.menu().is_empty(), "no menu once the model is being typed");
+    }
+
+    #[test]
+    fn model_menu_uses_the_models_the_provider_reported() {
+        let mut a = app();
+        a.on_msg(Msg::Models(vec!["qwen3:14b".into(), "llama3".into()]));
+        a.input = "/model q".into();
+        let m = a.menu();
+        assert_eq!(m.len(), 1);
+        assert!(m[0].fill.ends_with("/qwen3:14b"));
     }
 
     fn key(c: KeyCode) -> KeyEvent {

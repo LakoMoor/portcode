@@ -3,153 +3,71 @@
 <rect width="1026" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1026" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
-<rect x="671.76" y="34.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="53.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="72.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="91.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="110.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="129.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="148.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="167.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="186.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="205.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="224.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="243.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="262.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="281.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="300.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="319.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="338.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="357.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="357.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="376.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="376.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="395.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="395.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="414.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="414.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="433.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="433.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="452.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="452.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="471.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="471.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="490.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="490.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="509.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="509.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="528.00" width="653.10" height="19" fill="#1e1e1e"/>
-<rect x="671.76" y="528.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="547.00" width="653.10" height="19" fill="#141414"/>
-<rect x="671.76" y="547.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="566.00" width="653.10" height="19" fill="#141414"/>
-<rect x="671.76" y="566.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="585.00" width="653.10" height="19" fill="#141414"/>
-<rect x="671.76" y="585.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="604.00" width="653.10" height="19" fill="#141414"/>
-<rect x="671.76" y="604.00" width="354.54" height="19" fill="#141414"/>
-<rect x="671.76" y="623.00" width="354.54" height="19" fill="#141414"/>
+<rect x="167.94" y="148.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="167.00" width="9.33" height="19" fill="#1e1e1e"/>
+<rect x="177.27" y="167.00" width="541.14" height="19" fill="#342822"/>
+<rect x="718.41" y="167.00" width="139.95" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="186.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="205.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="224.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="243.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="262.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="281.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="300.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="319.00" width="690.42" height="19" fill="#1e1e1e"/>
+<rect x="167.94" y="338.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="357.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="376.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="395.00" width="690.42" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
-<text x="27.99" y="48.00" fill="#808080" textLength="615.78" lengthAdjust="spacingAndGlyphs">· No API key for lakomoor yet. Type /key to enter it, /provider to</text>
-<text x="671.76" y="48.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="46.65" y="67.00" fill="#808080" textLength="606.45" lengthAdjust="spacingAndGlyphs">pick another provider (local ones need no key), or /setup for the</text>
-<text x="671.76" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="67.00" fill="#fab283" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700">New session</text>
-<text x="46.65" y="86.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">steps.</text>
-<text x="671.76" y="86.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="105.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="105.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Mode</text>
-<text x="737.07" y="105.00" fill="#2e2e2e" textLength="270.57" lengthAdjust="spacingAndGlyphs"> ────────────────────────────</text>
-<text x="671.76" y="124.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="124.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
-<text x="811.71" y="124.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">  outside only</text>
-<text x="671.76" y="143.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="162.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="162.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Context</text>
-<text x="765.06" y="162.00" fill="#2e2e2e" textLength="242.58" lengthAdjust="spacingAndGlyphs"> ─────────────────────────</text>
-<text x="671.76" y="181.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="181.00" fill="#484848" textLength="130.62" lengthAdjust="spacingAndGlyphs">▱▱▱▱▱▱▱▱▱▱▱▱▱▱</text>
-<text x="830.37" y="181.00" fill="#808080" textLength="27.99" lengthAdjust="spacingAndGlyphs"> 0%</text>
-<text x="671.76" y="200.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="200.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs">0 of 65.5k · 0 in / 0 out</text>
-<text x="671.76" y="219.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="238.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="238.00" fill="#eeeeee" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700">Evidence</text>
-<text x="774.39" y="238.00" fill="#2e2e2e" textLength="233.25" lengthAdjust="spacingAndGlyphs"> ────────────────────────</text>
-<text x="671.76" y="257.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="257.00" fill="#7fd88f" textLength="74.64" lengthAdjust="spacingAndGlyphs">0 seen  </text>
-<text x="774.39" y="257.00" fill="#f5a742" textLength="111.96" lengthAdjust="spacingAndGlyphs">0 inferred  </text>
-<text x="886.35" y="257.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs">0 open</text>
-<text x="671.76" y="276.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="295.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="295.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Proof</text>
-<text x="746.40" y="295.00" fill="#2e2e2e" textLength="261.24" lengthAdjust="spacingAndGlyphs"> ───────────────────────────</text>
-<text x="671.76" y="314.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="314.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">no parity run yet</text>
-<text x="671.76" y="333.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="352.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="371.00" fill="#484848" textLength="653.10" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────┐</text>
-<text x="671.76" y="371.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="390.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="390.00" fill="#fab283" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> /agent     </text>
-<text x="130.62" y="390.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">switch agent: build · port · reverse · plan</text>
-<text x="653.10" y="390.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="409.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="409.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /model     </text>
-<text x="130.62" y="409.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">switch model: provider/model</text>
-<text x="653.10" y="409.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="428.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="428.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /models    </text>
-<text x="130.62" y="428.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">list models of this provider</text>
-<text x="653.10" y="428.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="447.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="447.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /provider  </text>
-<text x="130.62" y="447.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">list providers or switch: /provider &lt;name&gt; [model]</text>
-<text x="653.10" y="447.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="466.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="466.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /key       </text>
-<text x="130.62" y="466.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">enter an API key (hidden); /key &lt;provider&gt;</text>
-<text x="653.10" y="466.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="485.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="485.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /setup     </text>
-<text x="130.62" y="485.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">first-run guide: provider, key, model</text>
-<text x="653.10" y="485.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="504.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="504.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /update    </text>
-<text x="130.62" y="504.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">check for a newer PortCode</text>
-<text x="653.10" y="504.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="504.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="523.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="18.66" y="523.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs"> /clear     </text>
-<text x="130.62" y="523.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">new session</text>
-<text x="653.10" y="523.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="671.76" y="523.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="542.00" fill="#484848" textLength="653.10" lengthAdjust="spacingAndGlyphs">└────────────────────────────────────────────────────────────────────┘</text>
-<text x="671.76" y="542.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="561.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="671.76" y="561.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="580.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="18.66" y="580.00" fill="#eeeeee" textLength="653.10" lengthAdjust="spacingAndGlyphs"> /                                                                    </text>
-<text x="671.76" y="580.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="599.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="671.76" y="599.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="618.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="27.99" y="618.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
-<text x="74.64" y="618.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
-<text x="214.59" y="618.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="335.88" y="618.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
-<text x="671.76" y="618.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="699.75" y="618.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs">port</text>
-<text x="737.07" y="618.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">code </text>
-<text x="783.72" y="618.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">0.1.0</text>
+<text x="167.94" y="162.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
+<text x="167.94" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="177.27" y="181.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ▸ </text>
+<text x="205.26" y="181.00" fill="#fab283" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">/agent      </text>
+<text x="317.22" y="181.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">switch agent: build · port · reverse · plan</text>
+<text x="849.03" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="200.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/model      </text>
+<text x="317.22" y="200.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">switch model: provider/model</text>
+<text x="849.03" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/models     </text>
+<text x="317.22" y="219.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">list models of this provider</text>
+<text x="849.03" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="238.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/provider   </text>
+<text x="317.22" y="238.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">list providers or switch: /provider &lt;name&gt; [model]</text>
+<text x="849.03" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="257.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/key        </text>
+<text x="317.22" y="257.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">enter an API key (hidden); /key &lt;provider&gt;</text>
+<text x="849.03" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/setup      </text>
+<text x="317.22" y="276.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">first-run guide: provider, key, model</text>
+<text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/update     </text>
+<text x="317.22" y="295.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">check for a newer PortCode</text>
+<text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/new        </text>
+<text x="317.22" y="314.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">new session (same as /clear)</text>
+<text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="167.94" y="333.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">└</text>
+<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/23 </text>
+<text x="233.25" y="333.00" fill="#484848" textLength="625.11" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────────┘</text>
+<text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="177.27" y="371.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs"> /                                                                                         </text>
+<text x="167.94" y="390.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="409.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="186.60" y="409.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
+<text x="233.25" y="409.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
+<text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
+<text x="494.49" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="242.58" y="447.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
 <text x="0.00" y="637.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
-<text x="279.90" y="637.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">tab agents · / commands · ctrl+b sidebar  </text>
-<text x="671.76" y="637.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="634.44" y="637.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">tab agents · / commands · ctrl+b sidebar  </text>
 </g>
 </svg>

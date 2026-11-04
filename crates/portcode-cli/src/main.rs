@@ -90,6 +90,9 @@ enum Cmd {
         /// Show the /create screen: website|app|game|format|fresh, optionally `kind:source`, `look-` prefix for "just look inside"
         #[arg(long)]
         create: Option<String>,
+        /// Show the first-run notice (no API key yet)
+        #[arg(long)]
+        first_run: bool,
         /// Workbench view: pseudo, disasm or hex
         #[arg(long, default_value = "pseudo")]
         wb_tab: String,
@@ -321,6 +324,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             ref workbench,
             ref wb_tab,
             ref create,
+            first_run,
         }) => {
             let (w, h) = size
                 .split_once('x')
@@ -341,6 +345,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     workbench: workbench.clone(),
                     wb_tab: wb_tab.clone(),
                     create: create.clone(),
+                    first_run,
                 },
             )
             .await
