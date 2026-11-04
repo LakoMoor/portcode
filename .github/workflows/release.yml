@@ -39,4 +39,8 @@ jobs:
         env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
         run: |
           cd dist && cat *.sha256 > SHA256SUMS
-          gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --generate-notes --title "PortCode ${GITHUB_REF_NAME}" *.tar.gz *.sha256 SHA256SUMS
+          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --clobber *.tar.gz *.sha256 SHA256SUMS
+          else
+            gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --generate-notes --title "PortCode ${GITHUB_REF_NAME}" *.tar.gz *.sha256 SHA256SUMS
+          fi
