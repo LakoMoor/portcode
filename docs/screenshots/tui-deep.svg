@@ -150,10 +150,12 @@
 <text x="877.02" y="618.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="27.99" y="637.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
 <text x="46.65" y="637.00" fill="#7fd88f" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">evidence_add</text>
-<text x="158.61" y="637.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  E-0001</text>
+<text x="177.27" y="637.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0001</text>
 <text x="877.02" y="637.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="46.65" y="656.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="656.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">Recorded E-0001 (Inference, Medium) for cli.options.</text>
+<text x="65.31" y="656.00" fill="#808080" textLength="83.97" lengthAdjust="spacingAndGlyphs">Recorded </text>
+<text x="149.28" y="656.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0001</text>
+<text x="205.26" y="656.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs"> (Inference, Medium) for cli.options.</text>
 <text x="877.02" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="877.02" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="0.00" y="694.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Next: run the original with each option and capture goldens, so the inference above        </text>

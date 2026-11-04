@@ -24,8 +24,13 @@
 <rect x="877.02" y="319.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="338.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="357.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="376.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="395.00" width="354.54" height="19" fill="#141414"/>
+<rect x="877.02" y="376.00" width="27.99" height="19" fill="#141414"/>
+<rect x="905.01" y="376.00" width="55.98" height="19" fill="#7fd88f"/>
+<rect x="960.99" y="376.00" width="251.91" height="19" fill="#142e1e"/>
+<rect x="1212.90" y="376.00" width="18.66" height="19" fill="#141414"/>
+<rect x="877.02" y="395.00" width="27.99" height="19" fill="#141414"/>
+<rect x="905.01" y="395.00" width="307.89" height="19" fill="#142e1e"/>
+<rect x="1212.90" y="395.00" width="18.66" height="19" fill="#141414"/>
 <rect x="877.02" y="414.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="433.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="452.00" width="354.54" height="19" fill="#141414"/>
@@ -35,6 +40,9 @@
 <rect x="877.02" y="528.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="547.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="566.00" width="354.54" height="19" fill="#141414"/>
+<rect x="9.33" y="585.00" width="37.32" height="19" fill="#142e1e"/>
+<rect x="46.65" y="585.00" width="55.98" height="19" fill="#7fd88f"/>
+<rect x="102.63" y="585.00" width="746.40" height="19" fill="#142e1e"/>
 <rect x="877.02" y="585.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="604.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="623.00" width="354.54" height="19" fill="#141414"/>
@@ -43,8 +51,8 @@
 <rect x="877.02" y="680.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="699.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="718.00" width="354.54" height="19" fill="#141414"/>
+<rect x="587.79" y="737.00" width="93.30" height="19" fill="#1e1e1e"/>
 <rect x="877.02" y="737.00" width="354.54" height="19" fill="#141414"/>
-<rect x="587.79" y="756.00" width="93.30" height="19" fill="#1e1e1e"/>
 <rect x="877.02" y="756.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="775.00" width="354.54" height="19" fill="#141414"/>
 <rect x="877.02" y="794.00" width="354.54" height="19" fill="#141414"/>
@@ -138,33 +146,36 @@
 <text x="951.66" y="371.00" fill="#2e2e2e" textLength="261.24" lengthAdjust="spacingAndGlyphs"> ───────────────────────────</text>
 <text x="0.00" y="390.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Recording the gap I already see as an unknown.                                             </text>
 <text x="877.02" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="390.00" fill="#7fd88f" textLength="121.29" lengthAdjust="spacingAndGlyphs">✓ parity PASS</text>
+<text x="905.01" y="390.00" fill="#0a0a0a" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700"> PASS </text>
 <text x="877.02" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="409.00" fill="#7fd88f" textLength="111.96" lengthAdjust="spacingAndGlyphs"> parity PASS</text>
 <text x="27.99" y="428.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
 <text x="46.65" y="428.00" fill="#7fd88f" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">evidence_add</text>
-<text x="158.61" y="428.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  E-0002</text>
+<text x="177.27" y="428.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0002</text>
 <text x="877.02" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="428.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Todo</text>
-<text x="942.33" y="428.00" fill="#2e2e2e" textLength="270.57" lengthAdjust="spacingAndGlyphs"> ────────────────────────────</text>
 <text x="46.65" y="447.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="447.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">Recorded E-0002 (Unknown, Low) for cli.locale.</text>
+<text x="65.31" y="447.00" fill="#808080" textLength="83.97" lengthAdjust="spacingAndGlyphs">Recorded </text>
+<text x="149.28" y="447.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0002</text>
+<text x="205.26" y="447.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> (Unknown, Low) for cli.locale.</text>
 <text x="877.02" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="447.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">☑ </text>
-<text x="923.67" y="447.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs">pin + survey original</text>
+<text x="905.01" y="447.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Todo</text>
+<text x="942.33" y="447.00" fill="#2e2e2e" textLength="270.57" lengthAdjust="spacingAndGlyphs"> ────────────────────────────</text>
 <text x="877.02" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="905.01" y="466.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">☑ </text>
-<text x="923.67" y="466.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs">golden cases (6)</text>
+<text x="923.67" y="466.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs">pin + survey original</text>
 <text x="0.00" y="485.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Capture goldens from the ORIGINAL, then run the same cases on the port.                    </text>
 <text x="877.02" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="905.01" y="485.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">☑ </text>
-<text x="923.67" y="485.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">parity PASS</text>
+<text x="923.67" y="485.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs">golden cases (6)</text>
 <text x="877.02" y="504.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="905.01" y="504.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">☑ </text>
-<text x="923.67" y="504.00" fill="#808080" textLength="167.94" lengthAdjust="spacingAndGlyphs">screenshots + site</text>
+<text x="923.67" y="504.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">parity PASS</text>
 <text x="27.99" y="523.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
 <text x="46.65" y="523.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">bash</text>
 <text x="83.97" y="523.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">  run port on golden cases</text>
 <text x="877.02" y="523.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="905.01" y="523.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">☑ </text>
+<text x="923.67" y="523.00" fill="#808080" textLength="167.94" lengthAdjust="spacingAndGlyphs">screenshots + site</text>
 <text x="46.65" y="542.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
 <text x="877.02" y="542.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="46.65" y="561.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
@@ -174,38 +185,38 @@
 <text x="46.65" y="580.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">parity</text>
 <text x="102.63" y="580.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs">  parity PASS</text>
 <text x="877.02" y="580.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="46.65" y="599.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="599.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">parity: ok=6 diff=0 missing=0 extra=0</text>
+<text x="46.65" y="599.00" fill="#0a0a0a" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700"> PASS </text>
+<text x="102.63" y="599.00" fill="#7fd88f" textLength="289.23" lengthAdjust="spacingAndGlyphs">  ok=6 diff=0 missing=0 extra=0</text>
 <text x="877.02" y="599.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="46.65" y="618.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="618.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">RESULT: PASS</text>
+<text x="27.99" y="618.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
+<text x="46.65" y="618.00" fill="#eeeeee" textLength="83.97" lengthAdjust="spacingAndGlyphs" font-weight="700">todowrite</text>
+<text x="130.62" y="618.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  0 open</text>
 <text x="877.02" y="618.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="27.99" y="637.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
-<text x="46.65" y="637.00" fill="#eeeeee" textLength="83.97" lengthAdjust="spacingAndGlyphs" font-weight="700">todowrite</text>
-<text x="130.62" y="637.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  0 open</text>
+<text x="46.65" y="637.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="65.31" y="637.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs">[x] pin + survey original</text>
 <text x="877.02" y="637.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="46.65" y="656.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="656.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs">[x] pin + survey original</text>
+<text x="65.31" y="656.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs">[x] golden cases (6)</text>
 <text x="877.02" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="46.65" y="675.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="675.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs">[x] golden cases (6)</text>
+<text x="65.31" y="675.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs">[x] parity PASS</text>
 <text x="877.02" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="46.65" y="694.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="694.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs">[x] parity PASS</text>
+<text x="46.65" y="694.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">╰ </text>
+<text x="65.31" y="694.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">1 more lines</text>
 <text x="877.02" y="694.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="46.65" y="713.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">╰ </text>
-<text x="65.31" y="713.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">1 more lines</text>
 <text x="877.02" y="713.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="0.00" y="732.00" fill="#eeeeee" textLength="625.11" lengthAdjust="spacingAndGlyphs">   Parity is PASS on all 6 golden cases. One unknown remains open (</text>
+<text x="625.11" y="732.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0002</text>
+<text x="681.09" y="732.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs">: locale). Next:     </text>
 <text x="877.02" y="732.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="0.00" y="751.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Parity is PASS on all 6 golden cases. One unknown remains open (E-0002: locale). Next:     </text>
+<text x="0.00" y="751.00" fill="#eeeeee" textLength="587.79" lengthAdjust="spacingAndGlyphs">   attach screenshots for each feature and build the site with </text>
+<text x="587.79" y="751.00" fill="#fab283" textLength="93.30" lengthAdjust="spacingAndGlyphs">site_build</text>
+<text x="681.09" y="751.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs">.                    </text>
 <text x="877.02" y="751.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="0.00" y="770.00" fill="#eeeeee" textLength="587.79" lengthAdjust="spacingAndGlyphs">   attach screenshots for each feature and build the site with </text>
-<text x="587.79" y="770.00" fill="#fab283" textLength="93.30" lengthAdjust="spacingAndGlyphs">site_build</text>
-<text x="681.09" y="770.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs">.                    </text>
 <text x="877.02" y="770.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="27.99" y="789.00" fill="#9d7cd8" textLength="18.66" lengthAdjust="spacingAndGlyphs">▣ </text>
+<text x="46.65" y="789.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">port · mock/mock-model · 6 steps · 1320 in / 180 out</text>
 <text x="877.02" y="789.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="27.99" y="808.00" fill="#9d7cd8" textLength="18.66" lengthAdjust="spacingAndGlyphs">▣ </text>
-<text x="46.65" y="808.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">port · mock/mock-model · 6 steps · 1320 in / 180 out</text>
 <text x="877.02" y="808.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="877.02" y="827.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="877.02" y="846.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>

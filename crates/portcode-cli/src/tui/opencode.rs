@@ -301,3 +301,24 @@ fn every_screen_fits_small_terminals_without_panicking() {
         screen(&mut a, w, h);
     }
 }
+
+// ---- PortCode's own additions ----
+
+#[test]
+fn parity_result_gets_a_verdict_banner_and_ids_are_coloured() {
+    use super::app::ToolState;
+    let (mut a, _rx) = app();
+    a.items.push(Item::Tool {
+        name: "parity".into(),
+        args: "{}".into(),
+        state: ToolState::Ok,
+        title: "parity PASS".into(),
+        text: "parity: ok=6 diff=0 missing=0 extra=0\nRESULT: PASS".into(),
+    });
+    a.items
+        .push(Item::Assistant("Recorded E-0002 as unknown.".into()));
+    a.unknowns = vec!["E-0002 locale".into()];
+    let s = screen(&mut a, 120, 30);
+    assert!(s.contains(" PASS ") && s.contains("ok=6 diff=0"));
+    assert!(s.contains("E-0002"));
+}

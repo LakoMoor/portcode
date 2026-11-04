@@ -25,6 +25,9 @@
 <text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
 <text x="494.49" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
 <text x="242.58" y="447.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
+<text x="345.21" y="485.00" fill="#7fd88f" textLength="93.30" lengthAdjust="spacingAndGlyphs">● observed</text>
+<text x="438.51" y="485.00" fill="#f5a742" textLength="121.29" lengthAdjust="spacingAndGlyphs">   ● inferred</text>
+<text x="559.80" y="485.00" fill="#e06c75" textLength="111.96" lengthAdjust="spacingAndGlyphs">   ● unknown</text>
 <text x="0.00" y="637.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
 <text x="634.44" y="637.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">tab agents · / commands · ctrl+b sidebar  </text>
 </g>

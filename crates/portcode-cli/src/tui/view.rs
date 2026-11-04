@@ -156,6 +156,51 @@ fn md_lines(text: &str, width: usize, indent: &str) -> Vec<Line<'static>> {
     }
     out
 }
+/// Colour evidence ids (`E-0007`) by what the ledger says: open unknowns are red, the rest green.
+fn chip_ids(line: Line<'static>, unknown: &[String]) -> Line<'static> {
+    let (style, alignment) = (line.style, line.alignment);
+    let mut out: Vec<Span<'static>> = Vec::new();
+    for sp in line.spans {
+        let chars: Vec<char> = sp.content.chars().collect();
+        let mut plain = String::new();
+        let mut i = 0;
+        while i < chars.len() {
+            let is_id = chars[i] == 'E'
+                && chars.get(i + 1) == Some(&'-')
+                && (2..6).all(|k| chars.get(i + k).is_some_and(|c| c.is_ascii_digit()))
+                && !chars.get(i + 6).is_some_and(|c| c.is_ascii_digit())
+                && (i == 0 || !chars[i - 1].is_alphanumeric());
+            if is_id {
+                let id: String = chars[i..i + 6].iter().collect();
+                if !plain.is_empty() {
+                    out.push(Span::styled(std::mem::take(&mut plain), sp.style));
+                }
+                let col = if unknown.iter().any(|u| u.starts_with(&id)) {
+                    RED
+                } else {
+                    GREEN
+                };
+                out.push(Span::styled(
+                    id,
+                    Style::new().fg(col).add_modifier(Modifier::BOLD),
+                ));
+                i += 6;
+            } else {
+                plain.push(chars[i]);
+                i += 1;
+            }
+        }
+        if !plain.is_empty() {
+            out.push(Span::styled(plain, sp.style));
+        }
+    }
+    Line {
+        spans: out,
+        style,
+        alignment,
+    }
+}
+
 fn text_style() -> Style {
     text()
 }
@@ -212,7 +257,11 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                 if out.last().is_some_and(|l| !l.spans.is_empty()) {
                     out.push(Line::from(""));
                 }
-                out.extend(md_lines(t, width, "  "));
+                out.extend(
+                    md_lines(t, width, "  ")
+                        .into_iter()
+                        .map(|l| chip_ids(l, &app.unknowns)),
+                );
                 out.push(Line::from(""));
             }
             Item::Reasoning(t) => {
@@ -260,8 +309,39 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                     Span::styled(name.clone(), bold(tool_color(name))),
                     Span::styled(format!("  {sum}"), muted()),
                 ];
-                out.extend(wrap(head, width, 6).into_iter().map(Line::from));
-                if !matches!(state, ToolState::Running) && !body.trim().is_empty() {
+                out.extend(
+                    wrap(head, width, 6)
+                        .into_iter()
+                        .map(|l| chip_ids(Line::from(l), &app.unknowns)),
+                );
+                let verdict = (name == "parity" && !matches!(state, ToolState::Running))
+                    .then(|| body.lines().find_map(|l| l.trim().strip_prefix("RESULT:")))
+                    .flatten()
+                    .map(|r| r.trim().starts_with("PASS"));
+                if let Some(pass) = verdict {
+                    let (bg, fg, word) = if pass {
+                        (PASS_BG, GREEN, " PASS ")
+                    } else {
+                        (FAIL_BG, RED, " FAIL ")
+                    };
+                    let counts = body
+                        .lines()
+                        .find(|l| l.trim_start().starts_with("parity:"))
+                        .map(|l| l.trim().trim_start_matches("parity:").trim().to_string())
+                        .unwrap_or_default();
+                    out.push(pad_line(
+                        vec![
+                            Span::raw("    "),
+                            Span::styled(
+                                word,
+                                Style::new().fg(BG).bg(fg).add_modifier(Modifier::BOLD),
+                            ),
+                            Span::styled(format!("  {counts}"), Style::new().fg(fg)),
+                        ],
+                        width.saturating_sub(2),
+                        bg,
+                    ));
+                } else if !matches!(state, ToolState::Running) && !body.trim().is_empty() {
                     let max = if *state == ToolState::Err { 4 } else { 3 };
                     let lines: Vec<&str> = body.lines().collect();
                     for l in lines.iter().take(max) {
@@ -275,11 +355,14 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                         } else {
                             muted()
                         };
-                        out.push(Line::from(vec![
-                            Span::raw("    "),
-                            Span::styled("│ ", Style::new().fg(RULE)),
-                            Span::styled(l, st),
-                        ]));
+                        out.push(chip_ids(
+                            Line::from(vec![
+                                Span::raw("    "),
+                                Span::styled("│ ", Style::new().fg(RULE)),
+                                Span::styled(l, st),
+                            ]),
+                            &app.unknowns,
+                        ));
                     }
                     if lines.len() > max {
                         out.push(Line::from(vec![
@@ -631,11 +714,34 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     l.push(Line::from(""));
 
     l.push(section("Proof", w));
-    l.push(Line::from(match &app.parity {
-        Some((true, t)) => Span::styled(format!("✓ {t}"), Style::new().fg(GREEN)),
-        Some((false, t)) => Span::styled(format!("✗ {t}"), Style::new().fg(RED)),
-        None => Span::styled("no parity run yet", muted()),
-    }));
+    match &app.parity {
+        Some((ok, t)) => {
+            let (bg, fg, word) = if *ok {
+                (PASS_BG, GREEN, " PASS ")
+            } else {
+                (FAIL_BG, RED, " FAIL ")
+            };
+            l.push(pad_line(
+                vec![Span::styled(
+                    word,
+                    Style::new().fg(BG).bg(fg).add_modifier(Modifier::BOLD),
+                )],
+                w,
+                bg,
+            ));
+            for r in wrap(
+                vec![Span::styled(format!(" {t}"), Style::new().fg(fg))],
+                w,
+                1,
+            )
+            .into_iter()
+            .take(2)
+            {
+                l.push(pad_line(r, w, bg));
+            }
+        }
+        None => l.push(Line::from(Span::styled("no parity run yet", muted()))),
+    }
 
     if !app.todos.is_empty() {
         l.push(Line::from(""));
@@ -855,13 +961,28 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     prompt(f, app, pa, true);
     popup(f, app, pa);
     let tips = "tab agents   /deep look inside   /  commands   ctrl+c quit";
+    let lw = "● observed   ● inferred   ● unknown".chars().count() as u16;
+    f.render_widget(
+        Paragraph::new(Line::from(vec![
+            Span::styled("● observed", Style::new().fg(GREEN)),
+            Span::styled("   ● inferred", Style::new().fg(YELLOW)),
+            Span::styled("   ● unknown", Style::new().fg(RED)),
+        ])),
+        Rect {
+            x: cx(lw),
+            y: pa.y + pa.height + 3,
+            width: lw,
+            height: 1,
+        }
+        .intersection(area),
+    );
     if let Some(h) = &app.hint {
         let w = (h.chars().count() as u16).min(area.width.saturating_sub(2));
         f.render_widget(
             Paragraph::new(Line::from(Span::styled(h.clone(), Style::new().fg(YELLOW)))),
             Rect {
                 x: cx(w),
-                y: pa.y + pa.height + 3,
+                y: pa.y + pa.height + 5,
                 width: w,
                 height: 1,
             }
