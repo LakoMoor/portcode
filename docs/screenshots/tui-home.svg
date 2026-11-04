@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1026" height="642" viewBox="0 0 1026 642" role="img" aria-label="portcode — home">
+<rect width="1026" height="642" rx="10" fill="#0a0a0a"/>
+<rect width="1026" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1026" height="10" fill="#1b1b1b"/>
+<circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
+<text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
+<rect x="167.94" y="319.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="338.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="357.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="376.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="395.00" width="690.42" height="19" fill="#141414"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="391.86" y="219.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">┌─┐┌─┐┬─┐┌┬┐</text>
+<text x="503.82" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">┌─┐┌─┐┌┬┐┌─┐</text>
+<text x="391.86" y="238.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">├─┘│ │├┬┘ │ </text>
+<text x="503.82" y="238.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">│  │ │ ││├┤ </text>
+<text x="391.86" y="257.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">┴  └─┘┴└─ ┴ </text>
+<text x="503.82" y="257.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">└─┘└─┘─┴┘└─┘</text>
+<text x="335.88" y="295.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">port anything to Rust · show the proof</text>
+<text x="167.94" y="333.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="177.27" y="352.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs"> Ask anything… "Port this CLI to Rust, following rustport"</text>
+<text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="390.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="167.94" y="409.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
+<text x="186.60" y="409.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
+<text x="233.25" y="409.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
+<text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
+<text x="335.88" y="447.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">tab agents   /  commands   ctrl+c quit</text>
+<text x="0.00" y="637.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
+<text x="466.50" y="637.00" fill="#808080" textLength="559.80" lengthAdjust="spacingAndGlyphs">tab agents · ctrl+t thinking · ctrl+b sidebar · / commands  </text>
+</g>
+</svg>

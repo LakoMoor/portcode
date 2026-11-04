@@ -1,20 +1,36 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PortCode — port anything to Rust, with proof. Runs on your own LLMs.</title>
-<meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/session-port-agent.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
+<meta property="og:title" content="PortCode — port anything to Rust, with proof"><meta property="og:description" content="Open-source CLI agent for reverse engineering and Rust ports on local and self-hosted LLMs."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source CLI agent that reverse-engineers programs and ports them to Rust with evidence, golden tests, screenshots and a generated GitHub Pages site. Works with local and self-hosted LLMs: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' rx='11' fill='%23ff8700'/%3E%3Ctext x='8' y='35' font-family='monospace' font-size='28' font-weight='700' fill='%23111'%3Epc%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="#">Port<b>Code</b></a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#skill">Skill</a><a class="l" href="#ports">Ports</a><a class="l" href="#cli">CLI</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="#">Port<b>Code</b></a><a class="l" href="#install">Install</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#skill">Skill</a><a class="l" href="#ports">Ports</a><a class="l" href="#cli">CLI</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru.html">RU</a><a class="l" href="https://github.com/LakoMoor/portcode">GitHub ↗</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="eyebrow">Open source · 100% Rust · local-first</div>
 <h1>Port anything to Rust.<br><em>Show the proof.</em></h1>
 <p class="lead">PortCode is a terminal agent that studies an original program, records what it learns as evidence, ports it to Rust slice by slice, and proves it with golden tests, parity checks, screenshots and a generated documentation site. It talks to <strong>your</strong> models — <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM — not to a vendor you did not choose.</p>
-<div class="cmd"><span>$</span> cargo install --git https://github.com/LakoMoor/portcode portcode-cli &amp;&amp; portcode init &amp;&amp; portcode</div>
+<div class="cmd"><span>$</span> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</div>
 <div class="btns"><a class="btn" href="#how">See how it works</a><a class="btn ghost" href="ports/wordstat/">Example port with evidence</a><a class="btn ghost" href="https://github.com/LakoMoor/portcode">Source</a></div>
-<figure class="shot"><img src="screenshots/session-port-agent.svg" alt="PortCode port agent session: pin, survey, evidence, parity PASS"></figure>
-<p class="cap">The <code>port</code> agent on the wordstat example. The model here is a scripted replay (<code>portcode-mock-llm</code>) so the run is reproducible; the tools — pin, survey, bash, parity, ledger — are real. <a href="https://github.com/LakoMoor/portcode/blob/main/scripts/make_screenshots.sh">Regenerate it yourself</a>.</p>
+<figure class="shot"><img src="screenshots/tui-session.svg" alt="PortCode full-screen UI: port agent with tool calls, evidence and todo sidebar"></figure>
+<p class="cap">The full-screen UI running the <code>port</code> agent on the wordstat example. The model here is a scripted replay (<code>portcode-mock-llm</code>) so the run is reproducible; the UI and the tools — pin, survey, bash, parity, ledger — are real. <a href="https://github.com/LakoMoor/portcode/blob/main/scripts/make_screenshots.sh">Regenerate it yourself</a>.</p>
 </header>
+
+<section id="install"><h2><small>Install</small>One line, checksum verified</h2>
+<pre><code># macOS / Linux / WSL
+curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
+# options: PORTCODE_VERSION=v0.1.0 · PORTCODE_INSTALL_DIR=~/bin · PORTCODE_FROM_SOURCE=1 · --with-skill ~/.claude/skills · --uninstall
+
+brew tap LakoMoor/tap &amp;&amp; brew install portcode          # Homebrew
+cargo install --git https://github.com/LakoMoor/portcode portcode-cli
+
+portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
+<p>Prebuilt: Linux and macOS, x86_64 and aarch64. The installer verifies the sha256 and falls back to a source build when no binary exists. Windows: use WSL for now.</p>
+<div class="grid">
+<div class="card"><h3>Home</h3><p><img src="screenshots/tui-home.svg" alt="home screen" style="width:100%;border-radius:8px"></p></div>
+<div class="card"><h3>Slash commands</h3><p><img src="screenshots/tui-slash.svg" alt="slash popup" style="width:100%;border-radius:8px"></p></div>
+<div class="card"><h3>Permission dialog</h3><p><img src="screenshots/tui-permission.svg" alt="permission dialog" style="width:100%;border-radius:8px"></p></div>
+</div></section>
 
 <section id="how"><h2><small>Workflow</small>Evidence first, code second</h2>
 <div class="grid">

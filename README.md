@@ -4,8 +4,12 @@ An open-source terminal agent for reverse engineering and Rust ports that runs o
 <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p align="center"><a href="https://lakomoor.github.io/portcode/">Site</a> · <a href="https://lakomoor.github.io/portcode/ports/wordstat/">Example port</a> · <a href="README.ru.md">Русский</a> · <a href="docs/ARCHITECTURE.md">Architecture</a></p>
 
-![PortCode port agent session](docs/screenshots/session-port-agent.svg)
-<sub>The `port` agent on the bundled example. The model is a **scripted replay** (`portcode-mock-llm`) so the run is reproducible; the tools (pin, survey, bash, parity, ledger) are real. Regenerate: `scripts/make_screenshots.sh`.</sub>
+![PortCode full-screen UI](docs/screenshots/tui-session.svg)
+<sub>The full-screen UI (OpenCode-style) running the `port` agent on the bundled example. The model is a **scripted replay** (`portcode-mock-llm`) so the run is reproducible; the UI and tools (pin, survey, bash, parity, ledger) are real — the picture is the real UI rendered headlessly. Regenerate: `scripts/make_screenshots.sh`.</sub>
+
+| Home | Slash commands | Permission dialog |
+|---|---|---|
+| ![home](docs/screenshots/tui-home.svg) | ![slash](docs/screenshots/tui-slash.svg) | ![permission](docs/screenshots/tui-permission.svg) |
 
 ## What it does
 1. **Studies** the original: pins the exact build (sha256), surveys the tree, records facts in an append-only **evidence ledger** as `observation` / `inference` / `unknown`.
@@ -16,18 +20,32 @@ It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, s
 
 ## Install
 ```sh
-git clone https://github.com/LakoMoor/portcode && cd portcode
-cargo install --path crates/portcode-cli      # installs `portcode`
-portcode init                                  # writes portcode.json
-export LAKOMOOR_API_KEY=...                    # or: portcode auth set lakomoor
-portcode doctor                                # providers, toolchain, optional engines
-portcode                                       # chat; /help inside
+# macOS / Linux (also WSL) — verifies the sha256 of the download
+curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
+#   options: PORTCODE_VERSION=v0.1.0  PORTCODE_INSTALL_DIR=~/bin  PORTCODE_FROM_SOURCE=1  --with-skill ~/.claude/skills  --uninstall
+
+# Homebrew (after the tap is published)
+brew tap LakoMoor/tap && brew install portcode
+
+# from source (Rust >= 1.85)
+cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 ```
-Requires Rust ≥ 1.85. Local models need no key: `portcode -m ollama/qwen3:14b`.
+Then:
+```sh
+portcode init                 # writes portcode.json
+export LAKOMOOR_API_KEY=...   # or: portcode auth set lakomoor   (local models need no key)
+portcode doctor               # providers, toolchain, optional engines
+portcode                      # full-screen UI;  portcode --plain for a line-based chat
+portcode completions zsh > ~/.zfunc/_portcode
+```
+Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bash` tool is Unix-only for now).
+
+## Keys (full-screen UI)
+`enter` send · `alt+enter` newline · `tab`/`shift+tab` switch agent · `/` commands · `esc` interrupt · `ctrl+t` show reasoning · `ctrl+b` sidebar · `pgup/pgdn`/wheel scroll · `ctrl+c` interrupt / clear / quit. Permission dialog: `y` once · `a` always · `n` reject.
 
 ## Use
 ```sh
-portcode                                  # interactive, agent "build"
+portcode                                  # full-screen UI, agent "build"
 portcode -a port                          # the rustport workflow
 portcode run -a reverse -y "Explain how ./app stores its save files" --json
 portcode models -p lakomoor               # list served models

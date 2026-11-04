@@ -6,8 +6,16 @@
 
 Это переписывание архитектуры OpenCode на Rust (агенты, инструменты, разрешения, сессии, скиллы, MCP) вместе со скиллом [rustport](skills/rustport). Что покрыто, а что нет — в [docs/OPENCODE_MAPPING.md](docs/OPENCODE_MAPPING.md).
 
+![Интерфейс PortCode](docs/screenshots/tui-session.svg)
+
+Установка (macOS / Linux / WSL; проверяет sha256):
 ```sh
-cargo install --path crates/portcode-cli
+curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
+# или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
+```
+Полноэкранный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc` прервать · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode --plain` — построчный режим. Windows: через WSL.
+
+```sh
 portcode init && export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor
 portcode doctor
 portcode -a port                               # воркфлоу rustport

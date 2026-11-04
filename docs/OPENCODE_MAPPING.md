@@ -14,7 +14,8 @@ PortCode is a clean Rust rewrite of OpenCode's *design*, not a translation of it
 | skills (`SKILL.md`) | `skills.rs`, bundled `rustport`, discovery in `.portcode/.claude/.agents` | ✅ |
 | MCP client | `mcp.rs` stdio JSON-RPC (`tools/list`, `tools/call`) | ◐ (no remote/HTTP, resources, prompts) |
 | compaction | tool-output pruning + model summary near 75 % window | ✅ |
-| TUI (`packages/tui`), desktop, web app, console | line-based terminal UI with colour panels | ◐ (no full-screen TUI/desktop/web) |
+| TUI (`packages/tui`) | full-screen ratatui UI: home, transcript with tool blocks, prompt box, sidebar (context · evidence · todo), slash popup, permission dialog; `--plain` line mode | ◐ (no diff viewer, model/session pickers, themes) |
+| desktop, web app, console | — | ⏳ |
 | server / SDK / plugins / LSP / formatters / GitHub integration / share | — | ⏳ |
 | i18n READMEs | EN + RU | ◐ |
 

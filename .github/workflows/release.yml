@@ -1,0 +1,36 @@
+name: release
+on:
+  push: { tags: ["v*"] }
+  workflow_dispatch:
+permissions: { contents: write }
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,    target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+          - { os: macos-latest,     target: aarch64-apple-darwin }
+          - { os: macos-latest,     target: x86_64-apple-darwin }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "${{ matrix.target }}" }
+      - uses: Swatinem/rust-cache@v2
+      - run: packaging/package.sh ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with: { name: "portcode-${{ matrix.target }}", path: dist/* }
+  publish:
+    needs: build
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: Create release with checksums
+        env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        run: |
+          cd dist && cat *.sha256 > SHA256SUMS
+          gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --generate-notes --title "PortCode ${GITHUB_REF_NAME}" *.tar.gz *.sha256 SHA256SUMS

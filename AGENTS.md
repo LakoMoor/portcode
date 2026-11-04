@@ -10,3 +10,5 @@ PortCode: Rust agent for reverse engineering and ports, built for local/self-hos
 - Facts about an original go in the ledger as observation / inference / unknown. Never claim parity without a `parity` PASS.
 - No secrets, no personal paths in code, tests, screenshots or docs. Screenshots come from `scripts/make_screenshots.sh` / `portcode port shot`, never hand-made.
 - Before pushing: `cargo fmt --all && cargo clippy --workspace --all-targets && cargo test --workspace`; if you changed output rendering, rerun `scripts/make_screenshots.sh` and `examples/wordstat/demo.sh`.
+- UI: `crates/portcode-cli/src/tui` (App = state/update, view = render, svg = headless screenshot). Real runs and `portcode snapshot` share them; keep `App` free of terminal I/O so it stays testable.
+- Installers: `install.sh` must keep verifying sha256; test it with `PORTCODE_DOWNLOAD_URL` against a local `packaging/package.sh` archive.

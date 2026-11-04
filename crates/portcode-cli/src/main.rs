@@ -2,6 +2,7 @@
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
 mod cmds;
 mod term;
+mod tui;
 
 use clap::{Parser, Subcommand};
 use portcode_agent::{Config, Runner, Status};
@@ -34,6 +35,24 @@ enum Cmd {
     Chat {
         #[arg(short = 'c', long)]
         r#continue: bool,
+        /// Line-based chat instead of the full-screen UI
+        #[arg(long)]
+        plain: bool,
+    },
+    /// Render the full-screen UI headlessly to an SVG screenshot
+    #[command(hide = true)]
+    Snapshot {
+        out: String,
+        #[arg(long, default_value = "120x36")]
+        size: String,
+        #[arg(long)]
+        prompt: Option<String>,
+        #[arg(long)]
+        until_permission: bool,
+        #[arg(long)]
+        typed: Option<String>,
+        #[arg(long)]
+        cwd_label: Option<String>,
     },
     /// Run one prompt non-interactively
     Run {
@@ -69,6 +88,8 @@ enum Cmd {
         #[command(subcommand)]
         sub: AuthCmd,
     },
+    /// Print shell completions (bash, zsh, fish, powershell, elvish)
+    Completions { shell: clap_complete::Shell },
     /// List agents
     Agents,
     /// Skills: list, show, export
@@ -193,14 +214,54 @@ pub fn root() -> Result<std::path::PathBuf, String> {
 async fn real_main(cli: Cli) -> Result<i32, String> {
     let cfg = || Config::load(&root()?);
     match cli.cmd {
-        None => cmds::chat(cfg()?, &cli.model, &cli.agent, cli.show_reasoning, false).await,
-        Some(Cmd::Chat { r#continue }) => {
-            cmds::chat(
+        None => {
+            let tty = std::io::IsTerminal::is_terminal(&std::io::stdin())
+                && std::io::IsTerminal::is_terminal(&std::io::stdout());
+            if tty {
+                tui::run(cfg()?, tui_opts(&cli, false)).await
+            } else {
+                cmds::chat(cfg()?, &cli.model, &cli.agent, cli.show_reasoning, false).await
+            }
+        }
+        Some(Cmd::Chat { r#continue, plain }) => {
+            if plain {
+                cmds::chat(
+                    cfg()?,
+                    &cli.model,
+                    &cli.agent,
+                    cli.show_reasoning,
+                    r#continue,
+                )
+                .await
+            } else {
+                tui::run(cfg()?, tui_opts(&cli, r#continue)).await
+            }
+        }
+        Some(Cmd::Snapshot {
+            ref out,
+            ref size,
+            ref prompt,
+            until_permission,
+            ref typed,
+            ref cwd_label,
+        }) => {
+            let (w, h) = size
+                .split_once('x')
+                .and_then(|(w, h)| Some((w.parse().ok()?, h.parse().ok()?)))
+                .ok_or("--size must look like 120x36")?;
+            let mut o = tui_opts(&cli, false);
+            o.cwd_label = cwd_label.clone();
+            tui::snapshot(
                 cfg()?,
-                &cli.model,
-                &cli.agent,
-                cli.show_reasoning,
-                r#continue,
+                o,
+                tui::Snap {
+                    out: out.clone(),
+                    w,
+                    h,
+                    prompt: prompt.clone(),
+                    until_permission,
+                    typed: typed.clone(),
+                },
             )
             .await
         }
@@ -259,6 +320,15 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             AuthCmd::Set { provider, from_env } => cmds::auth_set(&provider, from_env.as_deref()),
             AuthCmd::List => cmds::auth_list(),
         },
+        Some(Cmd::Completions { shell }) => {
+            clap_complete::generate(
+                shell,
+                &mut <Cli as clap::CommandFactory>::command(),
+                "portcode",
+                &mut std::io::stdout(),
+            );
+            Ok(0)
+        }
         Some(Cmd::Agents) => {
             for a in portcode_agent::agents::all() {
                 println!(
@@ -291,6 +361,16 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
         }) => cmds::page(&input, &out, &title, &css, &home),
         Some(Cmd::Port { sub }) => cmds::port(cfg()?, sub_port(sub)).await,
         Some(Cmd::Tool { name, args }) => cmds::run_tool(cfg()?, &name, &args).await,
+    }
+}
+
+fn tui_opts(cli: &Cli, cont: bool) -> tui::Opts {
+    tui::Opts {
+        model: cli.model.clone(),
+        agent: cli.agent.clone().unwrap_or_else(|| "build".into()),
+        cont,
+        show_reasoning: cli.show_reasoning,
+        cwd_label: None,
     }
 }
 
