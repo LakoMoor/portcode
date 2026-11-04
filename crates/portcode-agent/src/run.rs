@@ -78,6 +78,8 @@ pub struct Runner {
     pub session_id: String,
     pub usage: Usage,
     last_prompt_tokens: u64,
+    /// Session id of the subscription CLI (`claude-code` / `codex`), kept so the next turn resumes it.
+    cli_session: Option<String>,
 }
 
 fn err_text(e: impl std::fmt::Display) -> String {
@@ -184,6 +186,7 @@ impl Runner {
             session_id: Store::new_id(),
             usage: Usage::default(),
             last_prompt_tokens: 0,
+            cli_session: None,
         })
     }
 
@@ -455,7 +458,66 @@ impl Runner {
     }
 
     /// Run one user turn to completion.
+    /// One turn through the user's own `claude` / `codex` CLI (their subscription). See `backend`.
+    async fn send_cli(&mut self, cli: crate::backend::Cli, text: &str) -> Result<Outcome, String> {
+        use crate::backend;
+        let bin = backend::find_binary(cli).ok_or_else(|| {
+            format!(
+                "{} is not installed or not on PATH. Install it and {}. `portcode doctor` shows what was found.",
+                cli.binary_name(),
+                cli.login_hint()
+            )
+        })?;
+        self.messages.push(Message::user(text));
+        self.ctx.cancel.store(false, Ordering::Relaxed);
+        let deep = self.ctx.is_deep();
+        let brief = agents::cli_brief(&self.agent, &self.skills, deep);
+        let permission = self
+            .cfg
+            .cli_permission
+            .clone()
+            .unwrap_or_else(|| "acceptEdits".into());
+        let model = self.resolved.model.clone();
+        let req = backend::Request {
+            cli,
+            bin: &bin,
+            model: &model,
+            prompt: text,
+            brief: &brief,
+            root: &self.ctx.root,
+            session: self.cli_session.as_deref(),
+            deep,
+            readonly: self.agent.readonly,
+            permission: &permission,
+        };
+        let turn = backend::run(&req, self.ui.as_ref(), &self.ctx.cancel).await?;
+        if let Some(s) = &turn.session {
+            self.cli_session = Some(s.clone());
+        }
+        self.messages.push(Message::assistant_text(&turn.text));
+        self.usage.prompt_tokens += turn.usage.prompt_tokens;
+        self.usage.completion_tokens += turn.usage.completion_tokens;
+        self.ui.event(UiEvent::Usage(turn.usage));
+        let cancelled = self.ctx.cancelled();
+        match turn.error {
+            Some(e) if !cancelled => Err(e),
+            _ => Ok(Outcome {
+                text: turn.text,
+                steps: turn.steps,
+                usage: turn.usage,
+                status: if cancelled {
+                    Status::Cancelled
+                } else {
+                    Status::Done
+                },
+            }),
+        }
+    }
+
     pub async fn send(&mut self, text: &str) -> Result<Outcome, String> {
+        if let Some(cli) = crate::backend::cli_for(&self.resolved.provider.name) {
+            return self.send_cli(cli, text).await;
+        }
         self.messages.push(Message::user(text));
         self.ctx.cancel.store(false, Ordering::Relaxed);
         let base_steps = self

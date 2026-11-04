@@ -147,6 +147,18 @@ pub async fn chat(
 pub async fn models(cfg: Config, which: Option<String>) -> Result<i32, String> {
     let reference = which.map(|w| if w.contains('/') { w } else { format!("{w}/x") });
     let r = cfg.resolve(reference.as_deref())?;
+    if let Some(cli) = portcode_agent::backend::cli_for(&r.provider.name) {
+        println!(
+            "{} {}",
+            bold(&r.provider.name),
+            dim("(runs the official CLI on your subscription)")
+        );
+        for m in portcode_agent::backend::model_hints(cli) {
+            println!("  {m}");
+        }
+        println!("  {}", dim("any other id your plan includes also works"));
+        return Ok(0);
+    }
     let c = Client::new(r.provider.clone()).map_err(|e| e.to_string())?;
     let ids = c.list_models().await.map_err(|e| e.to_string())?;
     println!("{} {}", bold(&r.provider.name), dim(&r.provider.base_url));
@@ -230,6 +242,14 @@ pub async fn doctor(cfg: Config) -> Result<i32, String> {
         async move {
             let r = cfg.resolve(Some(&format!("{n}/x"))).ok();
             let res = match r {
+                Some(r) if portcode_llm::is_cli(&r.provider) => {
+                    let cli = portcode_agent::backend::cli_for(&n);
+                    match cli.map(portcode_agent::backend::status) {
+                        Some((true, s)) => Err(format!("✓ {s}")),
+                        Some((false, s)) => Err(s),
+                        None => Err("not configured".into()),
+                    }
+                }
                 Some(r) => match Client::new(r.provider.clone()) {
                     Ok(c) => {
                         tokio::time::timeout(std::time::Duration::from_secs(4), c.list_models())
@@ -705,5 +725,35 @@ pub fn remote_keys((op, arg): (String, String)) -> Result<i32, String> {
             );
         }
     }
+    Ok(0)
+}
+
+/// `portcode mcp`: PortCode's tools for Claude Code / Codex over stdio.
+pub async fn mcp(cfg: Config, deep: bool, print_config: bool) -> Result<i32, String> {
+    if print_config {
+        let exe = std::env::current_exe()
+            .map(|p| p.display().to_string())
+            .unwrap_or_else(|_| "portcode".into());
+        println!(
+            "Give Claude Code and Codex PortCode's evidence, pin, parity and screenshot tools:\n"
+        );
+        println!("  claude mcp add portcode -- {exe} mcp");
+        println!("  codex mcp add portcode -- {exe} mcp\n");
+        println!("Add --deep after `mcp` to also offer disasm, decompile, emulate and the other deep tools.");
+        println!("Or run PortCode on your subscription directly:  portcode -m claude-code/sonnet   /   portcode -m codex/default");
+        return Ok(0);
+    }
+    let root = crate::root()?;
+    let reg = portcode_agent::tools::builtin(portcode_agent::skills::discover(&root));
+    let ctx = Ctx::new(
+        root,
+        Arc::new(portcode_agent::DenyAsk),
+        Rules::from_config(&cfg.permission),
+    );
+    ctx.deep.store(
+        deep || cfg.mode.as_deref() == Some("deep"),
+        std::sync::atomic::Ordering::Relaxed,
+    );
+    portcode_agent::mcpserve::serve(reg, ctx).await?;
     Ok(0)
 }

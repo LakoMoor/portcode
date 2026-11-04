@@ -66,6 +66,13 @@
 </div>
 <p class="cap">Обновления: <code>portcode update</code> или <code>/update</code> сравнивает твою версию с последним релизом. Раз в день приложение проверяет тихо. <code>PORTCODE_NO_UPDATE_CHECK=1</code> отключает. Сами обновления не ставятся.</p></section>
 
+<section id="subs"><h2>Работай на своей подписке Claude или ChatGPT</h2>
+<p class="sub">Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.</p>
+<div class="bento">
+<div class="t g-light s6 tc"><h3>PortCode на твоей подписке</h3><p><code>portcode -m claude-code/sonnet</code> или <code>portcode -m codex/default</code>. Работа видна в окне PortCode, а доказательства попадают в тот же журнал.</p></div>
+<div class="t g-dark s6 tc"><h3>Твой CLI использует PortCode</h3><p><code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="../guide/SUBSCRIPTIONS.html">Подробности и ограничения</a>.</p></div>
+</div></section>
+
 <section id="try"><h2>Посмотри настоящий запуск</h2>
 <p class="sub">Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.</p>
 <div id="demo" data-lang="ru"><div class="dlog" aria-live="polite"></div><div class="dside"><h4>Доказательства</h4><div class="dev">0</div><h4>Дела</h4><div class="dtodo"></div></div>

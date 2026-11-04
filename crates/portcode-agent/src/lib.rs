@@ -5,9 +5,11 @@
 )]
 
 pub mod agents;
+pub mod backend;
 pub mod config;
 pub mod engines;
 pub mod mcp;
+pub mod mcpserve;
 pub mod permission;
 pub mod run;
 pub mod session;

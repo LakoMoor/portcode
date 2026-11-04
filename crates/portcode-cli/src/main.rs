@@ -121,6 +121,14 @@ enum Cmd {
     Doctor,
     /// Check whether a newer PortCode is released
     Update,
+    /// Serve PortCode's tools over MCP (stdio) for Claude Code or Codex; `--print-config` shows how to register it
+    Mcp {
+        /// Also offer the deep reverse-engineering tools
+        #[arg(long)]
+        deep: bool,
+        #[arg(long)]
+        print_config: bool,
+    },
     /// Probe a model: chat, tool-calling, JSON validity, edit accuracy
     Eval,
     /// Create portcode.json in this directory
@@ -398,6 +406,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
         }
         Some(Cmd::Models { provider }) => cmds::models(cfg()?, provider.or(cli.model)).await,
         Some(Cmd::Providers) => cmds::providers(cfg()?),
+        Some(Cmd::Mcp { deep, print_config }) => cmds::mcp(cfg()?, deep, print_config).await,
         Some(Cmd::Update) => {
             println!("{}", update::report(true).await);
             Ok(0)

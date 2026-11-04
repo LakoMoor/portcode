@@ -16,6 +16,7 @@ The installer checks the sha256 of the download. Another way: `cargo install --g
 PortCode talks to any OpenAI-compatible server. Choose one:
 
 - **A local model (no key).** Start Ollama, LM Studio, llama.cpp or vLLM, then run `portcode` and type `/provider ollama qwen3:14b`.
+- **Your Claude or ChatGPT subscription.** Install Claude Code or Codex, sign in there once, then `/provider claude-code sonnet` or `/provider codex default`. No key, no API bill. See [Claude Code and Codex](SUBSCRIPTIONS.html).
 - **A hosted API.** Run `portcode`, type `/key` and paste your key. It is hidden while you type and saved in your config folder with mode 600. From a shell the same thing is `portcode auth set <provider>`, or `portcode auth set <provider> --from-env NAME` to read it from an environment variable.
 
 Inside the app:

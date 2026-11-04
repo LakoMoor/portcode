@@ -19,7 +19,7 @@ mod profile;
 mod repair;
 mod types;
 
-pub use client::{presets, Client, LlmError, ProviderConfig, StreamEvent};
+pub use client::{is_cli, presets, Client, LlmError, ProviderConfig, StreamEvent};
 pub use profile::{profile_for, ModelProfile};
 pub use repair::{parse_text_tool_calls, repair_json, strip_think};
 pub use types::{Assistant, FunctionCall, Message, Role, ToolCall, ToolDef, Usage};

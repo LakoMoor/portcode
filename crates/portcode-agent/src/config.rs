@@ -28,6 +28,9 @@ pub struct Config {
     /// Prompt flavour for every model: `auto` (default: picked from the model id), `compact`, `full` or `qwen38`.
     /// A per-model `"models": { "<id>": { "prompt_style": … } }` entry still wins.
     pub prompt_style: Option<String>,
+    /// Claude Code `--permission-mode` for the `claude-code` provider: `acceptEdits` (default), `plan`,
+    /// `bypassPermissions` or `default`. Read-only agents always use `plan`.
+    pub cli_permission: Option<String>,
     /// Extra directories file tools may touch without asking.
     pub allowed_dirs: Vec<String>,
 }

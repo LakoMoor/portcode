@@ -8,6 +8,7 @@ use portcode_llm::ModelProfile;
 use std::path::Path;
 
 const COMMON: &str = include_str!("../prompts/common.md");
+const CLI_BRIEF: &str = include_str!("../prompts/cli.md");
 const QWEN38: &str = include_str!("../prompts/qwen38.md");
 const FULL_EXTRA: &str = include_str!("../prompts/full_extra.md");
 
@@ -229,6 +230,25 @@ pub fn instructions(root: &Path) -> String {
     out
 }
 
+/// Instructions handed to Claude Code / Codex when they run a PortCode turn (see `backend`).
+pub fn cli_brief(agent: &AgentDef, skills: &[Skill], deep: bool) -> String {
+    let mut s = String::from(CLI_BRIEF);
+    s.push('\n');
+    s.push_str(agent.prompt);
+    if agent.embed_skill {
+        if let Some(sk) = skills.iter().find(|k| k.name == "rustport") {
+            s.push_str(&sk.body);
+        }
+        s.push_str("\n</rustport-skill>\n");
+    }
+    s.push_str(if deep {
+        "\nMode: deep. You may look inside the original with the PortCode deep tools. Use it only on software the user owns or may examine.\n"
+    } else {
+        "\nMode: clean-room. Observe the original from outside only: run it, read its output. Do not disassemble, decompile or inspect its bytes.\n"
+    });
+    s
+}
+
 pub fn system_prompt(
     agent: &AgentDef,
     profile: &ModelProfile,
@@ -318,6 +338,16 @@ mod tests {
         assert!(
             system_prompt(&find("build").unwrap(), &p, d, &skills, false, 0).contains("# Skills")
         );
+    }
+    #[test]
+    fn cli_brief_names_the_portcode_tools_and_the_mode() {
+        let skills = vec![crate::skills::bundled()];
+        let b = cli_brief(&find("port").unwrap(), &skills, false);
+        assert!(
+            b.contains("mcp__portcode__") && b.contains("evidence_add") && b.contains("clean-room")
+        );
+        assert!(b.len() < 14_000, "{} bytes", b.len());
+        assert!(cli_brief(&find("reverse").unwrap(), &skills, true).contains("Mode: deep"));
     }
     #[test]
     fn qwen38_style_swaps_the_common_rules_and_stays_small_and_stable() {

@@ -7,6 +7,12 @@ root = pathlib.Path(__file__).resolve().parent.parent
 src = (root / "docs/index.html").read_text()
 
 T = [
+ ('Use your Claude or ChatGPT plan', 'Работай на своей подписке Claude или ChatGPT'),
+ ('No API key needed. PortCode starts the official <code>claude</code> or <code>codex</code> program on your machine and lets it use the login you already have. It adds its own tools: the evidence ledger, pinning, parity checks and screenshots.', 'Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.'),
+ ('PortCode on your plan', 'PortCode на твоей подписке'),
+ ('<code>portcode -m claude-code/sonnet</code> or <code>portcode -m codex/default</code>. The work shows up in the PortCode screen and the evidence goes into the same ledger.', '<code>portcode -m claude-code/sonnet</code> или <code>portcode -m codex/default</code>. Работа видна в окне PortCode, а доказательства попадают в тот же журнал.'),
+ ('Your CLI uses PortCode', 'Твой CLI использует PortCode'),
+ ('<code>claude mcp add portcode -- portcode mcp</code> gives Claude Code (and Codex with <code>codex mcp add</code>) PortCode\'s tools in the session you already use. <a href="guide/SUBSCRIPTIONS.html">Details and limits</a>.', '<code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="guide/SUBSCRIPTIONS.html">Подробности и ограничения</a>.'),
  ('>First run</a>', '>Первый запуск</a>'),
  ('<h2>First run</h2>', '<h2>Первый запуск</h2>'),
  ('Three steps, all inside the app. Type <code>/setup</code> any time to see them again.', 'Три шага, все внутри приложения. <code>/setup</code> покажет их снова.'),

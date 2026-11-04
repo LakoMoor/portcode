@@ -21,6 +21,11 @@ pub struct ProviderConfig {
 }
 
 /// Built-in endpoints. All speak the OpenAI `/chat/completions` protocol.
+/// `claude-code` and `codex` run through the user's own CLI instead of an HTTP API.
+pub fn is_cli(p: &ProviderConfig) -> bool {
+    p.base_url.starts_with("cli://")
+}
+
 pub fn presets() -> Vec<ProviderConfig> {
     let p = |n: &str, u: &str, env: Option<&str>| ProviderConfig {
         name: n.into(),
@@ -35,6 +40,9 @@ pub fn presets() -> Vec<ProviderConfig> {
             "https://lakomoor.com/v1",
             Some("LAKOMOOR_API_KEY"),
         ),
+        // Subscription backends: no HTTP at all, PortCode starts the official CLI (see portcode-agent::backend).
+        p("claude-code", "cli://claude", None),
+        p("codex", "cli://codex", None),
         p("ollama", "http://localhost:11434/v1", None),
         p("lmstudio", "http://localhost:1234/v1", None),
         p("llamacpp", "http://localhost:8080/v1", None),

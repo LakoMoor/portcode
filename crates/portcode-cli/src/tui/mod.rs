@@ -109,6 +109,16 @@ async fn runner_task(
                 let _ = tx.send(Msg::Info(m));
             }
             Cmd::ListModels => {
+                if let Some(cli) = portcode_agent::backend::cli_for(&r.resolved.provider.name) {
+                    let h = portcode_agent::backend::model_hints(cli);
+                    let _ = tx.send(Msg::Models(h.clone()));
+                    let _ = tx.send(Msg::Info(format!(
+                        "{} runs the official CLI on your subscription. Models: {} (or any id your plan includes)",
+                        r.resolved.provider.name,
+                        h.join(", ")
+                    )));
+                    continue;
+                }
                 let m = match portcode_llm::Client::new(r.resolved.provider.clone()) {
                     Ok(c) => match c.list_models().await {
                         Ok(ids) if !ids.is_empty() => {

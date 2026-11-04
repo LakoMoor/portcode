@@ -583,7 +583,13 @@ impl App {
                 names
                     .into_iter()
                     .map(|n| {
-                        let d = if self.key_missing(&n) {
+                        let d = if let Some(cli) = portcode_agent::backend::cli_for(&n) {
+                            if portcode_agent::backend::find_binary(cli).is_some() {
+                                "subscription"
+                            } else {
+                                "CLI not installed"
+                            }
+                        } else if self.key_missing(&n) {
                             "needs a key"
                         } else if n == self.provider {
                             "current"
@@ -665,7 +671,13 @@ impl App {
             "providers (switch: /provider <name> [model], key: /key <name>):".into(),
         ));
         for n in names {
-            let state = if self.key_missing(&n) {
+            let state = if let Some(cli) = portcode_agent::backend::cli_for(&n) {
+                if portcode_agent::backend::find_binary(cli).is_some() {
+                    "uses your subscription"
+                } else {
+                    "CLI not installed"
+                }
+            } else if self.key_missing(&n) {
                 "needs a key → /key"
             } else if portcode_agent::config::stored_key(&n).is_some() {
                 "key saved"

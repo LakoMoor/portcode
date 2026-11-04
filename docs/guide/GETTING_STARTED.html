@@ -13,6 +13,7 @@ portcode --version
 <p>PortCode talks to any OpenAI-compatible server. Choose one:</p>
 <ul>
 <li><strong>A local model (no key).</strong> Start Ollama, LM Studio, llama.cpp or vLLM, then run <code>portcode</code> and type <code>/provider ollama qwen3:14b</code>.</li>
+<li><strong>Your Claude or ChatGPT subscription.</strong> Install Claude Code or Codex, sign in there once, then <code>/provider claude-code sonnet</code> or <code>/provider codex default</code>. No key, no API bill. See [Claude Code and Codex](SUBSCRIPTIONS.html).</li>
 <li><strong>A hosted API.</strong> Run <code>portcode</code>, type <code>/key</code> and paste your key. It is hidden while you type and saved in your config folder with mode 600. From a shell the same thing is <code>portcode auth set &lt;provider&gt;</code>, or <code>portcode auth set &lt;provider&gt; --from-env NAME</code> to read it from an environment variable.</li>
 </ul>
 <p>Inside the app:</p>

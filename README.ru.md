@@ -12,7 +12,7 @@
 
 ![Интерфейс PortCode](docs/screenshots/tui-session.svg)
 
-**Первый запуск.** Запусти `portcode` в папке проекта. Локальная модель: `/provider ollama qwen3:14b`. Облачный API: `/key` и вставь ключ (он скрыт и сохраняется с правами 600). `portcode doctor` проверит настройку, `/create` запустит пошаговый перенос, `/setup` повторит эти шаги, `portcode update` проверит новую версию. Подробно: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
+**Первый запуск.** Запусти `portcode` в папке проекта. Локальная модель: `/provider ollama qwen3:14b`. Облачный API: `/key` и вставь ключ (он скрыт и сохраняется с правами 600). Есть подписка Claude или ChatGPT? `portcode -m claude-code/sonnet` или `portcode -m codex/default` работает на ней через официальный CLI, без ключа ([docs/SUBSCRIPTIONS.md](docs/SUBSCRIPTIONS.md)). `portcode doctor` проверит настройку, `/create` запустит пошаговый перенос, `/setup` повторит эти шаги, `portcode update` проверит новую версию. Подробно: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md).
 
 Установка (macOS / Linux / WSL; проверяет sha256):
 ```sh
