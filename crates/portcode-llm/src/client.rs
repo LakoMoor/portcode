@@ -249,6 +249,25 @@ impl Client {
                 if let Some(k) = p.top_k {
                     o.insert("top_k".into(), json!(k));
                 }
+                if let Some(x) = p.presence_penalty {
+                    o.insert("presence_penalty".into(), json!(x));
+                }
+                let mut kw = serde_json::Map::new();
+                match p.reasoning_effort.as_deref() {
+                    Some("none") => {
+                        kw.insert("enable_thinking".into(), json!(false));
+                    }
+                    Some(e) => {
+                        kw.insert("reasoning_effort".into(), json!(e));
+                    }
+                    None => {}
+                }
+                if let Some(k) = p.preserve_thinking {
+                    kw.insert("preserve_thinking".into(), json!(k));
+                }
+                if !kw.is_empty() {
+                    o.insert("chat_template_kwargs".into(), Value::Object(kw));
+                }
                 if !tools.is_empty() {
                     o.insert("tool_choice".into(), json!("auto"));
                     if !p.parallel_tool_calls {
@@ -566,6 +585,29 @@ impl ThinkFilter {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn qwen38_request_carries_card_sampling_and_template_kwargs() {
+        let c = Client::new(presets().remove(1)).unwrap();
+        let mut p = crate::profile_for("qwen3.8-27b");
+        let b = c.body("qwen3.8-27b", &p, &[], &[], false);
+        assert_eq!(b["temperature"], 1.0);
+        assert_eq!(b["top_k"], 20);
+        assert_eq!(b["presence_penalty"], 0.0);
+        assert_eq!(b["chat_template_kwargs"]["reasoning_effort"], "medium");
+        assert_eq!(b["chat_template_kwargs"]["preserve_thinking"], true);
+        p.non_thinking();
+        let b = c.body("qwen3.8-27b", &p, &[], &[], false);
+        assert_eq!(b["chat_template_kwargs"]["enable_thinking"], false);
+        assert!(b["chat_template_kwargs"].get("reasoning_effort").is_none());
+        assert_eq!(b["presence_penalty"], 1.5);
+        // the minimal retry (for servers that reject extra fields) sends none of it
+        let m = c.body("qwen3.8-27b", &p, &[], &[], true);
+        assert!(m.get("chat_template_kwargs").is_none() && m.get("presence_penalty").is_none());
+        // other families are untouched
+        let g = c.body("llama3", &crate::profile_for("llama3"), &[], &[], false);
+        assert!(g.get("chat_template_kwargs").is_none());
+    }
+
     use super::*;
     #[test]
     fn think_filter_splits_across_chunks() {

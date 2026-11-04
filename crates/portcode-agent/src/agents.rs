@@ -8,6 +8,7 @@ use portcode_llm::ModelProfile;
 use std::path::Path;
 
 const COMMON: &str = include_str!("../prompts/common.md");
+const QWEN38: &str = include_str!("../prompts/qwen38.md");
 const FULL_EXTRA: &str = include_str!("../prompts/full_extra.md");
 
 #[derive(Debug, Clone)]
@@ -236,7 +237,11 @@ pub fn system_prompt(
     deep: bool,
     now_secs: u64,
 ) -> String {
-    let mut s = String::from(COMMON);
+    let mut s = String::from(if profile.prompt_style == "qwen38" {
+        QWEN38
+    } else {
+        COMMON
+    });
     if profile.prompt_style == "full" {
         s.push_str(FULL_EXTRA);
     }
@@ -313,6 +318,19 @@ mod tests {
         assert!(
             system_prompt(&find("build").unwrap(), &p, d, &skills, false, 0).contains("# Skills")
         );
+    }
+    #[test]
+    fn qwen38_style_swaps_the_common_rules_and_stays_small_and_stable() {
+        let p = portcode_llm::profile_for("qwen3.8-27b");
+        let skills = vec![crate::skills::bundled()];
+        let d = std::path::Path::new("/nonexistent-project");
+        let a = system_prompt(&find("port").unwrap(), &p, d, &skills, false, 0);
+        let b = system_prompt(&find("port").unwrap(), &p, d, &skills, false, 86_400 * 9);
+        assert!(a.contains("Think once, briefly") && !a.contains("# Example of correct behaviour"));
+        assert!(a.contains("Hard rules") && a.contains("</rustport-skill>"));
+        let cut = a.find("- date:").unwrap();
+        assert_eq!(&a[..cut], &b[..cut]);
+        assert!(a.len() < 12_000, "{} bytes", a.len());
     }
     #[test]
     fn prompts_stay_small_enough_for_small_contexts() {

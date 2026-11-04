@@ -54,3 +54,32 @@ Many local servers run with a 4k to 16k window and cut replies early. PortCode a
 
 ## Check your model
 `portcode eval -m <provider/model>` runs: chat, a tool call with valid JSON, and a read→edit task in a temp dir. Failing tool-call → try `parallel_tool_calls:false`, a bigger model, or a server flag that enables the model's tool parser (vLLM `--enable-auto-tool-choice`, llama.cpp `--jinja`).
+
+## Qwen3.8 (27B, Flash-Next)
+
+PortCode recognises `qwen3.8-27b`, `Qwen3.8-Flash-Next` and similar ids and switches to a profile built from the model cards ([Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next), [Unsloth's Qwen3.8-27B guide](https://unsloth.ai/docs/models/qwen3.8-27b)):
+
+| | thinking (default) | non-thinking |
+|---|---|---|
+| temperature | 1.0 | 0.7 |
+| top_p / top_k | 0.95 / 20 | 0.8 / 20 |
+| presence_penalty | 0.0 | 1.5 |
+
+What changes for these models:
+- **Prompt.** A shorter rule set (`prompt_style: "qwen38"`): think once, don't redo earlier reasoning, tool calls only through the tool interface, independent reads in parallel. No worked example, the model does not need one.
+- **Thinking control.** Sent as `chat_template_kwargs`: `reasoning_effort` (`xhigh`, `medium`, `low`) and `preserve_thinking`. PortCode defaults to `medium` and keeps preserved thinking on. The card's own default is `xhigh`; it also notes that a lower effort does not always shorten a multi-turn agent task, so try both on your hardware. `none` turns thinking off and applies the non-thinking sampling above.
+- **Output budget.** Thinking tokens count against `max_tokens`, so the default is 16384.
+- **Tool calls.** Parallel calls are on. Your server must run the Qwen tool-call parser (vLLM: `--tool-call-parser qwen3_xml --reasoning-parser qwen3`; llama.cpp: `--jinja`).
+
+Settings, in `portcode.json`:
+
+```json
+{
+  "prompt_style": "auto",
+  "models": {
+    "qwen3.8-27b": { "reasoning_effort": "low", "context_window": 131072 }
+  }
+}
+```
+
+`prompt_style` is `auto` (picked from the model id), `compact`, `full` or `qwen38`, and applies to every model; a per-model entry wins. In the app, `/style` and `/effort` change them for the current session. The ids in the cards and the sampling numbers come from the sources above; I could not verify them on a running model, so run `portcode eval` on yours.

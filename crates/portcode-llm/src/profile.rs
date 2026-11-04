@@ -10,6 +10,11 @@ pub struct ModelProfile {
     pub temperature: Option<f32>,
     pub top_p: Option<f32>,
     pub top_k: Option<u32>,
+    pub presence_penalty: Option<f32>,
+    /// Qwen3.8-style thinking control sent as `chat_template_kwargs`: `xhigh`, `medium`, `low` or `none` (thinking off).
+    pub reasoning_effort: Option<String>,
+    /// Keep thinking blocks of earlier turns in the prompt (Qwen3.8 does by default; helps long agent runs).
+    pub preserve_thinking: Option<bool>,
     pub max_tokens: u32,
     /// Context window in tokens; drives auto-compaction. Local servers often run smaller than the model card.
     pub context_window: u32,
@@ -21,7 +26,7 @@ pub struct ModelProfile {
     pub text_tool_fallback: bool,
     /// Remove inline `<think>…</think>` from displayed and stored text.
     pub strip_think: bool,
-    /// Prompt flavour: `compact` (short, rule-first, few-shot) or `full`.
+    /// Prompt flavour: `compact` (short, rule-first, few-shot), `full`, or `qwen38` (for Qwen3.8 thinking models).
     pub prompt_style: String,
     /// Max bytes of one tool result kept in context.
     pub tool_output_limit: usize,
@@ -34,6 +39,9 @@ impl Default for ModelProfile {
             temperature: Some(0.2),
             top_p: None,
             top_k: None,
+            presence_penalty: None,
+            reasoning_effort: None,
+            preserve_thinking: None,
             max_tokens: 4096,
             context_window: 32_768,
             parallel_tool_calls: false,
@@ -65,11 +73,45 @@ impl ModelProfile {
     }
 }
 
+/// Qwen3.8 family: `qwen3.8-27b`, `Qwen3.8-Flash-Next`, `qwen3_8-…`, `qwen38…`.
+pub fn is_qwen38(model: &str) -> bool {
+    let m = model.to_lowercase();
+    m.contains("qwen3.8") || m.contains("qwen3_8") || m.contains("qwen38") || m.contains("qwen-3.8")
+}
+
+impl ModelProfile {
+    /// Qwen3.8 non-thinking mode: the model card asks for different sampling when thinking is off.
+    pub fn non_thinking(&mut self) {
+        self.reasoning_effort = Some("none".into());
+        self.temperature = Some(0.7);
+        self.top_p = Some(0.8);
+        self.presence_penalty = Some(1.5);
+        self.max_tokens = self.max_tokens.min(4096);
+    }
+}
+
 /// Built-in profile for a model id such as `deepseek-chat`, `Qwen/Qwen3-Coder-30B`, `qwen3:14b`.
 pub fn profile_for(model: &str) -> ModelProfile {
     let m = model.to_lowercase();
     let mut p = ModelProfile::default();
-    if m.contains("deepseek") {
+    if is_qwen38(model) {
+        // Sampling from the Qwen3.8 model cards (thinking mode). Thinking tokens count against `max_tokens`.
+        p.family = "qwen38".into();
+        p.prompt_style = "qwen38".into();
+        p.temperature = Some(1.0);
+        p.top_p = Some(0.95);
+        p.top_k = Some(20);
+        p.presence_penalty = Some(0.0);
+        p.reasoning_effort = Some("medium".into());
+        p.preserve_thinking = Some(true);
+        p.parallel_tool_calls = true;
+        p.context_window = 65_536;
+        p.max_tokens = 16_384;
+        p.tool_output_limit = 16_000;
+        if m.contains("flash") {
+            p.tool_output_limit = 12_000;
+        }
+    } else if m.contains("deepseek") {
         p.family = "deepseek".into();
         p.temperature = Some(0.0); // reasoning variants ignore it; chat variants are steadier at 0 for tool use
         p.context_window = 65_536;
@@ -117,6 +159,34 @@ mod tests {
                 && !flash.parallel_tool_calls
         );
         assert_eq!(profile_for("gpt-x").family, "generic");
+    }
+
+    #[test]
+    fn qwen38_gets_the_model_card_sampling_and_its_own_prompt() {
+        for id in ["qwen3.8-27b", "Qwen/Qwen3.8-Flash-Next", "qwen38-27b-q4"] {
+            let p = profile_for(id);
+            assert_eq!(
+                (
+                    p.family.as_str(),
+                    p.prompt_style.as_str(),
+                    p.temperature,
+                    p.top_p,
+                    p.top_k
+                ),
+                ("qwen38", "qwen38", Some(1.0), Some(0.95), Some(20)),
+                "{id}"
+            );
+            assert_eq!(p.presence_penalty, Some(0.0));
+            assert_eq!(p.preserve_thinking, Some(true));
+        }
+        assert_eq!(profile_for("qwen3-coder").family, "qwen");
+        let mut p = profile_for("qwen3.8-27b");
+        p.non_thinking();
+        assert_eq!(
+            (p.temperature, p.top_p, p.presence_penalty),
+            (Some(0.7), Some(0.8), Some(1.5))
+        );
+        assert_eq!(p.reasoning_effort.as_deref(), Some("none"));
     }
 
     #[test]

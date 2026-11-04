@@ -82,6 +82,12 @@ async fn runner_task(
                     let _ = tx.send(Msg::Info(e));
                 }
             }
+            Cmd::Tune(what, val) => {
+                let m = match r.tune(&what, &val) {
+                    Ok(m) | Err(m) => m,
+                };
+                let _ = tx.send(Msg::Info(m));
+            }
             Cmd::SetDeep(d) => r.ctx.deep.store(d, std::sync::atomic::Ordering::Relaxed),
             Cmd::Update => {
                 let tx = tx.clone();

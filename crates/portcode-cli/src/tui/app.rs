@@ -39,6 +39,8 @@ pub enum Cmd {
     Resume,
     ListModels,
     Update,
+    /// (`style` | `effort`, value) for the current model.
+    Tune(String, String),
     SetDeep(bool),
 }
 
@@ -110,6 +112,8 @@ pub const SLASH: &[(&str, &str)] = &[
         "workbench",
         "deep: functions, pseudo-C, disassembly, hex and evidence side by side",
     ),
+    ("style", "prompt style: auto, compact, full, qwen38"),
+    ("effort", "Qwen3.8 thinking: xhigh, medium, low, none"),
     ("theme", "dark or light: /theme light"),
     ("thinking", "show / hide reasoning"),
     ("sidebar", "toggle sidebar"),
@@ -1031,6 +1035,14 @@ impl App {
             ("create", _) => self.wiz = Some(super::wizard::Wizard::default()),
             ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
+            ("style" | "effort", a) => match a {
+                Some(v) => { let _ = self.cmd_tx.send(Cmd::Tune(name.into(), v.into())); }
+                None => self.items.push(Item::Info(if name == "style" {
+                    "prompt style: /style auto|compact|full|qwen38 (auto picks qwen38 for Qwen3.8 models). Default for all models: \"prompt_style\" in portcode.json".into()
+                } else {
+                    "/effort xhigh|medium|low|none: thinking depth for Qwen3.8 (none = thinking off)".into()
+                })),
+            },
             ("theme", a) => {
                 let light = match a {
                     Some("light") => true,

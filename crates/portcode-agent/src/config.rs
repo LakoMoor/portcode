@@ -25,6 +25,9 @@ pub struct Config {
     pub max_steps: Option<u32>,
     /// `clean-room` (default) or `deep`.
     pub mode: Option<String>,
+    /// Prompt flavour for every model: `auto` (default: picked from the model id), `compact`, `full` or `qwen38`.
+    /// A per-model `"models": { "<id>": { "prompt_style": … } }` entry still wins.
+    pub prompt_style: Option<String>,
     /// Extra directories file tools may touch without asking.
     pub allowed_dirs: Vec<String>,
 }
@@ -202,7 +205,26 @@ impl Config {
                 "provider '{pname}' has no base_url: add it under \"provider\" in portcode.json"
             ));
         }
-        let mut pv = serde_json::to_value(profile_for(&model)).unwrap_or(Value::Null);
+        let mut base = profile_for(&model);
+        if let Some(st) = self
+            .prompt_style
+            .as_deref()
+            .filter(|s| !s.is_empty() && *s != "auto")
+        {
+            base.prompt_style = st.to_string();
+        }
+        // `reasoning_effort: "none"` on a Qwen3.8 model means non-thinking mode: take that mode's sampling first,
+        // so explicit overrides below still win.
+        let wants_off = self
+            .models
+            .get(&model)
+            .and_then(|o| o.get("reasoning_effort"))
+            .and_then(|v| v.as_str())
+            == Some("none");
+        if wants_off && base.family == "qwen38" {
+            base.non_thinking();
+        }
+        let mut pv = serde_json::to_value(base).unwrap_or(Value::Null);
         if let Some(o) = self.models.get(&model) {
             merge(&mut pv, o.clone());
         }
@@ -265,7 +287,10 @@ pub const INIT_TEMPLATE: &str = r#"{
     "lakomoor": { "base_url": "https://lakomoor.com/v1", "api_key_env": "LAKOMOOR_API_KEY" },
     "ollama":   { "base_url": "http://localhost:11434/v1" }
   },
+  // "auto" picks the prompt from the model id; or force "compact", "full" or "qwen38".
+  "prompt_style": "auto",
   // Override sampling / context per model id (the part after "provider/").
+  // Qwen3.8 thinking: "reasoning_effort" is "xhigh", "medium" (default here), "low" or "none" (thinking off).
   "models": {
     "qwen3:14b": { "context_window": 32768, "parallel_tool_calls": false }
   },
@@ -297,6 +322,34 @@ mod tests {
         write_state(&p, "theme", "light").unwrap();
         assert_eq!(read_state(&p, "model").as_deref(), Some("ollama/qwen3:14b"));
         assert_eq!(read_state(&p, "theme").as_deref(), Some("light"));
+    }
+
+    #[test]
+    fn prompt_style_setting_and_qwen38_effort_resolve() {
+        let c: Config = serde_json::from_str(
+            r#"{"prompt_style":"full","models":{"qwen3.8-27b":{"reasoning_effort":"none"}}}"#,
+        )
+        .unwrap();
+        let r = c.resolve(Some("ollama/qwen3.8-27b")).unwrap();
+        assert_eq!(
+            r.profile.prompt_style, "full",
+            "the global setting overrides the auto choice"
+        );
+        assert_eq!(
+            (r.profile.temperature, r.profile.presence_penalty),
+            (Some(0.7), Some(1.5))
+        );
+        let auto = Config::default()
+            .resolve(Some("ollama/qwen3.8-flash-next"))
+            .unwrap();
+        assert_eq!(auto.profile.prompt_style, "qwen38");
+        let other = Config {
+            prompt_style: Some("qwen38".into()),
+            ..Default::default()
+        }
+        .resolve(Some("ollama/llama3"))
+        .unwrap();
+        assert_eq!(other.profile.prompt_style, "qwen38");
     }
 
     #[test]

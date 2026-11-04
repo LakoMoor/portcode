@@ -274,6 +274,48 @@ impl Runner {
         Ok(())
     }
 
+    /// Change prompt style or reasoning effort for the current model without restarting.
+    pub fn tune(&mut self, what: &str, val: &str) -> Result<String, String> {
+        let prof = &mut self.resolved.profile;
+        match what {
+            "style" => {
+                if !["auto", "compact", "full", "qwen38"].contains(&val) {
+                    return Err("style is one of: auto, compact, full, qwen38".into());
+                }
+                prof.prompt_style = if val == "auto" {
+                    portcode_llm::profile_for(&self.resolved.model).prompt_style
+                } else {
+                    val.to_string()
+                };
+                Ok(format!("prompt style: {}", prof.prompt_style))
+            }
+            "effort" => {
+                if !["xhigh", "medium", "low", "none"].contains(&val) {
+                    return Err("effort is one of: xhigh, medium, low, none (thinking off)".into());
+                }
+                if val == "none" {
+                    prof.non_thinking();
+                } else {
+                    let base = portcode_llm::profile_for(&self.resolved.model);
+                    prof.reasoning_effort = Some(val.to_string());
+                    if prof.reasoning_effort.as_deref() != Some("none")
+                        && prof.presence_penalty == Some(1.5)
+                    {
+                        prof.temperature = base.temperature;
+                        prof.top_p = base.top_p;
+                        prof.presence_penalty = base.presence_penalty;
+                        prof.max_tokens = base.max_tokens;
+                    }
+                }
+                Ok(format!(
+                    "reasoning effort: {} (sent to the server as chat_template_kwargs; only Qwen3.8-style templates read it)",
+                    val
+                ))
+            }
+            _ => Err("unknown setting".into()),
+        }
+    }
+
     fn system(&self) -> Message {
         Message::system(agents::system_prompt(
             &self.agent,
