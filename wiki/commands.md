@@ -10,7 +10,7 @@ This table is generated from the app's own command list, so it matches the versi
 
 ### Choosing a model
 
-`/provider` lists providers and which ones lack a key. `/provider ollama qwen3:14b` switches provider and model. `/models` lists what the current provider serves; `/model lakomoor/deepseek-chat` picks one. `/key` asks for an API key without showing it. `/setup` repeats the first-run steps. See [First run](first-run.html).
+`/provider` lists providers and which ones lack a key. `/provider ollama qwen3:14b` switches provider and model. `/models` lists what the current provider serves; `/model ollama/qwen3:14b` picks one. `/key` asks for an API key without showing it. `/setup` repeats the first-run steps. See [First run](first-run.html).
 
 ### Tuning the prompt
 

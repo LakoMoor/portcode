@@ -5,8 +5,8 @@
 <text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
 <rect x="167.94" y="148.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="167.00" width="9.33" height="19" fill="#1e1e1e"/>
-<rect x="177.27" y="167.00" width="214.59" height="19" fill="#342822"/>
-<rect x="391.86" y="167.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="177.27" y="167.00" width="261.24" height="19" fill="#342822"/>
+<rect x="438.51" y="167.00" width="419.85" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="186.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="205.00" width="690.42" height="19" fill="#1e1e1e"/>
 <rect x="167.94" y="224.00" width="690.42" height="19" fill="#1e1e1e"/>
@@ -18,57 +18,57 @@
 <rect x="167.94" y="338.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="357.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="376.00" width="690.42" height="19" fill="#141414"/>
-<rect x="167.94" y="395.00" width="326.55" height="19" fill="#141414"/>
-<rect x="494.49" y="395.00" width="121.29" height="19" fill="#e06c75"/>
-<rect x="615.78" y="395.00" width="242.58" height="19" fill="#141414"/>
+<rect x="167.94" y="395.00" width="363.87" height="19" fill="#141414"/>
+<rect x="531.81" y="395.00" width="121.29" height="19" fill="#e06c75"/>
+<rect x="653.10" y="395.00" width="205.26" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="167.94" y="162.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
 <text x="167.94" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="177.27" y="181.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ▸ </text>
-<text x="205.26" y="181.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">lakomoor     </text>
-<text x="326.55" y="181.00" fill="#808080" textLength="65.31" lengthAdjust="spacingAndGlyphs">current</text>
+<text x="205.26" y="181.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">claude-code  </text>
+<text x="326.55" y="181.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">subscription</text>
 <text x="849.03" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="200.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">claude-code  </text>
-<text x="326.55" y="200.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs">subscription</text>
+<text x="205.26" y="200.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">codex        </text>
+<text x="326.55" y="200.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">CLI not installed</text>
 <text x="849.03" y="200.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="219.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">codex        </text>
-<text x="326.55" y="219.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">CLI not installed</text>
+<text x="205.26" y="219.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">ollama       </text>
+<text x="326.55" y="219.00" fill="#808080" textLength="65.31" lengthAdjust="spacingAndGlyphs">current</text>
 <text x="849.03" y="219.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="238.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">ollama       </text>
+<text x="205.26" y="238.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">lmstudio     </text>
 <text x="326.55" y="238.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="238.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="257.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">lmstudio     </text>
+<text x="205.26" y="257.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">llamacpp     </text>
 <text x="326.55" y="257.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="276.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">llamacpp     </text>
-<text x="326.55" y="276.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="276.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">vllm         </text>
+<text x="326.55" y="276.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
 <text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="295.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">vllm         </text>
-<text x="326.55" y="295.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
+<text x="205.26" y="295.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">sglang       </text>
+<text x="326.55" y="295.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
 <text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="314.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">sglang       </text>
-<text x="326.55" y="314.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">ready</text>
+<text x="205.26" y="314.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">deepseek     </text>
+<text x="326.55" y="314.00" fill="#808080" textLength="102.63" lengthAdjust="spacingAndGlyphs">needs a key</text>
 <text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="333.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">└</text>
-<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/10 </text>
-<text x="233.25" y="333.00" fill="#484848" textLength="625.11" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────────┘</text>
+<text x="177.27" y="333.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs"> 1/9 </text>
+<text x="223.92" y="333.00" fill="#484848" textLength="634.44" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────────┘</text>
 <text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="177.27" y="371.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs"> /provider                                                                                 </text>
 <text x="167.94" y="390.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="409.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="186.60" y="409.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
-<text x="233.25" y="409.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
-<text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="494.49" y="409.00" fill="#0a0a0a" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
-<text x="625.11" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="233.25" y="409.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs">  lakomoor/Q-Next-6.1</text>
+<text x="429.18" y="409.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  ollama</text>
+<text x="531.81" y="409.00" fill="#0a0a0a" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
+<text x="662.43" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
 <text x="242.58" y="447.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
 <text x="345.21" y="485.00" fill="#7fd88f" textLength="93.30" lengthAdjust="spacingAndGlyphs">● observed</text>
 <text x="438.51" y="485.00" fill="#f5a742" textLength="121.29" lengthAdjust="spacingAndGlyphs">   ● inferred</text>

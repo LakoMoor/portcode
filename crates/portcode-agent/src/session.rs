@@ -25,6 +25,16 @@ impl SessionInfo {
     }
 }
 
+/// What a session needs besides its messages, so `--resume` comes back the way it was left.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[serde(default)]
+pub struct Meta {
+    pub agent: String,
+    /// `provider/model`.
+    pub model: String,
+    pub deep: bool,
+}
+
 pub struct Store {
     dir: PathBuf,
 }
@@ -56,6 +66,19 @@ impl Store {
         let tmp = f.with_extension("tmp");
         std::fs::write(&tmp, text).map_err(|e| e.to_string())?;
         std::fs::rename(&tmp, &f).map_err(|e| e.to_string())
+    }
+    fn meta_file(&self, id: &str) -> Option<PathBuf> {
+        self.file(id).map(|f| f.with_extension("meta.json"))
+    }
+    pub fn save_meta(&self, id: &str, m: &Meta) {
+        if let (Some(f), Ok(t)) = (self.meta_file(id), serde_json::to_string(m)) {
+            let _ = std::fs::create_dir_all(&self.dir);
+            let _ = std::fs::write(f, t);
+        }
+    }
+    pub fn load_meta(&self, id: &str) -> Option<Meta> {
+        let t = std::fs::read_to_string(self.meta_file(id)?).ok()?;
+        serde_json::from_str(&t).ok()
     }
     pub fn load(&self, id: &str) -> Result<Vec<Message>, String> {
         let f = self.file(id).ok_or("bad session id")?;
@@ -151,6 +174,9 @@ impl Store {
     }
     pub fn delete(&self, id: &str) -> Result<(), String> {
         let f = self.file(id).ok_or("bad session id")?;
+        if let Some(m) = self.meta_file(id) {
+            let _ = std::fs::remove_file(m);
+        }
         std::fs::remove_file(&f).map_err(|e| format!("{}: {e}", f.display()))
     }
     /// Newest session id, if any.
@@ -174,6 +200,26 @@ impl Store {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn meta_roundtrips_and_is_not_listed_as_a_session() {
+        let d = tempfile::tempdir().unwrap();
+        let s = Store::new(d.path());
+        s.save("s-1", &[Message::user("x")]).unwrap();
+        s.save_meta(
+            "s-1",
+            &Meta {
+                agent: "team".into(),
+                model: "ollama/qwen3:14b".into(),
+                deep: true,
+            },
+        );
+        let m = s.load_meta("s-1").unwrap();
+        assert_eq!((m.agent.as_str(), m.deep), ("team", true));
+        assert_eq!(s.list().len(), 1);
+        assert_eq!(s.latest().as_deref(), Some("s-1"));
+        s.delete("s-1").unwrap();
+        assert!(s.load_meta("s-1").is_none());
+    }
     #[test]
     fn roundtrip_and_id_validation() {
         let d = tempfile::tempdir().unwrap();

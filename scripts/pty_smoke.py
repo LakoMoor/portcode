@@ -7,7 +7,6 @@ pid, fd = pty.fork()
 if pid == 0:
     os.chdir(cwd)
     os.environ.update(TERM="xterm-256color", PORTCODE_NO_UPDATE_CHECK="1", HOME=cwd)
-    os.environ.pop("LAKOMOOR_API_KEY", None)
     os.execv(exe, [exe])
 fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 32, 110, 0, 0))
 buf = b""

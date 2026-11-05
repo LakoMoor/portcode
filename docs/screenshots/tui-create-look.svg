@@ -23,8 +23,8 @@
 <rect x="513.15" y="414.00" width="149.28" height="19" fill="#1e1e1e"/>
 <rect x="93.30" y="452.00" width="27.99" height="19" fill="#1e1e1e"/>
 <rect x="93.30" y="490.00" width="373.20" height="19" fill="#1e1e1e"/>
-<rect x="578.46" y="547.00" width="74.64" height="19" fill="#f5a742"/>
-<rect x="681.09" y="547.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="559.80" y="547.00" width="74.64" height="19" fill="#f5a742"/>
+<rect x="662.43" y="547.00" width="102.63" height="19" fill="#1e1e1e"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="93.30" y="48.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700">New project</text>
 <text x="195.93" y="48.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   enter or ctrl+s starts · tab moves · esc closes</text>
@@ -60,9 +60,9 @@
 <text x="457.17" y="504.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
 <text x="93.30" y="523.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
 <text x="102.63" y="561.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
-<text x="195.93" y="561.00" fill="#eeeeee" textLength="223.92" lengthAdjust="spacingAndGlyphs">lakomoor/mock/mock-model</text>
-<text x="419.85" y="561.00" fill="#56b6c2" textLength="158.61" lengthAdjust="spacingAndGlyphs">  agent reverse  </text>
-<text x="578.46" y="561.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
-<text x="653.10" y="561.00" fill="#eeeeee" textLength="503.82" lengthAdjust="spacingAndGlyphs">     ✦ Start                                          </text>
+<text x="195.93" y="561.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model</text>
+<text x="401.19" y="561.00" fill="#56b6c2" textLength="158.61" lengthAdjust="spacingAndGlyphs">  agent reverse  </text>
+<text x="559.80" y="561.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="634.44" y="561.00" fill="#eeeeee" textLength="522.48" lengthAdjust="spacingAndGlyphs">     ✦ Start                                            </text>
 </g>
 </svg>

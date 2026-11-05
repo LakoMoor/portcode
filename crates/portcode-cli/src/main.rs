@@ -15,12 +15,12 @@ use term::*;
 #[command(
     name = "portcode",
     version,
-    about = "PortCode — port programs to Rust with evidence, using local or self-hosted LLMs (lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM…)"
+    about = "PortCode — port programs to Rust with evidence, using local or self-hosted LLMs (Ollama, LM Studio, llama.cpp, vLLM…)"
 )]
 struct Cli {
     #[command(subcommand)]
     cmd: Option<Cmd>,
-    /// Model as provider/model, e.g. lakomoor/deepseek-chat or ollama/qwen3:14b
+    /// Model as provider/model, e.g. ollama/qwen3:14b or lmstudio/qwen3-coder
     #[arg(short, long, global = true)]
     model: Option<String>,
     /// Agent: build, port, reverse, plan

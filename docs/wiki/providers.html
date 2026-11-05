@@ -44,12 +44,11 @@
 <main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Models</p>
 <h1 id="providers-models-and-open-weight-tuning">Providers, models and open-weight tuning<a class="anchor" href="#providers-models-and-open-weight-tuning" aria-label="Link to this section">#</a></h1>
 <h2 id="configuration">Configuration<a class="anchor" href="#configuration" aria-label="Link to this section">#</a></h2>
-<p>Layers (later wins): built-in presets &lt; <code>~/.config/portcode/portcode.json</code> &lt; <code>./portcode.json</code> &lt; <code>./.portcode/portcode.json</code> &lt; env (<code>PORTCODE_MODEL</code>, <code>PORTCODE_BASE_URL</code>, <code>PORTCODE_API_KEY</code>). <code>//</code> comment lines are allowed. Model reference: <code>provider/model</code> (a bare id uses <code>lakomoor</code>).</p>
+<p>Layers (later wins): built-in presets &lt; <code>~/.config/portcode/portcode.json</code> &lt; <code>./portcode.json</code> &lt; <code>./.portcode/portcode.json</code> &lt; env (<code>PORTCODE_MODEL</code>, <code>PORTCODE_BASE_URL</code>, <code>PORTCODE_API_KEY</code>). <code>//</code> comment lines are allowed. Model reference: <code>provider/model</code> (a bare id uses <code>ollama</code>).</p>
 <pre><code class="lang-jsonc">{
-  &quot;model&quot;: &quot;lakomoor/deepseek-chat&quot;,
+  &quot;model&quot;: &quot;ollama/qwen3:14b&quot;,
   &quot;small_model&quot;: &quot;ollama/qwen3:4b&quot;,          // used for context compaction
   &quot;provider&quot;: {
-    &quot;lakomoor&quot;: { &quot;base_url&quot;: &quot;https://lakomoor.com/v1&quot;, &quot;api_key_env&quot;: &quot;LAKOMOOR_API_KEY&quot; },
     &quot;mybox&quot;:    { &quot;base_url&quot;: &quot;http://10.0.0.5:8000/v1&quot;, &quot;headers&quot;: { &quot;X-Team&quot;: &quot;rev&quot; } }
   },
   &quot;models&quot;: { &quot;qwen3:14b&quot;: { &quot;context_window&quot;: 32768, &quot;parallel_tool_calls&quot;: false } },

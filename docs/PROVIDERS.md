@@ -1,14 +1,13 @@
 # Providers, models and open-weight tuning
 
 ## Configuration
-Layers (later wins): built-in presets < `~/.config/portcode/portcode.json` < `./portcode.json` < `./.portcode/portcode.json` < env (`PORTCODE_MODEL`, `PORTCODE_BASE_URL`, `PORTCODE_API_KEY`). `//` comment lines are allowed. Model reference: `provider/model` (a bare id uses `lakomoor`).
+Layers (later wins): built-in presets < `~/.config/portcode/portcode.json` < `./portcode.json` < `./.portcode/portcode.json` < env (`PORTCODE_MODEL`, `PORTCODE_BASE_URL`, `PORTCODE_API_KEY`). `//` comment lines are allowed. Model reference: `provider/model` (a bare id uses `ollama`).
 
 ```jsonc
 {
-  "model": "lakomoor/deepseek-chat",
+  "model": "ollama/qwen3:14b",
   "small_model": "ollama/qwen3:4b",          // used for context compaction
   "provider": {
-    "lakomoor": { "base_url": "https://lakomoor.com/v1", "api_key_env": "LAKOMOOR_API_KEY" },
     "mybox":    { "base_url": "http://10.0.0.5:8000/v1", "headers": { "X-Team": "rev" } }
   },
   "models": { "qwen3:14b": { "context_window": 32768, "parallel_tool_calls": false } },

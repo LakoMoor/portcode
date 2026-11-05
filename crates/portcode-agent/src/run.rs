@@ -265,9 +265,28 @@ impl Runner {
         let st = self.store.as_ref().ok_or("sessions disabled")?;
         let id = st.resolve(reference)?;
         self.messages = st.load(&id)?;
+        let meta = st.load_meta(&id);
         self.session_id = id.clone();
         self.cli_session = None;
+        if let Some(m) = meta {
+            // come back in the agent, model and mode the session was left in; a model or agent that no longer exists is skipped
+            if !m.agent.is_empty() {
+                let _ = self.set_agent(&m.agent);
+            }
+            if !m.model.is_empty() {
+                let _ = self.set_model(&m.model);
+            }
+            self.ctx.deep.store(m.deep, Ordering::Relaxed);
+        }
         Ok((id, self.messages.len()))
+    }
+    /// Agent, `provider/model` and deep flag, as saved with the session.
+    pub fn state(&self) -> (String, String, bool) {
+        (
+            self.agent.name.to_string(),
+            format!("{}/{}", self.resolved.provider.name, self.resolved.model),
+            self.ctx.is_deep(),
+        )
     }
     pub fn sessions(&self) -> Vec<crate::session::SessionInfo> {
         self.store.as_ref().map(|s| s.list()).unwrap_or_default()
@@ -549,6 +568,11 @@ impl Runner {
     fn save(&self) {
         if let Some(s) = &self.store {
             let _ = s.save(&self.session_id, &self.messages);
+            let (agent, model, deep) = self.state();
+            s.save_meta(
+                &self.session_id,
+                &crate::session::Meta { agent, model, deep },
+            );
         }
     }
 

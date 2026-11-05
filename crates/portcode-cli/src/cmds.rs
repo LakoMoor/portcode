@@ -570,7 +570,7 @@ pub fn init(force: bool) -> Result<i32, String> {
             ),
         );
     }
-    println!("{} wrote {}\n  next: export LAKOMOOR_API_KEY=… (or `portcode auth set lakomoor`), then `portcode doctor` and `portcode`", green("✓"), p.display());
+    println!("{} wrote {}\n  next: start your model server (e.g. `ollama serve`) or `portcode auth set <provider>`, then `portcode doctor` and `portcode`", green("✓"), p.display());
     Ok(0)
 }
 

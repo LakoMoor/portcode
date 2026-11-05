@@ -35,11 +35,6 @@ pub fn presets() -> Vec<ProviderConfig> {
         headers: BTreeMap::new(),
     };
     vec![
-        p(
-            "lakomoor",
-            "https://lakomoor.com/v1",
-            Some("LAKOMOOR_API_KEY"),
-        ),
         // Subscription backends: no HTTP at all, PortCode starts the official CLI (see portcode-agent::backend).
         p("claude-code", "cli://claude", None),
         p("codex", "cli://codex", None),

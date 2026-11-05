@@ -3,7 +3,7 @@
 <nav><div class="wrap"><a class="brand" href="./"><img src="./assets/logo.svg" alt="">PortCode</a><a class="l" href="./guide/ARCHITECTURE.html">Architecture</a><a class="l" href="./guide/PROVIDERS.html">Providers</a><a class="l" href="./guide/OPENCODE_MAPPING.html">OpenCode mapping</a><a class="l" href="./guide/ENGINES.html">Engines</a><a class="l" href="./guide/ROADMAP.html">Roadmap</a><a class="l" href="./remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="doc">
 <h1>PortCode (по-русски)</h1>
-<p><strong>Перенеси программу на Rust и проверь, что она ведёт себя так же.</strong> Терминальный агент: изучает программу, переписывает её на Rust и сверяет результат с оригиналом. Работает с моделями, которые ты запускаешь сам: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
+<p><strong>Перенеси программу на Rust и проверь, что она ведёт себя так же.</strong> Терминальный агент: изучает программу, переписывает её на Rust и сверяет результат с оригиналом. Работает с моделями, которые ты запускаешь сам: Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p>Что он делает: фиксирует точную сборку оригинала (sha256) и ведёт журнал фактов (<code>observation</code> — видел или запускал, <code>inference</code> — вывел, <code>unknown</code> — пока не знаю). Переносит программу по одному модулю и сверяет каждый с эталонным выводом <strong>оригинала</strong>. Проверяет <code>parity</code> и дифференциальным фаззингом, снимает скриншот на каждую функцию и собирает сайт для GitHub Pages.</p>
 <p>Начни с <code>/create</code>: он спросит, что воссоздать (сайт, программу, игру, формат файла или пока ничего), насколько близко можно заглядывать, на чём строить и чего ты хочешь, и запустит нужного агента в нужном режиме.</p>
 <p>![/create](docs/screenshots/tui-create.svg)</p>
@@ -18,7 +18,7 @@
 # или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 </code></pre>
 <p>Терминальный интерфейс в стиле OpenCode: <code>enter</code> отправить · <code>alt+enter</code> перенос · <code>tab</code> сменить агента · <code>/</code> команды · <code>esc esc</code> отменить запрос · <code>ctrl+t</code> рассуждения · <code>ctrl+b</code> боковая панель. <code>portcode --resume</code> показывает список сохранённых сессий этого проекта на выбор (<code>-c</code> — продолжить последнюю; <code>portcode sessions</code> — список, просмотр, удаление). <code>/yolo</code> разрешает всё без вопросов (красная метка <code>allow-all</code> остаётся на экране; <code>/yolo off</code> выключает). <code>/venv on|off</code> — агент создаёт и использует Python <code>.venv</code> (по умолчанию включено, <code>&quot;venv&quot;</code> в конфиге). <code>/team on</code> (или <code>&quot;team&quot;: {&quot;enabled&quot;: true, &quot;parallel&quot;: 3}</code>) добавляет агента <code>team</code>: оркестратор запускает параллельно проджект-менеджера, техлида, исследователей, разработчиков, тестировщика и ревьюера. <code>portcode chat --plain</code> — построчный режим. Windows: нативно, см. установку.</p>
-<pre><code>portcode init &amp;&amp; export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor
+<pre><code>portcode init &amp;&amp; ollama serve &amp;                # или portcode auth set &lt;провайдер&gt;
 portcode doctor
 portcode -a port                               # воркфлоу rustport
 portcode -m ollama/qwen3:14b                   # локальная модель, ключ не нужен

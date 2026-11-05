@@ -6,12 +6,12 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-pub const DEFAULT_MODEL: &str = "lakomoor/deepseek-chat";
+pub const DEFAULT_MODEL: &str = "ollama/qwen3:14b";
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    /// `provider/model`, e.g. `lakomoor/qwen3-coder`, `ollama/qwen3:14b`.
+    /// `provider/model`, e.g. `ollama/qwen3:14b`, `lmstudio/qwen3-coder`.
     pub model: Option<String>,
     /// Cheaper model for compaction and titles.
     pub small_model: Option<String>,
@@ -192,7 +192,7 @@ impl Config {
             .unwrap_or_else(|| DEFAULT_MODEL.into());
         let (pname, model) = match r.split_once('/') {
             Some((p, m)) if self.knows_provider(p) => (p.to_string(), m.to_string()),
-            _ => ("lakomoor".to_string(), r.clone()),
+            _ => ("ollama".to_string(), r.clone()),
         };
         let mut provider =
             presets()
@@ -316,9 +316,8 @@ pub fn store_key(provider: &str, key: &str) -> Result<PathBuf, String> {
 
 pub const INIT_TEMPLATE: &str = r#"{
   // PortCode config. Commit this file; keep keys in env vars or `portcode auth set <provider>`.
-  "model": "lakomoor/deepseek-chat",
+  "model": "ollama/qwen3:14b",
   "provider": {
-    "lakomoor": { "base_url": "https://lakomoor.com/v1", "api_key_env": "LAKOMOOR_API_KEY" },
     "ollama":   { "base_url": "http://localhost:11434/v1" }
   },
   // "auto" picks the prompt from the model id; or force "compact", "full" or "qwen38".
@@ -406,11 +405,11 @@ mod tests {
         assert_eq!(r.provider.base_url, "http://localhost:11434/v1");
     }
     #[test]
-    fn bare_model_uses_lakomoor_and_slash_in_model_id_survives() {
+    fn bare_model_uses_ollama_and_slash_in_model_id_survives() {
         let r = Config::default().resolve(Some("Qwen/Qwen3-Coder")).unwrap();
         assert_eq!(
             (r.provider.name.as_str(), r.model.as_str()),
-            ("lakomoor", "Qwen/Qwen3-Coder")
+            ("ollama", "Qwen/Qwen3-Coder")
         );
     }
     #[test]
@@ -418,7 +417,7 @@ mod tests {
         let mut c = Config::default();
         c.models
             .insert("m".into(), serde_json::json!({"context_window": 8000}));
-        let r = c.resolve(Some("lakomoor/m")).unwrap();
+        let r = c.resolve(Some("ollama/m")).unwrap();
         assert_eq!(r.profile.context_window, 8000);
         assert!(r.profile.text_tool_fallback);
     }
@@ -431,8 +430,8 @@ mod tests {
             .join("\n");
         let c: Config = serde_json::from_str(&t).unwrap();
         assert_eq!(
-            c.provider["lakomoor"].base_url.as_deref(),
-            Some("https://lakomoor.com/v1")
+            c.provider["ollama"].base_url.as_deref(),
+            Some("http://localhost:11434/v1")
         );
     }
 }

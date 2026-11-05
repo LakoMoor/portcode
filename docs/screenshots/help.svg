@@ -5,8 +5,8 @@
 <text x="502.5" y="19" fill="#8b949e" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode --help</text>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#c9d1d9" xml:space="preserve">
 <text x="18" y="58"><tspan fill="#7ee787">$ portcode --help</tspan></text>
-<text x="18" y="77"><tspan>PortCode — port programs to Rust with evidence, using local or self-hosted LLMs (lakomoor.com/v1, Ollama, LM S</tspan></text>
-<text x="18" y="96"><tspan>tudio, llama.cpp, vLLM…)</tspan></text>
+<text x="18" y="77"><tspan>PortCode — port programs to Rust with evidence, using local or self-hosted LLMs (Ollama, LM Studio, llama.cpp,</tspan></text>
+<text x="18" y="96"><tspan> vLLM…)</tspan></text>
 <text x="18" y="115"></text>
 <text x="18" y="134"><tspan>Usage: portcode [OPTIONS] [COMMAND]</tspan></text>
 <text x="18" y="153"></text>
@@ -17,7 +17,7 @@
 <text x="18" y="248"><tspan>  models       List models served by a provider</tspan></text>
 <text x="18" y="267"><tspan>  providers    Show configured and built-in providers</tspan></text>
 <text x="18" y="286"><tspan>  doctor       Check providers, toolchain and optional engines</tspan></text>
-<text x="18" y="305"><tspan>  update       Check whether a newer PortCode is released</tspan></text>
+<text x="18" y="305"><tspan>  update       Install the newest PortCode release (sha256-checked); `--check` only looks</tspan></text>
 <text x="18" y="324"><tspan>  mcp          Serve PortCode's tools over MCP (stdio) for Claude Code or Codex; `--print-config` shows how to</tspan></text>
 <text x="18" y="343"><tspan> register it</tspan></text>
 <text x="18" y="362"><tspan>  eval         Probe a model: chat, tool-calling, JSON validity, edit accuracy</tspan></text>
@@ -34,7 +34,7 @@
 <text x="18" y="571"><tspan>  help         Print this message or the help of the given subcommand(s)</tspan></text>
 <text x="18" y="590"></text>
 <text x="18" y="609"><tspan>Options:</tspan></text>
-<text x="18" y="628"><tspan>  -m, --model &lt;MODEL&gt;       Model as provider/model, e.g. lakomoor/deepseek-chat or ollama/qwen3:14b</tspan></text>
+<text x="18" y="628"><tspan>  -m, --model &lt;MODEL&gt;       Model as provider/model, e.g. ollama/qwen3:14b or lmstudio/qwen3-coder</tspan></text>
 <text x="18" y="647"><tspan>  -a, --agent &lt;AGENT&gt;       Agent: build, port, reverse, plan</tspan></text>
 <text x="18" y="666"><tspan>      --show-reasoning      Show the model's reasoning stream</tspan></text>
 <text x="18" y="685"><tspan>      --deep                Deep mode: may disassemble, decompile and emulate the original (you own it or may </tspan></text>

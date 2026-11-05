@@ -1,7 +1,7 @@
 <h1 align="center">PortCode</h1>
 <p align="center"><b>Port a program to Rust and check it behaves the same.</b><br>
 An open-source terminal agent that studies a program, rewrites it in Rust and compares the result with the original. It works with models you run yourself:
-<code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
+Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p align="center"><a href="https://lakomoor.github.io/portcode/">Site</a> · <a href="https://lakomoor.github.io/portcode/ports/wordstat/">Example port</a> · <a href="README.ru.md">Русский</a> · <a href="docs/ARCHITECTURE.md">Architecture</a></p>
 
 ![PortCode in 36 seconds](docs/media/portcode-demo.gif)
@@ -49,7 +49,7 @@ cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 Then:
 ```sh
 portcode init                 # writes portcode.json
-export LAKOMOOR_API_KEY=...   # or: portcode auth set lakomoor   (local models need no key)
+ollama serve                  # local models need no key; hosted ones: portcode auth set <provider>
 portcode doctor               # providers, toolchain, optional engines
 portcode                      # full-screen UI;  portcode chat --plain for a line-based chat
 portcode completions zsh > ~/.zfunc/_portcode
@@ -95,8 +95,8 @@ For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and l
 portcode                                  # full-screen UI, agent "build"
 portcode -a port                          # the rustport workflow
 portcode run -a reverse -y "Explain how ./app stores its save files" --json
-portcode models -p lakomoor               # list served models
-portcode eval -m lakomoor/deepseek-chat   # probe: chat, tool-call JSON, read→edit round trip
+portcode models -p ollama                 # list served models
+portcode eval -m ollama/qwen3:14b        # probe: chat, tool-call JSON, read→edit round trip
 portcode port scaffold mygame             # workspace + docs/PORT.md
 portcode port pin original/game.exe --version 1.0.3
 portcode port shot feature-x -s ui.menu -- ./target/release/mygame --help

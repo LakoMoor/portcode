@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PortCode: port a program to Rust and check it behaves the same</title>
-<meta property="og:title" content="PortCode: port a program to Rust and check it behaves the same"><meta property="og:description" content="Open-source terminal agent that reverse-engineers programs and ports them to Rust. Works with local and self-hosted models."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source terminal agent. It studies a program, rewrites it in Rust, and checks the result against the original with recorded evidence, golden tests and screenshots. It works with local and self-hosted models: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
+<meta property="og:title" content="PortCode: port a program to Rust and check it behaves the same"><meta property="og:description" content="Open-source terminal agent that reverse-engineers programs and ports them to Rust. Works with local and self-hosted models."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source terminal agent. It studies a program, rewrites it in Rust, and checks the result against the original with recorded evidence, golden tests and screenshots. It works with local and self-hosted models: Ollama, LM Studio, llama.cpp, vLLM.">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <script src="theme.js"></script><script src="copy.js" defer></script>
 <link rel="stylesheet" href="style.css">
@@ -11,7 +11,7 @@
 <header class="hero">
 <div class="top"><div>
 <h1>Port a program to Rust and check it behaves the same.</h1>
-<p class="lead">PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
+<p class="lead">PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself: Ollama, LM Studio, llama.cpp, vLLM.</p></div>
 <div class="icard"><small class="ik">Install in one line</small><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.sh | sh</span></div>
 <div class="btns"><a class="btn" href="#install">Install</a><a class="btn light" href="ports/wordstat/">See an example port</a></div><small class="ik" style="margin-top:20px">Then open any folder</small><div class="cmd"><span><s>$</s> portcode</span></div>
 <small class="ik" style="margin-top:20px">Windows (PowerShell)</small><div class="cmd"><span><s>&gt;</s> irm https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.ps1 | iex</span></div>
@@ -26,7 +26,7 @@
  <div class="ctl search c2">⌕ &nbsp;E-0007</div>
  <div class="ctl cta c2" style="grid-column:6/13">Run parity</div>
  <div style="grid-column:6/13"><div class="lbl">context</div><div class="ctl slider" style="--w:68%"><em></em><i></i></div></div>
- <div class="ctl select" style="grid-column:6/13"><span>lakomoor/deepseek-chat</span><small>⌄</small></div>
+ <div class="ctl select" style="grid-column:6/13"><span>ollama/qwen3:14b</span><small>⌄</small></div>
 </div></div>
 <div class="t g-violet s5 h340"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">lakomoor.github.io/portcode/remote</span></div>
  <div class="body"><span class="chipx">● connected · full control</span>
@@ -234,14 +234,13 @@ portcode --clean-room -a port</code></pre></div></div>
 <section id="llm"><h2>Works with local and self-hosted models</h2>
 <p class="sub">One OpenAI-compatible client that copes with what open models get wrong: <code>reasoning_content</code> and inline <code>&lt;think&gt;</code>, tool calls written as plain text, broken or cut-off JSON arguments, numbers in quotes, servers that reject optional fields, streams that stall. Small context windows and replies cut off by the output limit are handled too.</p>
 <table><tr><th>Provider</th><th>Default endpoint</th><th>Key</th></tr>
-<tr><td><code>lakomoor</code></td><td>https://lakomoor.com/v1</td><td><code>LAKOMOOR_API_KEY</code></td></tr>
 <tr><td><code>ollama</code></td><td>http://localhost:11434/v1</td><td>none</td></tr>
 <tr><td><code>lmstudio</code></td><td>http://localhost:1234/v1</td><td>none</td></tr>
 <tr><td><code>llamacpp</code> · <code>vllm</code> · <code>sglang</code></td><td>:8080 · :8000 · :30000</td><td>optional</td></tr>
 <tr><td><code>deepseek</code> · <code>openrouter</code></td><td>hosted, same protocol</td><td>env var</td></tr></table>
 <div class="note"><strong>What is tested.</strong> The client, the JSON repair and the agent loop are tested end to end against a scripted server. The DeepSeek and Qwen profiles are cautious guesses, not benchmark results. Run <code>portcode eval</code> on your model and adjust.</div>
-<pre><code>$ portcode models -p lakomoor
-$ portcode -m lakomoor/deepseek-chat
+<pre><code>$ portcode models -p ollama
+$ portcode -m ollama/qwen3:14b
 $ portcode -m ollama/qwen3:14b -a port</code></pre></section>
 
 <section id="agents"><h2>Six agents</h2>

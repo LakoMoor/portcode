@@ -50,14 +50,13 @@
 <p>Commit <code>portcode.json</code>. Keep keys in environment variables or in <code>portcode auth set &lt;provider&gt;</code> (stored in <code>~/.config/portcode/auth.json</code>, mode 0600). Never commit a key.</p>
 <h2 id="an-example">An example<a class="anchor" href="#an-example" aria-label="Link to this section">#</a></h2>
 <pre><code class="lang-json">{
-  &quot;model&quot;: &quot;lakomoor/deepseek-chat&quot;,
+  &quot;model&quot;: &quot;ollama/qwen3:14b&quot;,
   &quot;small_model&quot;: &quot;ollama/qwen3:4b&quot;,
   &quot;prompt_style&quot;: &quot;auto&quot;,
   &quot;venv&quot;: true,
   &quot;suggest&quot;: true,
   &quot;team&quot;: { &quot;enabled&quot;: false, &quot;parallel&quot;: 3 },
   &quot;provider&quot;: {
-    &quot;lakomoor&quot;: { &quot;base_url&quot;: &quot;https://lakomoor.com/v1&quot;, &quot;api_key_env&quot;: &quot;LAKOMOOR_API_KEY&quot; },
     &quot;ollama&quot;:   { &quot;base_url&quot;: &quot;http://localhost:11434/v1&quot; }
   },
   &quot;models&quot;: { &quot;qwen3:14b&quot;: { &quot;context_window&quot;: 32768, &quot;parallel_tool_calls&quot;: false } },
@@ -67,7 +66,7 @@
 }</code></pre>
 <h2 id="every-setting">Every setting<a class="anchor" href="#every-setting" aria-label="Link to this section">#</a></h2>
 <div class="tw"><table><thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><code>model</code></td><td>string</td><td><code>lakomoor/deepseek-chat</code></td><td><code>provider/model</code> to use</td></tr>
+<tr><td><code>model</code></td><td>string</td><td><code>ollama/qwen3:14b</code></td><td><code>provider/model</code> to use</td></tr>
 <tr><td><code>small_model</code></td><td>string</td><td>the main model</td><td>cheaper model for context compaction</td></tr>
 <tr><td><code>default_agent</code></td><td>string</td><td><code>build</code></td><td>agent to start with</td></tr>
 <tr><td><code>provider</code></td><td>map</td><td>presets</td><td>endpoints: <code>base_url</code>, <code>api_key</code>, <code>api_key_env</code>, <code>headers</code>. See <a href="providers.html">Providers</a></td></tr>
@@ -94,7 +93,7 @@
 <tr><td><code>PORTCODE_THEME</code></td><td><code>light</code> or <code>dark</code></td></tr>
 <tr><td><code>PORTCODE_NO_UPDATE_CHECK</code></td><td><code>1</code> turns off the daily update check</td></tr>
 <tr><td><code>PORTCODE_INSTALL_DIR</code></td><td>where <code>install.sh</code> puts the binary</td></tr>
-<tr><td><code>LAKOMOOR_API_KEY</code> and the other provider variables</td><td>provider keys, named in <code>api_key_env</code></td></tr>
+<tr><td><code>VLLM_API_KEY</code>, <code>DEEPSEEK_API_KEY</code> and the other provider variables</td><td>provider keys, named in <code>api_key_env</code></td></tr>
 </tbody></table></div>
 <div class="pn"><a class="prev" href="subscriptions.html"><small>Previous</small>Claude Code and Codex</a><a class="next" href="cli.html"><small>Next</small>Command line</a></div>
 <p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/config.md">Edit this page on GitHub</a></p></main>

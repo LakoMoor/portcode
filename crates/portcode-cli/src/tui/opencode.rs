@@ -15,7 +15,7 @@ fn app() -> (App, mpsc::UnboundedReceiver<super::app::Cmd>) {
         std::env::temp_dir(),
         "build",
         "deepseek-chat",
-        "lakomoor",
+        "ollama",
         64_000,
         "~/proj".into(),
         tx,
@@ -254,7 +254,7 @@ fn home_screen_has_the_prompt_box_agent_model_and_tips() {
     let (mut a, _rx) = app();
     let s = screen(&mut a, 100, 30);
     assert!(s.contains("Ask anything"), "placeholder like OpenCode");
-    assert!(s.contains("Build") && s.contains("deepseek-chat") && s.contains("lakomoor"));
+    assert!(s.contains("Build") && s.contains("deepseek-chat") && s.contains("ollama"));
     assert!(
         s.contains("tab") && s.contains("ctrl+c"),
         "key tips on the home screen"

@@ -17,14 +17,13 @@ Commit `portcode.json`. Keep keys in environment variables or in `portcode auth 
 
 ```json
 {
-  "model": "lakomoor/deepseek-chat",
+  "model": "ollama/qwen3:14b",
   "small_model": "ollama/qwen3:4b",
   "prompt_style": "auto",
   "venv": true,
   "suggest": true,
   "team": { "enabled": false, "parallel": 3 },
   "provider": {
-    "lakomoor": { "base_url": "https://lakomoor.com/v1", "api_key_env": "LAKOMOOR_API_KEY" },
     "ollama":   { "base_url": "http://localhost:11434/v1" }
   },
   "models": { "qwen3:14b": { "context_window": 32768, "parallel_tool_calls": false } },
@@ -38,7 +37,7 @@ Commit `portcode.json`. Keep keys in environment variables or in `portcode auth 
 
 | Key | Type | Default | Meaning |
 |---|---|---|---|
-| `model` | string | `lakomoor/deepseek-chat` | `provider/model` to use |
+| `model` | string | `ollama/qwen3:14b` | `provider/model` to use |
 | `small_model` | string | the main model | cheaper model for context compaction |
 | `default_agent` | string | `build` | agent to start with |
 | `provider` | map | presets | endpoints: `base_url`, `api_key`, `api_key_env`, `headers`. See [Providers](providers.html) |
@@ -69,4 +68,4 @@ A few choices you make in the app are remembered in a small state file in your c
 | `PORTCODE_THEME` | `light` or `dark` |
 | `PORTCODE_NO_UPDATE_CHECK` | `1` turns off the daily update check |
 | `PORTCODE_INSTALL_DIR` | where `install.sh` puts the binary |
-| `LAKOMOOR_API_KEY` and the other provider variables | provider keys, named in `api_key_env` |
+| `VLLM_API_KEY`, `DEEPSEEK_API_KEY` and the other provider variables | provider keys, named in `api_key_env` |

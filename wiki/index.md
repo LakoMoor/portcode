@@ -1,6 +1,6 @@
 # PortCode wiki
 
-PortCode is a terminal agent that studies a program, rewrites it in Rust, and checks the result against the original. It is built for models you run yourself (Ollama, LM Studio, llama.cpp, vLLM, `lakomoor.com/v1`), and it also works with a hosted API or with your Claude Code or Codex subscription.
+PortCode is a terminal agent that studies a program, rewrites it in Rust, and checks the result against the original. It is built for models you run yourself (Ollama, LM Studio, llama.cpp, vLLM), and it also works with a hosted API or with your Claude Code or Codex subscription.
 
 What sets it apart is the proof. PortCode pins the exact build of the original (sha256), writes down every fact as an *observation*, an *inference* or an *unknown*, ports one module at a time, and only calls a module done after a `parity` run passes against the original's own output.
 

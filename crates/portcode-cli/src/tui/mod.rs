@@ -105,7 +105,17 @@ async fn runner_task(
                 let _ = tx.send(Msg::Idle);
             }
             Cmd::Resume(w) => {
-                let _ = tx.send(match r.resume(&w) {
+                let res = r.resume(&w);
+                if res.is_ok() {
+                    let _ = tx.send(Msg::Restored(
+                        r.agent.name.to_string(),
+                        r.resolved.provider.name.clone(),
+                        r.resolved.model.clone(),
+                        r.resolved.profile.context_window,
+                        r.ctx.is_deep(),
+                    ));
+                }
+                let _ = tx.send(match res {
                     Ok((id, _)) => Msg::Resumed(id, r.history().to_vec()),
                     Err(e) => Msg::Info(e),
                 });
@@ -206,6 +216,8 @@ async fn start(
         cancel,
     );
     if let Some((id, h)) = &resumed {
+        app.agent = runner.agent.name.to_string();
+        app.deep = runner.ctx.is_deep();
         app.load_history(id, h);
     }
     if !picker_rows.is_empty() {

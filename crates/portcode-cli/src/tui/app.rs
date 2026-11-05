@@ -15,6 +15,8 @@ pub enum Msg {
     Idle,
     /// A session was loaded: id and its messages, to redraw.
     Resumed(String, Vec<portcode_llm::Message>),
+    /// Agent, provider, model, context window and deep flag restored with a resumed session.
+    Restored(String, String, String, u32, bool),
     /// A guessed first message for the empty prompt (Tab inserts it).
     Suggest(String),
     /// Open the session picker.
@@ -492,6 +494,13 @@ impl App {
             }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
+            Msg::Restored(agent, provider, model, window, deep) => {
+                self.agent = agent;
+                self.provider = provider;
+                self.model = model;
+                self.ctx_window = window;
+                self.deep = deep;
+            }
             Msg::Models(m) => self.models = m,
             Msg::Done(r) => {
                 self.busy = false;

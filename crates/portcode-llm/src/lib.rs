@@ -1,5 +1,5 @@
 //! L1 — OpenAI-compatible chat client built for self-hosted and open-weight models
-//! (lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM, SGLang…).
+//! (Ollama, LM Studio, llama.cpp, vLLM, SGLang…).
 //!
 //! Open models are less uniform than hosted ones, so this crate absorbs the differences:
 //! `reasoning_content` and inline `<think>` blocks, tool calls emitted as text (`<tool_call>` / fenced JSON),
