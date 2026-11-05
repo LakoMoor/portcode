@@ -783,6 +783,27 @@ impl App {
         self.items.clear();
         self.todos.clear();
         self.title = None;
+        // up/down in the prompt walks what was typed in this session, not only since this launch
+        self.history = msgs
+            .iter()
+            .filter(|m| m.role == Role::User)
+            .filter_map(|m| m.content.as_deref())
+            .map(str::trim)
+            .filter(|t| {
+                !t.is_empty()
+                    && !t.starts_with('[')
+                    && !["Not finished.", "Your reply ", "You stopped, but"]
+                        .iter()
+                        .any(|p| t.starts_with(p))
+            })
+            .map(String::from)
+            .fold(Vec::new(), |mut v: Vec<String>, t| {
+                if v.last() != Some(&t) {
+                    v.push(t);
+                }
+                v
+            });
+        self.hist_pos = None;
         let mut results: std::collections::HashMap<&str, &str> = Default::default();
         for m in msgs.iter().filter(|m| m.role == Role::Tool) {
             if let (Some(i), Some(c)) = (m.tool_call_id.as_deref(), m.content.as_deref()) {
@@ -1432,6 +1453,23 @@ mod tests {
             tx,
             Arc::new(AtomicBool::new(false)),
         )
+    }
+    #[test]
+    fn resumed_session_fills_prompt_history() {
+        use portcode_llm::Message;
+        let mut a = app();
+        a.load_history(
+            "s-1",
+            &[
+                Message::user("first"),
+                Message::user("Not finished.\nOpen items"),
+                Message::user("second"),
+            ],
+        );
+        a.on_key(key(KeyCode::Up));
+        assert_eq!(a.input, "second");
+        a.on_key(key(KeyCode::Up));
+        assert_eq!(a.input, "first");
     }
     #[test]
     fn arrows_move_in_the_slash_menu_and_enter_completes() {
