@@ -4,6 +4,8 @@ An open-source terminal agent that studies a program, rewrites it in Rust and co
 <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p>
 <p align="center"><a href="https://lakomoor.github.io/portcode/">Site</a> · <a href="https://lakomoor.github.io/portcode/ports/wordstat/">Example port</a> · <a href="README.ru.md">Русский</a> · <a href="docs/ARCHITECTURE.md">Architecture</a></p>
 
+![PortCode in 36 seconds](docs/media/portcode-demo.gif)
+
 ![PortCode full-screen UI](docs/screenshots/tui-session.svg)
 <sub>The terminal UI running the `port` agent on the bundled example. The model is a **scripted replay** (`portcode-mock-llm`) so the run can be reproduced; the UI and the tools (pin, survey, bash, parity, ledger) are real, and the picture is the real UI rendered without a terminal. Regenerate with `scripts/make_screenshots.sh`.</sub>
 

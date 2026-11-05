@@ -153,7 +153,7 @@ for a, b in T:
     out = out.replace(a, b)
 # the language switch and local paths
 out = out.replace('href="ru/"', 'href="../"')
-for d in ("style.css", "toolkit.css", "theme.js", "copy.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "wiki/", "remote/"):
+for d in ("style.css", "toolkit.css", "theme.js", "copy.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "wiki/", "remote/", "media/"):
     out = out.replace(f'href="{d}', f'href="../{d}').replace(f'src="{d}', f'src="../{d}')
 out = out.replace('<a class="l" href="../wiki/">Документация</a>', '<a class="l" href="../wiki/">Документация</a>')
 out = out.replace('href="#"', 'href="./"')

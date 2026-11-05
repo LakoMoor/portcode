@@ -241,3 +241,4 @@ main.doc pre{max-width:100%;overflow-x:auto}
   .cmd .copybtn{margin:0;align-self:flex-end}
   nav a.l.keep{padding:7px 9px}
 }
+.demo{padding-top:0}.demo img{display:block;width:100%;max-width:960px;height:auto;margin:0 auto;border-radius:18px;box-shadow:var(--shadow)}
