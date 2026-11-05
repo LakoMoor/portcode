@@ -9,7 +9,8 @@ src = (root / "docs/index.html").read_text()
 T = [
  ('<small class="ik" style="margin-top:20px">Then open any folder</small>', '<small class="ik" style="margin-top:20px">Потом откройте любую папку</small>'),
  ('<small class="ik">Install in one line</small>', '<small class="ik">Установка одной строкой</small>'),
- ('<p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads. Also runs on your <a href="wiki/subscriptions.html">Claude Code or Codex subscription</a>, no API key.</p>', '<p class="ikn">macOS, Linux и WSL. Установщик проверяет sha256 загрузки. Работает и на вашей <a href="wiki/subscriptions.html">подписке Claude Code или Codex</a>, без API-ключа.</p>'),
+ ('<small class="ik" style="margin-top:20px">Windows (PowerShell)</small>', '<small class="ik" style="margin-top:20px">Windows (PowerShell)</small>'),
+ ('<p class="ikn">macOS, Linux, Windows and WSL. The installer checks the sha256 of what it downloads. Also runs on your <a href="wiki/subscriptions.html">Claude Code or Codex subscription</a>, no API key.</p>', '<p class="ikn">macOS, Linux, Windows и WSL. Установщик проверяет sha256 загрузки. Работает и на вашей <a href="wiki/subscriptions.html">подписке Claude Code или Codex</a>, без API-ключа.</p>'),
  ('Use your Claude or ChatGPT plan', 'Работай на своей подписке Claude или ChatGPT'),
  ('No API key needed. PortCode starts the official <code>claude</code> or <code>codex</code> program on your machine and lets it use the login you already have. It adds its own tools: the evidence ledger, pinning, parity checks and screenshots.', 'Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.'),
  ('PortCode on your plan', 'PortCode на твоей подписке'),
@@ -75,7 +76,7 @@ T = [
  ('The port agent working on wordstat: tool calls, evidence and a to-do list on the right. Made with', 'Агент port работает над wordstat: вызовы инструментов, факты и список дел справа. Снято скриптом'),
  # install
  ('<h2>Install</h2>', '<h2>Установка</h2>'),
- ('Linux and macOS, x86_64 and aarch64. The installer checks the sha256 and builds from source if there is no binary for your system. On Windows use WSL.', 'Linux и macOS, x86_64 и aarch64. Установщик проверяет sha256 и собирает из исходников, если для твоей системы нет бинарника. В Windows используй WSL.'),
+ ('Windows, Linux and macOS, x86_64 and aarch64. The installers check the sha256; the Linux/macOS one builds from source if there is no binary for your system. The Windows build needs no Rust and no Visual C++ runtime.', 'Windows, Linux и macOS, x86_64 и aarch64. Установщики проверяют sha256; установщик для Linux/macOS собирает из исходников, если бинарника для твоей системы нет. Сборке для Windows не нужны ни Rust, ни Visual C++.'),
  # deep
  ('<h2>Clean room or deep</h2>', '<h2>Clean room или deep</h2>'),
  ('In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Ghidra and ImHex, which are installed next to the binary, each one only after you say yes.', 'В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».'),

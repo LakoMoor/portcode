@@ -188,7 +188,7 @@ async fn start(
     let cancel = runner.cancel_flag();
     let label = o.cwd_label.clone().unwrap_or_else(|| {
         let p = root.display().to_string();
-        match std::env::var("HOME") {
+        match std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
             Ok(h) if p.starts_with(&h) => format!("~{}", &p[h.len()..]),
             _ => p,
         }

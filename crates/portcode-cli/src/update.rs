@@ -2,8 +2,12 @@
 use std::time::Duration;
 
 const API: &str = "https://api.github.com/repos/LakoMoor/portcode/releases/latest";
+#[cfg(not(windows))]
 pub const INSTALL: &str =
     "curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh";
+#[cfg(windows)]
+pub const INSTALL: &str =
+    "irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex";
 
 pub fn current() -> &'static str {
     env!("CARGO_PKG_VERSION")

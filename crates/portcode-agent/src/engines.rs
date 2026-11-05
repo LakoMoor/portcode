@@ -75,6 +75,7 @@ pub fn dir() -> PathBuf {
         }
     }
     let home = std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("."));
     home.join(".portcode/engines")
@@ -82,13 +83,26 @@ pub fn dir() -> PathBuf {
 
 pub fn which(bin: &str) -> Option<PathBuf> {
     let path = std::env::var_os("PATH")?;
+    let exts: &[&str] = if cfg!(windows) {
+        &["", ".exe", ".cmd", ".bat"]
+    } else {
+        &[""]
+    };
     std::env::split_paths(&path)
-        .map(|d| d.join(bin))
+        .flat_map(|d| exts.iter().map(move |x| d.join(format!("{bin}{x}"))))
         .find(|p| p.is_file())
 }
 
 pub fn venv_python() -> PathBuf {
-    dir().join("py/bin/python")
+    let unix = dir().join("py/bin/python");
+    if unix.is_file() {
+        return unix;
+    }
+    let win = dir().join("py").join("Scripts").join("python.exe");
+    if win.is_file() {
+        return win;
+    }
+    unix
 }
 
 fn first_dir_with(base: &Path, rel: &str) -> Option<PathBuf> {
@@ -167,7 +181,7 @@ pub fn install_script(e: &Engine) -> Result<String, String> {
     let q = sh_quote(&d.display().to_string());
     match e.how {
         How::Pip(pkg, _) => Ok(format!(
-            "set -e\nmkdir -p {q}\n[ -x {q}/py/bin/python ] || python3 -m venv {q}/py\n{q}/py/bin/pip install --disable-pip-version-check -q {}\necho installed {pkg}",
+            "set -e\nmkdir -p {q}\nif [ ! -x {q}/py/bin/python ] && [ ! -f {q}/py/Scripts/python.exe ]; then python3 -m venv {q}/py || python -m venv {q}/py; fi\nPY={q}/py/bin/python; [ -x \"$PY\" ] || PY={q}/py/Scripts/python.exe\n\"$PY\" -m pip install --disable-pip-version-check -q {}\necho installed {pkg}",
             sh_quote(pkg)
         )),
         How::Ghidra => Ok(format!(

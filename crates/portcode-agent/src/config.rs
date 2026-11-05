@@ -290,7 +290,6 @@ pub fn stored_key(provider: &str) -> Option<String> {
 
 /// Save a key to `auth.json` (mode 0600). Keys never go into `portcode.json`, which is meant to be committed.
 pub fn store_key(provider: &str, key: &str) -> Result<PathBuf, String> {
-    use std::os::unix::fs::PermissionsExt;
     let p = auth_path().ok_or("no config directory on this platform")?;
     std::fs::create_dir_all(p.parent().ok_or("bad path")?).map_err(|e| e.to_string())?;
     let mut v: Value = std::fs::read_to_string(&p)
@@ -305,8 +304,13 @@ pub fn store_key(provider: &str, key: &str) -> Result<PathBuf, String> {
         serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?,
     )
     .map_err(|e| e.to_string())?;
-    std::fs::set_permissions(&p, std::fs::Permissions::from_mode(0o600))
-        .map_err(|e| e.to_string())?;
+    // Mode 0600 on Unix; on Windows the file lives in your profile folder, which other users cannot read.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&p, std::fs::Permissions::from_mode(0o600))
+            .map_err(|e| e.to_string())?;
+    }
     Ok(p)
 }
 

@@ -84,7 +84,6 @@ pub fn load() -> Vec<Key> {
 }
 
 fn save(keys: &[Key]) -> Result<(), String> {
-    use std::os::unix::fs::OpenOptionsExt;
     let p = path()?;
     if let Some(d) = p.parent() {
         std::fs::create_dir_all(d).map_err(|e| e.to_string())?;
@@ -96,13 +95,14 @@ fn save(keys: &[Key]) -> Result<(), String> {
     let tmp = p.with_extension("tmp");
     {
         use std::io::Write;
-        let mut f = std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .mode(0o600)
-            .open(&tmp)
-            .map_err(|e| e.to_string())?;
+        let mut o = std::fs::OpenOptions::new();
+        o.write(true).create(true).truncate(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            o.mode(0o600);
+        }
+        let mut f = o.open(&tmp).map_err(|e| e.to_string())?;
         f.write_all(
             serde_json::to_string_pretty(&v)
                 .map_err(|e| e.to_string())?

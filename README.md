@@ -35,6 +35,9 @@ It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, s
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 #   options: --with-engines core  PORTCODE_VERSION=v0.1.0  PORTCODE_INSTALL_DIR=~/bin  PORTCODE_FROM_SOURCE=1  --with-skill ~/.claude/skills  --uninstall
 
+# Windows (PowerShell) — verifies the sha256, no Rust needed, adds portcode to your PATH
+irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex
+
 # Homebrew (after the tap is published)
 brew tap LakoMoor/tap && brew install portcode
 
@@ -49,7 +52,7 @@ portcode doctor               # providers, toolchain, optional engines
 portcode                      # full-screen UI;  portcode chat --plain for a line-based chat
 portcode completions zsh > ~/.zfunc/_portcode
 ```
-Prebuilt binaries: Linux and macOS (x86_64, aarch64). Windows: use WSL (the `bash` tool is Unix-only for now).
+Prebuilt binaries: Linux, macOS and Windows (x86_64, aarch64). The Windows build is self-contained: no Rust, no Visual C++ runtime. The `bash` tool uses `sh` from Git for Windows when it is installed, otherwise `cmd.exe`.
 
 ## Finishing 1:1
 The `port` agent cannot stop early. When it tries to, PortCode checks three things: every behaviour of the original is a todo item, every todo is completed, and the last `parity` run passed on the final code (an edit after parity re-opens it). If not, the agent is sent back with the open items, and it gets extra steps when the budget runs out unfinished. The only way out is `blocked`, for a decision only you can make. Parity still compares against goldens captured from the original, so "done" means "proven", not "claimed".

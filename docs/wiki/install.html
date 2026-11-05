@@ -44,6 +44,7 @@
 <main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Start</p>
 <h1 id="install">Install<a class="anchor" href="#install" aria-label="Link to this section">#</a></h1>
 <h2 id="the-installer-macos-linux-wsl">The installer (macOS, Linux, WSL)<a class="anchor" href="#the-installer-macos-linux-wsl" aria-label="Link to this section">#</a></h2>
+<p>On Windows, scroll to <a href="#windows-powershell">Windows (PowerShell)</a>.</p>
 <pre><code class="lang-sh">curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 portcode --version</code></pre>
 <p>The installer downloads the archive for your system from the latest release and <strong>verifies its sha256</strong> before it installs anything. It puts the binary in <code>~/.local/bin</code> (set <code>PORTCODE_INSTALL_DIR</code> to change that) and tells you if the folder is not on your <code>PATH</code>.</p>
@@ -54,7 +55,17 @@ portcode --version</code></pre>
 <tr><td>Linux, aarch64</td><td><code>portcode-aarch64-unknown-linux-gnu.tar.gz</code></td></tr>
 </tbody></table></div>
 <p>Linux archives need glibc 2.34 or newer (Ubuntu 22.04, Debian 12). On a minimal Linux install <code>ca-certificates</code> too, or the download cannot make a TLS connection.</p>
-<p>Windows is supported through WSL.</p>
+<h2 id="windows-powershell">Windows (PowerShell)<a class="anchor" href="#windows-powershell" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-powershell">irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex
+portcode --version</code></pre>
+<p>No Rust and no Visual C++ runtime are needed: <code>portcode.exe</code> is a single static file. The script downloads <code>portcode-x86_64-pc-windows-msvc.zip</code> (or <code>portcode-aarch64-pc-windows-msvc.zip</code> on ARM), <strong>verifies its sha256</strong>, copies <code>portcode.exe</code> to <code>%LOCALAPPDATA%\Programs\portcode\bin</code> and adds that folder to your user <code>PATH</code>. Open a new terminal afterwards.</p>
+<div class="tw"><table><thead><tr><th>Variable</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>PORTCODE_VERSION</code></td><td>install a specific release, for example <code>v0.1.6</code></td></tr>
+<tr><td><code>PORTCODE_INSTALL_DIR</code></td><td>another folder for <code>portcode.exe</code></td></tr>
+<tr><td><code>PORTCODE_UNINSTALL=1</code></td><td>remove <code>portcode.exe</code> and the <code>PATH</code> entry</td></tr>
+</tbody></table></div>
+<p>Set them before the command, for example <code>$env:PORTCODE_VERSION = &quot;v0.1.6&quot;</code>.</p>
+<p>The <code>bash</code> tool runs commands with <code>sh</code> from <a href="https://git-scm.com/download/win">Git for Windows</a> (<code>winget install Git.Git</code>) when it is there, and with <code>cmd.exe</code> otherwise. The deep-mode engine installers (<code>portcode engines install core</code>) need Git for Windows. WSL users can use the Linux installer instead.</p>
 <h2 id="from-source">From source<a class="anchor" href="#from-source" aria-label="Link to this section">#</a></h2>
 <p>You need a recent stable Rust toolchain.</p>
 <pre><code class="lang-sh">cargo install --git https://github.com/LakoMoor/portcode portcode-cli</code></pre>
@@ -69,7 +80,7 @@ portcode --version</code></pre>
 <p>Supported shells: bash, zsh, fish, powershell, elvish.</p>
 <div class="pn"><a class="prev" href="index.html"><small>Previous</small>Overview</a><a class="next" href="first-run.html"><small>Next</small>First run</a></div>
 <p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/install.md">Edit this page on GitHub</a></p></main>
-<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#the-installer-macos-linux-wsl">The installer (macOS, Linux, WSL)</a><a class="t2" href="#from-source">From source</a><a class="t2" href="#updating">Updating</a><a class="t2" href="#check-the-setup">Check the setup</a><a class="t2" href="#shell-completions">Shell completions</a></aside>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#the-installer-macos-linux-wsl">The installer (macOS, Linux, WSL)</a><a class="t2" href="#windows-powershell">Windows (PowerShell)</a><a class="t2" href="#from-source">From source</a><a class="t2" href="#updating">Updating</a><a class="t2" href="#check-the-setup">Check the setup</a><a class="t2" href="#shell-completions">Shell completions</a></aside>
 </div>
 <footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
 <script src="wiki.js"></script></body></html>

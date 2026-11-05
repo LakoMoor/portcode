@@ -763,7 +763,15 @@ pub fn engines_install(ids: &[String]) -> Result<i32, String> {
                 continue;
             }
         };
-        let ok = std::process::Command::new("sh")
+        let Some(sh) = portcode_agent::tools::shell::posix_sh() else {
+            println!(
+                "  {} installing engines needs a POSIX shell. On Windows install Git for Windows (`winget install Git.Git`) or use WSL, then run this again.",
+                yellow("!")
+            );
+            failed += 1;
+            continue;
+        };
+        let ok = std::process::Command::new(sh)
             .arg("-c")
             .arg(&script)
             .status()

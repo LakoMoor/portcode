@@ -110,7 +110,7 @@ impl Skill {
         let Some(rel) = rel.filter(|r| !r.is_empty() && *r != "SKILL.md") else {
             return Ok(self.body.clone());
         };
-        if rel.contains("..") || rel.starts_with('/') {
+        if rel.contains("..") || rel.starts_with(['/', '\\']) || rel.contains(':') {
             return Err("file must be a relative path inside the skill".into());
         }
         if let Some((_, t)) = self.embedded.iter().find(|(p, _)| *p == rel) {

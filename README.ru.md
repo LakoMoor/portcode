@@ -14,12 +14,16 @@
 
 **Первый запуск.** Запусти `portcode` в папке проекта. Локальная модель: `/provider ollama qwen3:14b`. Облачный API: `/key` и вставь ключ (он скрыт и сохраняется с правами 600). Есть подписка Claude или ChatGPT? `portcode -m claude-code/sonnet` или `portcode -m codex/default` работает на ней через официальный CLI, без ключа ([docs/SUBSCRIPTIONS.md](docs/SUBSCRIPTIONS.md)). `portcode doctor` проверит настройку, `/create` запустит пошаговый перенос, `/setup` повторит эти шаги, `portcode update` проверит новую версию. Подробно: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md). Вся документация с поиском: [вики](https://lakomoor.github.io/portcode/wiki/) (на английском).
 
+Установка в Windows (PowerShell; готовый бинарник, Rust и Visual C++ не нужны, sha256 проверяется):
+```powershell
+irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex
+```
 Установка (macOS / Linux / WSL; проверяет sha256):
 ```sh
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 # или: cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 ```
-Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc esc` отменить запрос · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode --resume` показывает список сохранённых сессий этого проекта на выбор (`-c` — продолжить последнюю; `portcode sessions` — список, просмотр, удаление). `/yolo` разрешает всё без вопросов (красная метка `allow-all` остаётся на экране; `/yolo off` выключает). `/venv on|off` — агент создаёт и использует Python `.venv` (по умолчанию включено, `"venv"` в конфиге). `/team on` (или `"team": {"enabled": true, "parallel": 3}`) добавляет агента `team`: оркестратор запускает параллельно проджект-менеджера, техлида, исследователей, разработчиков, тестировщика и ревьюера. `portcode chat --plain` — построчный режим. Windows: через WSL.
+Терминальный интерфейс в стиле OpenCode: `enter` отправить · `alt+enter` перенос · `tab` сменить агента · `/` команды · `esc esc` отменить запрос · `ctrl+t` рассуждения · `ctrl+b` боковая панель. `portcode --resume` показывает список сохранённых сессий этого проекта на выбор (`-c` — продолжить последнюю; `portcode sessions` — список, просмотр, удаление). `/yolo` разрешает всё без вопросов (красная метка `allow-all` остаётся на экране; `/yolo off` выключает). `/venv on|off` — агент создаёт и использует Python `.venv` (по умолчанию включено, `"venv"` в конфиге). `/team on` (или `"team": {"enabled": true, "parallel": 3}`) добавляет агента `team`: оркестратор запускает параллельно проджект-менеджера, техлида, исследователей, разработчиков, тестировщика и ревьюера. `portcode chat --plain` — построчный режим. Windows: нативно, см. установку.
 
 ```sh
 portcode init && export LAKOMOOR_API_KEY=...   # или portcode auth set lakomoor

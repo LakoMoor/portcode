@@ -16,3 +16,20 @@ jobs:
       - run: cargo test --workspace
       - name: example port parity
         run: cargo build --release && PC=$PWD/target/release/portcode examples/wordstat/demo.sh
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+      - name: package and install like a user (no Rust involved after the build)
+        shell: pwsh
+        run: |
+          ./packaging/package.ps1
+          $env:PORTCODE_DOWNLOAD_URL = (Resolve-Path dist).Path
+          $env:PORTCODE_INSTALL_DIR = Join-Path $env:RUNNER_TEMP 'pc-bin'
+          Get-Content install.ps1 -Raw | Invoke-Expression
+          & (Join-Path $env:PORTCODE_INSTALL_DIR 'portcode.exe') --version
+          if ($LASTEXITCODE -ne 0) { throw 'installed portcode.exe failed' }

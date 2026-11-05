@@ -396,6 +396,7 @@ mod tests {
             .await
             .is_ok());
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn symlink_escape_is_caught() {
         let d = tempfile::tempdir().unwrap();

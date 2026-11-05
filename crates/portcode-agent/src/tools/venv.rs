@@ -15,14 +15,27 @@ pub fn dir(root: &Path) -> PathBuf {
     root.join(".venv")
 }
 
+/// The folder with the executables and the Python inside a venv (`bin/python`, or `Scripts\python.exe` on Windows).
+pub fn layout(v: &Path) -> (PathBuf, PathBuf) {
+    if cfg!(windows) {
+        let b = v.join("Scripts");
+        let p = b.join("python.exe");
+        (b, p)
+    } else {
+        let b = v.join("bin");
+        let p = b.join("python");
+        (b, p)
+    }
+}
+
 /// `VIRTUAL_ENV` and the new `PATH` for commands run in the project, when the venv exists and is enabled.
 pub fn env_for(ctx: &Ctx) -> Option<(PathBuf, std::ffi::OsString)> {
     if !ctx.venv.load(Ordering::Relaxed) {
         return None;
     }
     let v = dir(&ctx.root);
-    let bin = v.join("bin");
-    if !bin.join("python").exists() {
+    let (bin, py) = layout(&v);
+    if !py.exists() {
         return None;
     }
     let mut paths = vec![bin];
@@ -100,7 +113,7 @@ impl Tool for Venv {
         };
         let action = a.opt_str("action").unwrap_or_else(|| "status".into());
         let v = dir(&ctx.root);
-        let py = v.join("bin").join("python");
+        let py = layout(&v).1;
         let enabled = ctx.venv.load(Ordering::Relaxed);
         match action.as_str() {
             "status" => {
@@ -207,9 +220,7 @@ impl Tool for Venv {
 }
 
 fn which(p: &str) -> bool {
-    std::env::var_os("PATH")
-        .map(|v| std::env::split_paths(&v).any(|d| d.join(p).is_file()))
-        .unwrap_or(false)
+    crate::engines::which(p).is_some()
 }
 
 #[cfg(test)]

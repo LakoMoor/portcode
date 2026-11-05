@@ -1,5 +1,5 @@
 //! Deep-mode reverse-engineering tools. All except `re_status`/`re_install` are refused in clean-room mode.
-use super::shell::run_command;
+use super::shell::run_posix;
 use crate::engines::{self, sh_quote};
 use crate::permission::Decision;
 use crate::tool::*;
@@ -90,7 +90,7 @@ impl Tool for ReInstall {
                 ),
             )
             .await?;
-            let r = run_command(ctx, &script, Duration::from_secs(600)).await?;
+            let r = run_posix(ctx, &script, Duration::from_secs(600)).await?;
             let ok = r.code == Some(0) && !r.timed_out;
             let tail = clip(r.out.trim(), 1500);
             log.push_str(&format!(
@@ -118,7 +118,7 @@ async fn py_helper(ctx: &Ctx, script: &str, req: &Value, engine: &str) -> Result
         sh_quote(&dir.join(script).display().to_string()),
         sh_quote(&req.to_string())
     );
-    let r = run_command(ctx, &cmd, Duration::from_secs(60)).await?;
+    let r = run_posix(ctx, &cmd, Duration::from_secs(60)).await?;
     if r.timed_out {
         return err("timed out after 60s; lower max_insns/length");
     }
@@ -331,7 +331,7 @@ impl Tool for Decompile {
             "{} {} {} {step} -scriptPath {} -postScript PcDecompile.java {} {} {} 2>&1 | tail -n 25",
             q(&gh), q(&proj), name, q(&scripts), q(&out), mode, sh_quote(&query)
         );
-        let r = run_command(ctx, &cmd, Duration::from_secs(580)).await?;
+        let r = run_posix(ctx, &cmd, Duration::from_secs(580)).await?;
         match std::fs::read_to_string(&out) {
             Ok(t) => Ok(Out::new(
                 format!("decompile {mode}"),
@@ -718,7 +718,7 @@ impl Tool for Dotnet {
                 sh_quote(&query),
                 sh_quote(&file.display().to_string())
             );
-            let r = run_command(ctx, &cmd, Duration::from_secs(120)).await?;
+            let r = run_posix(ctx, &cmd, Duration::from_secs(120)).await?;
             if r.timed_out {
                 return err("ilspycmd timed out after 120s; decompile a smaller type.");
             }

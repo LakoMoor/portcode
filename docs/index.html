@@ -14,7 +14,8 @@
 <p class="lead">PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
 <div class="icard"><small class="ik">Install in one line</small><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.sh | sh</span></div>
 <div class="btns"><a class="btn" href="#install">Install</a><a class="btn light" href="ports/wordstat/">See an example port</a></div><small class="ik" style="margin-top:20px">Then open any folder</small><div class="cmd"><span><s>$</s> portcode</span></div>
-<p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads. Also runs on your <a href="wiki/subscriptions.html">Claude Code or Codex subscription</a>, no API key.</p></div></div>
+<small class="ik" style="margin-top:20px">Windows (PowerShell)</small><div class="cmd"><span><s>&gt;</s> irm https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.ps1 | iex</span></div>
+<p class="ikn">macOS, Linux, Windows and WSL. The installer checks the sha256 of what it downloads. Also runs on your <a href="wiki/subscriptions.html">Claude Code or Codex subscription</a>, no API key.</p></div></div>
 
 <div class="bento">
 <div class="t g-grid s7 h340"><div class="collage">
@@ -87,14 +88,17 @@
 <pre class="wprompt" aria-live="polite"></pre></div></section>
 
 <section id="install"><h2>Install</h2>
-<pre><code># macOS / Linux / WSL
+<pre><code># Windows (PowerShell), no Rust needed
+irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex
+
+# macOS / Linux / WSL
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 # options: PORTCODE_VERSION=v0.1.0 · PORTCODE_INSTALL_DIR=~/bin · PORTCODE_FROM_SOURCE=1 · --with-engines core · --with-skill ~/.claude/skills · --uninstall
 
 cargo install --git https://github.com/LakoMoor/portcode portcode-cli
 
 portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
-<p class="sub">Linux and macOS, x86_64 and aarch64. The installer checks the sha256 and builds from source if there is no binary for your system. On Windows use WSL.</p>
+<p class="sub">Windows, Linux and macOS, x86_64 and aarch64. The installers check the sha256; the Linux/macOS one builds from source if there is no binary for your system. The Windows build needs no Rust and no Visual C++ runtime.</p>
 <div class="bento">
 <div class="t g-peach s4"><div class="framed"><img src="screenshots/tui-home.svg" alt="home screen"></div></div>
 <div class="t g-mint s4"><div class="framed"><img src="screenshots/tui-slash.svg" alt="slash popup"></div></div>

@@ -31,7 +31,7 @@ done
 case "$(uname -s)" in
   Darwin) os="apple-darwin" ;;
   Linux)  os="unknown-linux-gnu" ;;
-  *) die "unsupported OS $(uname -s). On Windows use WSL, or: cargo install --git https://github.com/$REPO portcode-cli" ;;
+  *) die "unsupported OS $(uname -s). On Windows run in PowerShell: irm https://raw.githubusercontent.com/$REPO/main/install.ps1 | iex   (or: cargo install --git https://github.com/$REPO portcode-cli)" ;;
 esac
 case "$(uname -m)" in
   x86_64|amd64) arch="x86_64" ;;

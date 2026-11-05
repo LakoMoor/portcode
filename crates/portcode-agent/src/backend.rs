@@ -55,14 +55,27 @@ pub fn find_binary(cli: Cli) -> Option<PathBuf> {
     let mut dirs: Vec<PathBuf> = std::env::var_os("PATH")
         .map(|p| std::env::split_paths(&p).collect())
         .unwrap_or_default();
-    if let Some(h) = std::env::var_os("HOME").map(PathBuf::from) {
+    if let Some(h) = std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .map(PathBuf::from)
+    {
         dirs.extend([
             h.join(".local/bin"),
             h.join(".claude/local"),
             h.join(".npm-global/bin"),
         ]);
     }
-    dirs.into_iter().map(|d| d.join(name)).find(|p| p.is_file())
+    if let Some(a) = std::env::var_os("APPDATA") {
+        dirs.push(PathBuf::from(a).join("npm"));
+    }
+    let exts: &[&str] = if cfg!(windows) {
+        &["", ".exe", ".cmd"]
+    } else {
+        &[""]
+    };
+    dirs.into_iter()
+        .flat_map(|d| exts.iter().map(move |x| d.join(format!("{name}{x}"))))
+        .find(|p| p.is_file())
 }
 
 /// Model names worth offering. Claude Code takes aliases or full ids; Codex takes any id your plan includes.

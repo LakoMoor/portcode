@@ -29,6 +29,82 @@ async fn drain<R: AsyncReadExt + Unpin>(mut r: R) -> Vec<u8> {
     keep
 }
 
+/// A POSIX `sh`: always on macOS and Linux; on Windows the one that ships with Git for Windows, if installed.
+pub fn posix_sh() -> Option<std::path::PathBuf> {
+    #[cfg(not(windows))]
+    {
+        Some("sh".into())
+    }
+    #[cfg(windows)]
+    {
+        let mut c: Vec<std::path::PathBuf> = std::env::var_os("PATH")
+            .map(|p| {
+                std::env::split_paths(&p)
+                    .map(|d| d.join("sh.exe"))
+                    .collect()
+            })
+            .unwrap_or_default();
+        for var in ["ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"] {
+            if let Some(b) = std::env::var_os(var) {
+                let b = std::path::PathBuf::from(b);
+                c.push(b.join("Git").join("usr").join("bin").join("sh.exe"));
+                c.push(
+                    b.join("Programs")
+                        .join("Git")
+                        .join("usr")
+                        .join("bin")
+                        .join("sh.exe"),
+                );
+            }
+        }
+        c.into_iter().find(|p| p.is_file())
+    }
+}
+
+/// `sh -c cmd`; on Windows without Git's sh, `cmd.exe /C cmd`.
+fn shell_command(cmd: &str) -> Command {
+    match posix_sh() {
+        Some(sh) => {
+            let mut c = Command::new(sh);
+            c.arg("-c").arg(cmd);
+            c
+        }
+        None => {
+            let mut c = Command::new("cmd.exe");
+            c.arg("/C").arg(cmd);
+            c
+        }
+    }
+}
+
+/// Kill a process and everything it started.
+async fn kill_tree(pid: u32) {
+    #[cfg(unix)]
+    let _ = Command::new("kill")
+        .args(["-KILL", &format!("-{pid}")])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .await;
+    #[cfg(windows)]
+    let _ = Command::new("taskkill")
+        .args(["/PID", &pid.to_string(), "/T", "/F"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .await;
+}
+
+/// Like [`run_command`] for scripts written in POSIX shell (the engine tools). On Windows this needs Git for Windows.
+pub async fn run_posix(ctx: &Ctx, cmd: &str, timeout: Duration) -> Result<Ran, ToolError> {
+    if posix_sh().is_none() {
+        return err("this tool runs through a POSIX shell. On Windows install Git for Windows (it provides sh.exe: `winget install Git.Git`) or use WSL, then try again.");
+    }
+    run_command(ctx, cmd, timeout).await
+}
+
 /// Run `sh -c cmd` non-interactively: stdin closed, own process group, wall-clock deadline, capped output,
 /// whole group killed on timeout/cancel. A missing shell or spawn failure is an `Err`, never a panic.
 pub async fn run_command(ctx: &Ctx, cmd: &str, timeout: Duration) -> Result<Ran, ToolError> {
@@ -42,19 +118,20 @@ pub async fn run_command_with(
     timeout: Duration,
     color: bool,
 ) -> Result<Ran, ToolError> {
-    let mut c = Command::new("sh");
-    c.arg("-c")
-        .arg(cmd)
-        .current_dir(&ctx.root)
+    let mut c = shell_command(cmd);
+    c.current_dir(&ctx.root)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .kill_on_drop(true)
-        .process_group(0)
         .env("CI", "1")
         .env("PAGER", "cat")
         .env("GIT_PAGER", "cat")
         .env("GIT_TERMINAL_PROMPT", "0");
+    #[cfg(unix)]
+    c.process_group(0);
+    #[cfg(windows)]
+    c.creation_flags(0x0800_0000); // CREATE_NO_WINDOW: no console flashes
     if color {
         c.env("PORTCODE_FORCE_COLOR", "1")
             .env("CLICOLOR_FORCE", "1")
@@ -97,7 +174,7 @@ pub async fn run_command_with(
             _ = tokio::time::sleep(Duration::from_millis(150)) => {
                 if ctx.cancelled() { cancelled = true; } else if start.elapsed() >= timeout { timed_out = true; }
                 if cancelled || timed_out {
-                    if let Some(p) = pid { let _ = Command::new("kill").args(["-KILL", &format!("-{p}")]).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).status().await; }
+                    if let Some(p) = pid { kill_tree(p).await; }
                     let _ = child.kill().await;
                     break child.wait().await.ok();
                 }
@@ -127,7 +204,11 @@ impl Tool for Bash {
         "bash".into()
     }
     fn description(&self) -> String {
-        "Run one shell command in the project directory (non-interactive, no stdin, default 120s timeout). Use for builds, tests, git, inspecting binaries. Do not use it to read/search files — use read/grep/glob.".into()
+        if posix_sh().is_some() {
+            "Run one shell command in the project directory (non-interactive, no stdin, default 120s timeout). Use for builds, tests, git, inspecting binaries. Do not use it to read/search files — use read/grep/glob.".into()
+        } else {
+            "Run one command in the project directory through cmd.exe (Windows; non-interactive, no stdin, default 120s timeout). Use cmd syntax (dir, type, &&), not bash. For builds, tests, git. Do not use it to read/search files — use read/grep/glob.".into()
+        }
     }
     fn example(&self) -> String {
         r#"{"command": "cargo test -p mycrate", "description": "run unit tests"}"#.into()
@@ -310,7 +391,8 @@ fn inspects_binaries(cmd: &str) -> Option<&'static str> {
             !w.contains('=')
                 && !["sudo", "env", "time", "xargs", "nice", "exec", "command"].contains(w)
         })?;
-        let base = w.rsplit('/').next().unwrap_or(w);
+        let base = w.rsplit(['/', '\\']).next().unwrap_or(w);
+        let base = base.strip_suffix(".exe").unwrap_or(base);
         INSPECTORS.iter().find(|i| **i == base).copied()
     })
 }

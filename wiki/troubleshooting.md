@@ -51,3 +51,10 @@ Start with `portcode doctor`: it tests providers, the Rust toolchain and the eng
 ## Still stuck
 
 Open an issue at [github.com/LakoMoor/portcode/issues](https://github.com/LakoMoor/portcode/issues) with the output of `portcode doctor` and the version from `portcode --version`. Remove keys and personal paths first.
+
+## Windows
+
+- **`portcode` is not recognised right after install.** Open a new terminal: the installer changes your user `PATH`, which running terminals do not see.
+- **The installer says it could not write `portcode.exe`.** PortCode is running. Close it and run the installer again.
+- **`bash` tool: "no POSIX shell".** Install Git for Windows (`winget install Git.Git`) so the agent can use `sh`; without it only simple `cmd.exe` commands work.
+- **SmartScreen warns about `portcode.exe`.** The binary is not code-signed yet. Check the sha256 against `SHA256SUMS` on the release page; the installer does this for you.

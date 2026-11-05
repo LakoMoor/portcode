@@ -1,0 +1,4 @@
+# Windows: link the C runtime statically so portcode.exe runs on a clean machine
+# (no "Visual C++ Redistributable" prompt, no extra DLLs).
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]

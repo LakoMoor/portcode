@@ -2,6 +2,8 @@
 
 ## The installer (macOS, Linux, WSL)
 
+On Windows, scroll to [Windows (PowerShell)](#windows-powershell).
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh
 portcode --version
@@ -18,7 +20,24 @@ The installer downloads the archive for your system from the latest release and 
 
 Linux archives need glibc 2.34 or newer (Ubuntu 22.04, Debian 12). On a minimal Linux install `ca-certificates` too, or the download cannot make a TLS connection.
 
-Windows is supported through WSL.
+## Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/LakoMoor/portcode/main/install.ps1 | iex
+portcode --version
+```
+
+No Rust and no Visual C++ runtime are needed: `portcode.exe` is a single static file. The script downloads `portcode-x86_64-pc-windows-msvc.zip` (or `portcode-aarch64-pc-windows-msvc.zip` on ARM), **verifies its sha256**, copies `portcode.exe` to `%LOCALAPPDATA%\Programs\portcode\bin` and adds that folder to your user `PATH`. Open a new terminal afterwards.
+
+| Variable | Meaning |
+|---|---|
+| `PORTCODE_VERSION` | install a specific release, for example `v0.1.6` |
+| `PORTCODE_INSTALL_DIR` | another folder for `portcode.exe` |
+| `PORTCODE_UNINSTALL=1` | remove `portcode.exe` and the `PATH` entry |
+
+Set them before the command, for example `$env:PORTCODE_VERSION = "v0.1.6"`.
+
+The `bash` tool runs commands with `sh` from [Git for Windows](https://git-scm.com/download/win) (`winget install Git.Git`) when it is there, and with `cmd.exe` otherwise. The deep-mode engine installers (`portcode engines install core`) need Git for Windows. WSL users can use the Linux installer instead.
 
 ## From source
 
