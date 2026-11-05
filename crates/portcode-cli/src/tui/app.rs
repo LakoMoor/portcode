@@ -11,6 +11,10 @@ pub enum Msg {
     Perm(PermAsk),
     Done(Result<Outcome, String>),
     Info(String),
+    /// A session was loaded: id and its messages, to redraw.
+    Resumed(String, Vec<portcode_llm::Message>),
+    /// Open the session picker.
+    Pick(Vec<PickRow>),
     Models(Vec<String>),
     Remote(Remote),
     Wb(super::workbench::WbMsg),
@@ -36,7 +40,9 @@ pub enum Cmd {
     SetAgent(String),
     SetModel(String),
     Clear,
-    Resume,
+    /// Open a session (id, prefix, number or `last`).
+    Resume(String),
+    Sessions,
     ListModels,
     Update,
     /// (`style` | `effort`, value) for the current model.
@@ -49,6 +55,20 @@ pub enum ToolState {
     Running,
     Ok,
     Err,
+}
+
+/// One row of the session picker.
+pub struct PickRow {
+    pub id: String,
+    pub title: String,
+    pub messages: usize,
+    pub ago: String,
+    pub current: bool,
+}
+
+pub struct Picker {
+    pub rows: Vec<PickRow>,
+    pub sel: usize,
 }
 
 pub enum Item {
@@ -99,7 +119,8 @@ pub const SLASH: &[(&str, &str)] = &[
     ("new", "new session (same as /clear)"),
     ("clear", "new session"),
     ("agents", "list agents"),
-    ("resume", "resume the latest session"),
+    ("sessions", "list saved sessions of this project"),
+    ("resume", "open a session: /resume <number|id|last>"),
     ("tools", "list tools"),
     ("ledger", "show the evidence ledger"),
     (
@@ -149,6 +170,8 @@ pub struct App {
     pub last_prompt: u64,
     pub todos: Vec<Todo>,
     pub perm: Option<PermAsk>,
+    /// Full-screen list of saved sessions (`--resume`, `/resume`).
+    pub picker: Option<Picker>,
     /// Further permission asks that arrived while one is open (parallel team workers).
     pub perm_queue: std::collections::VecDeque<PermAsk>,
     pub scroll: usize,
@@ -238,6 +261,7 @@ impl App {
             wiz: None,
             auto_allow: false,
             perm_queue: Default::default(),
+            picker: None,
             slash_sel: 0,
             esc_at: None,
             persist: false,
@@ -447,6 +471,8 @@ impl App {
                 }
             }
             Msg::Info(s) => self.items.push(Item::Info(s)),
+            Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
+            Msg::Resumed(id, m) => self.load_history(&id, &m),
             Msg::Models(m) => self.models = m,
             Msg::Done(r) => {
                 self.busy = false;
@@ -723,6 +749,69 @@ impl App {
         }
     }
 
+    /// Replace the transcript with a loaded session (text and tool calls; reasoning is not kept on screen).
+    pub fn load_history(&mut self, id: &str, msgs: &[portcode_llm::Message]) {
+        use portcode_llm::Role;
+        self.items.clear();
+        self.todos.clear();
+        self.title = None;
+        let mut results: std::collections::HashMap<&str, &str> = Default::default();
+        for m in msgs.iter().filter(|m| m.role == Role::Tool) {
+            if let (Some(i), Some(c)) = (m.tool_call_id.as_deref(), m.content.as_deref()) {
+                results.insert(i, c);
+            }
+        }
+        for m in msgs {
+            match m.role {
+                Role::User => {
+                    if let Some(t) = m.content.as_deref().filter(|t| !t.trim().is_empty()) {
+                        self.items.push(Item::User(t.to_string()));
+                    }
+                }
+                Role::Assistant => {
+                    if let Some(t) = m.content.as_deref().filter(|t| !t.trim().is_empty()) {
+                        self.items.push(Item::Assistant(t.to_string()));
+                    }
+                    for c in &m.tool_calls {
+                        let out = results.get(c.id.as_str()).copied().unwrap_or("");
+                        self.items.push(Item::Tool {
+                            name: c.function.name.clone(),
+                            args: c.function.arguments.clone(),
+                            state: if out.starts_with("Error") {
+                                ToolState::Err
+                            } else {
+                                ToolState::Ok
+                            },
+                            title: String::new(),
+                            text: out.chars().take(2000).collect(),
+                        });
+                    }
+                }
+                _ => {}
+            }
+        }
+        if self.title.is_none() {
+            self.title = msgs.iter().find_map(|m| {
+                (m.role == Role::User)
+                    .then(|| m.content.clone())
+                    .flatten()
+                    .map(|t| {
+                        t.split_whitespace()
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                            .chars()
+                            .take(50)
+                            .collect()
+                    })
+            });
+        }
+        self.scroll = 0;
+        self.items.push(Item::Info(format!(
+            "resumed {id}: {} messages. Keep going below, or /sessions to switch.",
+            msgs.len()
+        )));
+    }
+
     /// One escape was pressed within the last two seconds.
     pub fn esc_armed(&self) -> bool {
         self.esc_at
@@ -774,6 +863,26 @@ impl App {
                     self.perm = self.perm_queue.pop_front();
                 }
                 None => self.perm = Some(p),
+            }
+            return;
+        }
+        if let Some(p) = self.picker.as_mut() {
+            let n = p.rows.len().max(1);
+            match k.code {
+                KeyCode::Up | KeyCode::Char('k') => p.sel = (p.sel + n - 1) % n,
+                KeyCode::Down | KeyCode::Char('j') => p.sel = (p.sel + 1) % n,
+                KeyCode::PageUp => p.sel = p.sel.saturating_sub(8),
+                KeyCode::PageDown => p.sel = (p.sel + 8).min(n - 1),
+                KeyCode::Home => p.sel = 0,
+                KeyCode::End => p.sel = n - 1,
+                KeyCode::Enter => {
+                    if let Some(row) = p.rows.get(p.sel) {
+                        let _ = self.cmd_tx.send(Cmd::Resume(row.id.clone()));
+                    }
+                    self.picker = None;
+                }
+                KeyCode::Esc | KeyCode::Char('q') => self.picker = None,
+                _ => {}
             }
             return;
         }
@@ -1120,7 +1229,16 @@ impl App {
             ("model", None) => self.items.push(Item::Info(format!("{}/{} (context {} tokens)", self.provider, self.model, self.ctx_window))),
             ("models", _) => { let _ = self.cmd_tx.send(Cmd::ListModels); }
             ("clear" | "new", _) => { self.items.clear(); self.todos.clear(); self.title = None; self.tokens_in = 0; self.tokens_out = 0; self.last_prompt = 0; let _ = self.cmd_tx.send(Cmd::Clear); }
-            ("resume", _) => { let _ = self.cmd_tx.send(Cmd::Resume); }
+            ("sessions", _) => { let _ = self.cmd_tx.send(Cmd::Sessions); }
+            ("resume", a) => {
+                if self.busy {
+                    self.items.push(Item::Error("wait for the running request (or press esc twice) before switching sessions".into()));
+                } else if let Some(w) = a {
+                    let _ = self.cmd_tx.send(Cmd::Resume(w.to_string()));
+                } else {
+                    let _ = self.cmd_tx.send(Cmd::Sessions);
+                }
+            }
             ("deep", _) => { self.deep = true; let _ = self.cmd_tx.send(Cmd::SetDeep(true)); self.items.push(Item::Info("deep mode: disasm, emulate, decompile and hexdump are available. Use it only on software you own or may examine.".into())); }
             ("clean" | "clean-room", _) => { self.deep = false; let _ = self.cmd_tx.send(Cmd::SetDeep(false)); self.items.push(Item::Info("clean-room mode: the original is observed from outside only.".into())); }
             ("engines", _) => {

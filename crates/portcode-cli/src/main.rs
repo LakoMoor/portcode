@@ -35,6 +35,9 @@ struct Cli {
     /// Clean-room mode (default): observe the original from outside only
     #[arg(long, global = true)]
     clean_room: bool,
+    /// Resume a saved session: pick from this project's history (no value), or give an id, a unique prefix or a number from `portcode sessions`
+    #[arg(short = 'r', long, global = true, num_args = 0..=1, default_missing_value = "pick", value_name = "SESSION")]
+    resume: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -96,6 +99,12 @@ enum Cmd {
         /// Workbench view: pseudo, disasm or hex
         #[arg(long, default_value = "pseudo")]
         wb_tab: String,
+    },
+    /// List, show or delete the saved sessions of this project
+    Sessions {
+        /// list (default) | show <id> | rm <id>
+        action: Option<String>,
+        id: Option<String>,
     },
     /// Run one prompt non-interactively
     Run {
@@ -305,7 +314,14 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             if tty {
                 tui::run(cfg()?, tui_opts(&cli, false)).await
             } else {
-                cmds::chat(cfg()?, &cli.model, &cli.agent, cli.show_reasoning, false).await
+                cmds::chat(
+                    cfg()?,
+                    &cli.model,
+                    &cli.agent,
+                    cli.show_reasoning,
+                    cli.resume.clone(),
+                )
+                .await
             }
         }
         Some(Cmd::Chat { r#continue, plain }) => {
@@ -315,7 +331,9 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     &cli.model,
                     &cli.agent,
                     cli.show_reasoning,
-                    r#continue,
+                    cli.resume
+                        .clone()
+                        .or(r#continue.then(|| "last".to_string())),
                 )
                 .await
             } else {
@@ -387,9 +405,19 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             )
             .await?;
             cmds::watch_ctrl_c(r.cancel_flag());
-            if r#continue {
-                if let Some(id) = r.latest_session() {
-                    r.resume(&id)?;
+            if cli.resume.as_deref() == Some("pick") {
+                return Err("`run` has no screen to pick from: use --resume <number|id> (see `portcode sessions`) or -c".into());
+            }
+            if let Some(w) = cli
+                .resume
+                .clone()
+                .or(r#continue.then(|| "last".to_string()))
+            {
+                match r.resume(&w) {
+                    Ok(_) => {}
+                    // `-c` on a fresh project just starts a new session.
+                    Err(_) if w == "last" => {}
+                    Err(e) => return Err(e),
                 }
             }
             let out = r.send(&text).await?;
@@ -427,6 +455,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             );
             Ok(0)
         }
+        Some(Cmd::Sessions { action, id }) => cmds::sessions(action.as_deref(), id.as_deref()),
         Some(Cmd::Agents) => {
             for a in portcode_agent::agents::all() {
                 println!(
@@ -483,7 +512,7 @@ fn tui_opts(cli: &Cli, cont: bool) -> tui::Opts {
     tui::Opts {
         model: cli.model.clone(),
         agent: cli.agent.clone().unwrap_or_else(|| "build".into()),
-        cont,
+        resume: cli.resume.clone().or(cont.then(|| "last".to_string())),
         show_reasoning: cli.show_reasoning,
         cwd_label: None,
     }

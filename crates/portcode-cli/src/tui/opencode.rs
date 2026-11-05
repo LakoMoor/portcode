@@ -428,3 +428,50 @@ fn team_command_adds_the_orchestrator_and_parallel_asks_queue_up() {
     a.on_key(k(KeyCode::Enter));
     assert!(!a.agents.iter().any(|x| x == "team"));
 }
+
+#[test]
+fn resume_picker_lists_sessions_and_enter_opens_the_chosen_one() {
+    use super::app::{Cmd, Msg, PickRow};
+    let (mut a, mut rx) = app();
+    let row = |id: &str, t: &str| PickRow {
+        id: id.into(),
+        title: t.into(),
+        messages: 4,
+        ago: "3 min ago".into(),
+        current: false,
+    };
+    a.on_msg(Msg::Pick(vec![
+        row("s-2", "port the parser"),
+        row("s-1", "fix the build"),
+    ]));
+    let s = screen(&mut a, 90, 20);
+    assert!(
+        s.contains("Resume a session") && s.contains("port the parser") && s.contains("3 min ago"),
+        "{s}"
+    );
+    a.on_key(k(KeyCode::Down));
+    a.on_key(k(KeyCode::Enter));
+    assert!(a.picker.is_none());
+    assert!(matches!(rx.try_recv(), Ok(Cmd::Resume(id)) if id == "s-1"));
+    a.on_msg(Msg::Pick(vec![row("s-2", "x")]));
+    a.on_key(k(KeyCode::Esc));
+    assert!(
+        a.picker.is_none() && rx.try_recv().is_err(),
+        "esc cancels without resuming"
+    );
+}
+
+#[test]
+fn resumed_history_is_redrawn_with_text_and_tool_calls() {
+    use super::app::{Item, Msg};
+    use portcode_llm::Message;
+    let (mut a, _rx) = app();
+    let msgs = vec![
+        Message::user("add a flag"),
+        Message::assistant_text("done, see src/main.rs"),
+    ];
+    a.on_msg(Msg::Resumed("s-9".into(), msgs));
+    assert!(matches!(&a.items[0], Item::User(t) if t == "add a flag"));
+    assert!(matches!(&a.items[1], Item::Assistant(t) if t.contains("src/main.rs")));
+    assert!(matches!(a.items.last(), Some(Item::Info(t)) if t.contains("s-9")));
+}

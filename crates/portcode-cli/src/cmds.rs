@@ -42,12 +42,95 @@ fn banner(r: &Runner) {
     );
 }
 
+/// `portcode sessions [list | show <id> | rm <id>]`.
+pub fn sessions(action: Option<&str>, id: Option<&str>) -> Result<i32, String> {
+    let root = crate::root()?;
+    let st = portcode_agent::session::Store::new(&root);
+    match (action.unwrap_or("list"), id) {
+        ("list" | "ls", _) => {
+            let l = st.list();
+            if l.is_empty() {
+                println!("no saved sessions here. Start one with `portcode`.");
+            }
+            for (i, s) in l.iter().enumerate() {
+                println!(
+                    "{:>3}  {:<14} {:>3} msgs  {:<12} {}",
+                    i + 1,
+                    s.id,
+                    s.messages,
+                    s.ago(),
+                    s.title
+                );
+            }
+            if !l.is_empty() {
+                println!(
+                    "{}",
+                    dim(
+                        "resume with: portcode --resume <number|id>   (no value opens this list; -c continues the latest)"
+                    )
+                );
+            }
+            Ok(0)
+        }
+        ("show", Some(w)) => {
+            let sid = st.resolve(w)?;
+            for m in st.load(&sid)? {
+                let who = match m.role {
+                    portcode_llm::Role::User => "you",
+                    portcode_llm::Role::Assistant => "agent",
+                    _ => continue,
+                };
+                if let Some(t) = m.content.as_deref().filter(|t| !t.trim().is_empty()) {
+                    println!("{} {}", bold(who), t.trim());
+                }
+            }
+            Ok(0)
+        }
+        ("rm" | "delete", Some(w)) => {
+            let sid = st.resolve(w)?;
+            st.delete(&sid)?;
+            println!("deleted {sid}");
+            Ok(0)
+        }
+        ("show" | "rm" | "delete", None) => {
+            Err("give a session: a number, an id or a prefix (see `portcode sessions`)".into())
+        }
+        (other, _) => Err(format!(
+            "unknown action '{other}': use list, show <id> or rm <id>"
+        )),
+    }
+}
+
+/// Numbered list of this project's sessions; the user types a number (empty = cancel).
+fn pick_session(r: &Runner) -> Option<String> {
+    let l = r.sessions();
+    if l.is_empty() {
+        println!("{}", dim("no saved sessions in this project yet"));
+        return None;
+    }
+    for (i, s) in l.iter().take(20).enumerate() {
+        println!(
+            "{:>3}  {:<12} {:>3} msgs  {}",
+            i + 1,
+            s.ago(),
+            s.messages,
+            s.title
+        );
+    }
+    print!("resume which? (number, empty = new session) ");
+    let _ = std::io::Write::flush(&mut std::io::stdout());
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).ok()?;
+    let t = line.trim();
+    (!t.is_empty()).then(|| t.to_string())
+}
+
 pub async fn chat(
     cfg: Config,
     model: &Option<String>,
     agent: &Option<String>,
     show_reasoning: bool,
-    cont: bool,
+    resume: Option<String>,
 ) -> Result<i32, String> {
     let mut r = Runner::new(
         crate::root()?,
@@ -59,10 +142,15 @@ pub async fn chat(
     )
     .await?;
     watch_ctrl_c(r.cancel_flag());
-    if cont {
-        if let Some(id) = r.latest_session() {
-            let n = r.resume(&id)?;
-            println!("{}", dim(&format!("resumed {id} ({n} messages)")));
+    if let Some(mut w) = resume {
+        if w == "pick" {
+            w = pick_session(&r).unwrap_or_else(|| "none".into());
+        }
+        match r.resume(&w) {
+            Ok((id, n)) => println!("{}", dim(&format!("resumed {id} ({n} messages)"))),
+            Err(_) if w == "none" => {}
+            Err(e) if w == "last" => println!("{}", dim(&format!("{e}; starting a new one"))),
+            Err(e) => return Err(e),
         }
     }
     banner(&r);
@@ -116,7 +204,10 @@ pub async fn chat(
                 ("todos", _) => for t in r.todos() { println!("  [{}] {}", t.status, t.content); },
                 ("ledger", _) => { let _ = run_tool(r.cfg.clone(), "evidence_list", "{}").await; }
                 ("clear", _) => { r.clear(); println!("{}", dim("context cleared")); }
-                ("resume", _) => match r.latest_session() { Some(id) => match r.resume(&id) { Ok(n) => println!("{}", dim(&format!("resumed {id} ({n} messages)"))), Err(e) => println!("{} {e}", red("!")) }, None => println!("{}", dim("no saved sessions")) },
+                ("resume", w) => {
+                    let w = match w { Some(w) => w.to_string(), None => match pick_session(&r) { Some(w) => w, None => continue } };
+                    match r.resume(&w) { Ok((id, n)) => println!("{}", dim(&format!("resumed {id} ({n} messages)"))), Err(e) => println!("{} {e}", red("!")) }
+                }
                 (other, _) => println!("{} unknown command /{other}. Try /help", yellow("!")),
             }
             continue;

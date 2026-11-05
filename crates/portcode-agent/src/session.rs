@@ -2,6 +2,29 @@
 use portcode_llm::Message;
 use std::path::{Path, PathBuf};
 
+/// One line of the session list.
+#[derive(Debug, Clone)]
+pub struct SessionInfo {
+    pub id: String,
+    pub modified: u64,
+    /// User and assistant messages.
+    pub messages: usize,
+    pub title: String,
+}
+
+impl SessionInfo {
+    /// "3 min ago", "2 days ago".
+    pub fn ago(&self) -> String {
+        let d = portcode_evidence::now_secs().saturating_sub(self.modified);
+        match d {
+            0..=89 => "just now".into(),
+            90..=5399 => format!("{} min ago", d / 60),
+            5400..=129_599 => format!("{} h ago", d / 3600),
+            _ => format!("{} days ago", d / 86_400),
+        }
+    }
+}
+
 pub struct Store {
     dir: PathBuf,
 }
@@ -42,6 +65,94 @@ impl Store {
             .map(|l| serde_json::from_str(l).map_err(|e| format!("corrupt session line: {e}")))
             .collect()
     }
+    /// Saved sessions, newest first.
+    pub fn list(&self) -> Vec<SessionInfo> {
+        let mut v: Vec<SessionInfo> = std::fs::read_dir(&self.dir)
+            .into_iter()
+            .flatten()
+            .flatten()
+            .filter_map(|e| {
+                let n = e.file_name().to_string_lossy().to_string();
+                let id = n.strip_suffix(".jsonl")?.to_string();
+                let modified = e
+                    .metadata()
+                    .ok()?
+                    .modified()
+                    .ok()?
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .ok()?
+                    .as_secs();
+                let msgs = self.load(&id).unwrap_or_default();
+                let title = msgs
+                    .iter()
+                    .find(|m| m.role == portcode_llm::Role::User)
+                    .and_then(|m| m.content.as_deref())
+                    .map(|t| t.split_whitespace().collect::<Vec<_>>().join(" "))
+                    .map(|t| {
+                        if t.chars().count() > 60 {
+                            format!("{}…", t.chars().take(59).collect::<String>())
+                        } else {
+                            t
+                        }
+                    })
+                    .unwrap_or_else(|| "(empty)".into());
+                Some(SessionInfo {
+                    id,
+                    modified,
+                    messages: msgs
+                        .iter()
+                        .filter(|m| {
+                            matches!(
+                                m.role,
+                                portcode_llm::Role::User | portcode_llm::Role::Assistant
+                            )
+                        })
+                        .count(),
+                    title,
+                })
+            })
+            .collect();
+        v.sort_by(|a, b| b.modified.cmp(&a.modified).then(b.id.cmp(&a.id)));
+        v
+    }
+    /// An id, a unique id prefix, `last`, or a 1-based number from [`Store::list`].
+    pub fn resolve(&self, r: &str) -> Result<String, String> {
+        let r = r.trim();
+        let all = self.list();
+        if all.is_empty() {
+            return Err("no saved sessions in this project".into());
+        }
+        if r.is_empty() || r == "last" || r == "latest" {
+            return Ok(all[0].id.clone());
+        }
+        if let Ok(n) = r.parse::<usize>() {
+            return all
+                .get(n.wrapping_sub(1))
+                .map(|s| s.id.clone())
+                .ok_or_else(|| {
+                    format!(
+                        "no session number {n}; there are {}. List them with /sessions.",
+                        all.len()
+                    )
+                });
+        }
+        if all.iter().any(|s| s.id == r) {
+            return Ok(r.to_string());
+        }
+        let hits: Vec<&SessionInfo> = all.iter().filter(|s| s.id.starts_with(r)).collect();
+        match hits.as_slice() {
+            [one] => Ok(one.id.clone()),
+            [] => Err(format!("no session '{r}'. List them with /sessions.")),
+            _ => Err(format!(
+                "'{r}' matches {} sessions; type more of the id.",
+                hits.len()
+            )),
+        }
+    }
+    pub fn delete(&self, id: &str) -> Result<(), String> {
+        let f = self.file(id).ok_or("bad session id")?;
+        std::fs::remove_file(&f).map_err(|e| format!("{}: {e}", f.display()))
+    }
     /// Newest session id, if any.
     pub fn latest(&self) -> Option<String> {
         let mut v: Vec<(std::time::SystemTime, String)> = std::fs::read_dir(&self.dir)
@@ -72,5 +183,34 @@ mod tests {
         assert_eq!(s.load("s-1").unwrap().len(), 2);
         assert_eq!(s.latest().as_deref(), Some("s-1"));
         assert!(s.save("../evil", &[]).is_err() && s.load("../evil").is_err());
+    }
+
+    #[test]
+    fn lists_newest_first_and_resolves_numbers_prefixes_and_last() {
+        let d = std::env::temp_dir().join(format!("pc-sess-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&d);
+        let st = Store::new(&d);
+        assert!(st.resolve("last").is_err(), "nothing saved yet");
+        st.save("s-100", &[Message::user("first task\n  with   spaces")])
+            .unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(1100));
+        st.save(
+            "s-200",
+            &[Message::user("second"), Message::assistant_text("ok")],
+        )
+        .unwrap();
+        let l = st.list();
+        assert_eq!(l[0].id, "s-200");
+        assert_eq!((l[0].messages, l[0].title.as_str()), (2, "second"));
+        assert_eq!(l[1].title, "first task with spaces");
+        assert_eq!(st.resolve("").unwrap(), "s-200");
+        assert_eq!(st.resolve("2").unwrap(), "s-100");
+        assert_eq!(st.resolve("s-1").unwrap(), "s-100");
+        assert!(st.resolve("s-").unwrap_err().contains("matches 2"));
+        assert!(st.resolve("9").unwrap_err().contains("no session number"));
+        assert!(st.resolve("../x").is_err());
+        st.delete("s-100").unwrap();
+        assert_eq!(st.list().len(), 1);
+        let _ = std::fs::remove_dir_all(&d);
     }
 }

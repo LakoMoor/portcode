@@ -103,7 +103,7 @@ async fn reads_edits_and_reports() {
     // session was persisted and is resumable
     let id = r.session_id.clone();
     let (mut r2, _) = runner(d.path(), &m.url, "build", Reply::Once).await;
-    assert!(r2.resume(&id).unwrap() >= 6);
+    assert!(r2.resume(&id).unwrap().1 >= 6);
 }
 
 #[tokio::test]

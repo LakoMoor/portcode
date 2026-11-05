@@ -259,11 +259,30 @@ impl Runner {
         self.session_id = Store::new_id();
     }
 
-    pub fn resume(&mut self, id: &str) -> Result<usize, String> {
+    /// Load a session by id, unique prefix, number from [`Runner::sessions`] or `last`. Returns the id and message count.
+    pub fn resume(&mut self, reference: &str) -> Result<(String, usize), String> {
         let st = self.store.as_ref().ok_or("sessions disabled")?;
-        self.messages = st.load(id)?;
-        self.session_id = id.to_string();
-        Ok(self.messages.len())
+        let id = st.resolve(reference)?;
+        self.messages = st.load(&id)?;
+        self.session_id = id.clone();
+        self.cli_session = None;
+        Ok((id, self.messages.len()))
+    }
+    pub fn sessions(&self) -> Vec<crate::session::SessionInfo> {
+        self.store.as_ref().map(|s| s.list()).unwrap_or_default()
+    }
+    pub fn delete_session(&mut self, reference: &str) -> Result<String, String> {
+        let st = self.store.as_ref().ok_or("sessions disabled")?;
+        let id = st.resolve(reference)?;
+        if id == self.session_id {
+            return Err("that is the session in use; start a new one first (/new)".into());
+        }
+        st.delete(&id)?;
+        Ok(id)
+    }
+    /// The conversation so far (for redrawing after a resume).
+    pub fn history(&self) -> &[Message] {
+        &self.messages
     }
     pub fn latest_session(&self) -> Option<String> {
         self.store.as_ref().and_then(|s| s.latest())

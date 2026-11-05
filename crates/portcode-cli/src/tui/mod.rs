@@ -56,7 +56,8 @@ impl Gate for TuiGate {
 pub struct Opts {
     pub model: Option<String>,
     pub agent: String,
-    pub cont: bool,
+    /// Session to open: an id, prefix, number or `last`.
+    pub resume: Option<String>,
     pub show_reasoning: bool,
     pub cwd_label: Option<String>,
 }
@@ -96,17 +97,19 @@ async fn runner_task(
                 });
             }
             Cmd::Clear => r.clear(),
-            Cmd::Resume => {
-                let m = match r.latest_session() {
-                    Some(id) => match r.resume(&id) {
-                        Ok(n) => format!(
-                            "resumed {id} ({n} messages); history is in context but not redrawn"
-                        ),
-                        Err(e) => e,
-                    },
-                    None => "no saved sessions".into(),
-                };
-                let _ = tx.send(Msg::Info(m));
+            Cmd::Resume(w) => {
+                let _ = tx.send(match r.resume(&w) {
+                    Ok((id, _)) => Msg::Resumed(id, r.history().to_vec()),
+                    Err(e) => Msg::Info(e),
+                });
+            }
+            Cmd::Sessions => {
+                let rows = pick_rows(&r);
+                let _ = tx.send(if rows.is_empty() {
+                    Msg::Info("no saved sessions in this project yet".into())
+                } else {
+                    Msg::Pick(rows)
+                });
             }
             Cmd::ListModels => {
                 if let Some(cli) = portcode_agent::backend::cli_for(&r.resolved.provider.name) {
@@ -160,9 +163,19 @@ async fn start(
         Arc::new(Bridge(mtx.clone())),
     )
     .await?;
-    if o.cont {
-        if let Some(id) = runner.latest_session() {
-            let _ = runner.resume(&id);
+    let mut resumed: Option<(String, Vec<portcode_llm::Message>)> = None;
+    let mut notice: Option<String> = None;
+    let mut picker_rows = Vec::new();
+    if o.resume.as_deref() == Some("pick") {
+        picker_rows = pick_rows(&runner);
+        if picker_rows.is_empty() {
+            notice = Some("no saved sessions in this project yet".into());
+        }
+    } else if let Some(w) = o.resume.as_deref() {
+        match runner.resume(w) {
+            Ok((id, _)) => resumed = Some((id, runner.history().to_vec())),
+            Err(e) if w == "last" => notice = Some(format!("{e}; starting a new session")),
+            Err(e) => notice = Some(e),
         }
     }
     let cancel = runner.cancel_flag();
@@ -184,6 +197,18 @@ async fn start(
         ctx_tx,
         cancel,
     );
+    if let Some((id, h)) = &resumed {
+        app.load_history(id, h);
+    }
+    if !picker_rows.is_empty() {
+        app.picker = Some(app::Picker {
+            rows: picker_rows,
+            sel: 0,
+        });
+    }
+    if let Some(n) = notice {
+        app.items.push(app::Item::Info(n));
+    }
     app.show_reasoning = o.show_reasoning;
     app.auto_allow = gate_auto;
     app.refresh_ledger();
@@ -197,6 +222,20 @@ async fn start(
     }
     tokio::spawn(runner_task(runner, ctx_rx, mtx.clone()));
     Ok((app, mrx, mtx))
+}
+
+fn pick_rows(r: &Runner) -> Vec<app::PickRow> {
+    r.sessions()
+        .into_iter()
+        .take(50)
+        .map(|s| app::PickRow {
+            ago: s.ago(),
+            current: s.id == r.session_id,
+            id: s.id,
+            title: s.title,
+            messages: s.messages,
+        })
+        .collect()
 }
 
 /// Run the tool calls the workbench asked for; results come back as `Msg::Wb`.

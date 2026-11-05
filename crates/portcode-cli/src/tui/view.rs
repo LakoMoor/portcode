@@ -1077,12 +1077,73 @@ fn home(f: &mut Frame, app: &App, area: Rect) {
     );
 }
 
+/// Full-screen list of saved sessions, like Claude Code's `--resume`.
+fn picker(f: &mut Frame, app: &App, area: Rect) {
+    let Some(p) = app.picker.as_ref() else {
+        return;
+    };
+    let rows_visible = (area.height as usize).saturating_sub(5).max(1);
+    let start = p.sel.saturating_sub(rows_visible - 1);
+    let w = area.width as usize;
+    let mut lines = vec![
+        Line::from(""),
+        Line::from(vec![
+            Span::raw("  "),
+            Span::styled("Resume a session", bold(c_accent())),
+            Span::styled(format!("  {} in this project", p.rows.len()), muted()),
+        ]),
+        Line::from(""),
+    ];
+    for (i, r) in p.rows.iter().enumerate().skip(start).take(rows_visible) {
+        let on = i == p.sel;
+        let bg = if on { c_select() } else { c_bg() };
+        let meta = format!("{:<11} {:>3} msgs", r.ago, r.messages);
+        let room = w.saturating_sub(meta.chars().count() + 8).max(10);
+        let mut title: String = r.title.chars().take(room).collect();
+        if r.current {
+            title += " ◂ current";
+        }
+        let pad = " ".repeat(room.saturating_sub(title.chars().count()) + 2);
+        let ts = if on {
+            bold(c_text()).bg(bg)
+        } else {
+            Style::new().fg(c_text()).bg(bg)
+        };
+        lines.push(Line::from(vec![
+            Span::styled(
+                if on { " ▸ " } else { "   " },
+                Style::new().fg(c_accent()).bg(bg),
+            ),
+            Span::styled(title, ts),
+            Span::styled(format!("{pad}{meta} "), Style::new().fg(c_muted()).bg(bg)),
+        ]));
+    }
+    f.render_widget(Paragraph::new(lines), area);
+    let foot = Rect {
+        x: area.x,
+        y: area.y + area.height.saturating_sub(1),
+        width: area.width,
+        height: 1,
+    };
+    f.render_widget(
+        Paragraph::new(Line::from(Span::styled(
+            "  ↑↓ choose · enter open · esc new session",
+            muted(),
+        ))),
+        foot,
+    );
+}
+
 pub fn draw(f: &mut Frame, app: &mut App) {
     let area = f.area();
     f.render_widget(
         Block::new().style(Style::new().bg(c_bg()).fg(c_text())),
         area,
     );
+    if app.picker.is_some() {
+        picker(f, app, area);
+        return;
+    }
     if app.wiz.is_some() {
         wizard(f, app, area);
         return;
