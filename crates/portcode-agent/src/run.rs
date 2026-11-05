@@ -624,7 +624,7 @@ impl Runner {
             .unwrap_or(self.agent.steps)
             .max(2);
         let mut limit = base_steps;
-        let (mut extensions, mut gate_nudges) = (0u32, 0u32);
+        let (mut extensions, mut gate_nudges, mut todo_nudges) = (0u32, 0u32, 0u32);
         lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut total = Usage::default();
@@ -802,6 +802,32 @@ impl Runner {
                             gaps.len(),
                             gaps.join("; ")
                         )));
+                    }
+                }
+                if !self.agent.gate
+                    && !final_step
+                    && todo_nudges < 2
+                    && !reply.trim_end().ends_with('?')
+                {
+                    // agents without the finish gate: a reply that stops while the todo list still has open items
+                    // (typically a "next step" written as text) is a model stopping early, not a finished job.
+                    let open: Vec<String> = lock(&self.ctx.state)
+                        .todos
+                        .iter()
+                        .filter(|t| t.status != "completed")
+                        .map(|t| t.content.clone())
+                        .collect();
+                    if !open.is_empty() {
+                        todo_nudges += 1;
+                        self.ui.event(UiEvent::Info(format!(
+                            "continuing: {} todo item(s) still open",
+                            open.len()
+                        )));
+                        self.messages.push(Message::user(format!(
+                            "You stopped, but the todo list still has open items:\n- {}\nDo not summarise. Carry out the next step now with a tool call. If only the user can unblock you, call `blocked` with the reason.",
+                            open.join("\n- ")
+                        )));
+                        continue;
                     }
                 }
                 self.save();
