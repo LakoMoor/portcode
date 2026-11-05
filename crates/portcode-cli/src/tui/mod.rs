@@ -93,7 +93,7 @@ async fn runner_task(
             Cmd::Update => {
                 let tx = tx.clone();
                 tokio::spawn(async move {
-                    let _ = tx.send(Msg::Info(crate::update::report(true).await));
+                    let _ = tx.send(Msg::Info(crate::update::apply().await));
                 });
             }
             Cmd::Clear => r.clear(),

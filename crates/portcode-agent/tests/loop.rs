@@ -541,3 +541,30 @@ async fn compact_replaces_the_conversation_with_a_summary_and_keeps_going() {
         .unwrap_or("")
         .contains("[Summary of the earlier conversation]")));
 }
+
+#[tokio::test]
+async fn cancel_stops_a_model_request_that_never_answers() {
+    // a server that accepts the connection and then says nothing
+    let l = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/v1", l.local_addr().unwrap());
+    tokio::spawn(async move {
+        let mut held = vec![];
+        while let Ok((s, _)) = l.accept().await {
+            held.push(s);
+        }
+    });
+    let d = tempfile::tempdir().unwrap();
+    let (mut r, _ui) = runner(d.path(), &url, "build", Reply::Once).await;
+    let flag = r.cancel_flag();
+    tokio::spawn(async move {
+        tokio::time::sleep(std::time::Duration::from_millis(400)).await;
+        flag.store(true, std::sync::atomic::Ordering::Relaxed);
+    });
+    let t = std::time::Instant::now();
+    let out = tokio::time::timeout(std::time::Duration::from_secs(10), r.send("hello"))
+        .await
+        .expect("cancel must end the request")
+        .unwrap();
+    assert!(matches!(out.status, Status::Cancelled));
+    assert!(t.elapsed() < std::time::Duration::from_secs(5));
+}

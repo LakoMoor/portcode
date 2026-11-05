@@ -177,6 +177,7 @@ impl Runner {
                 root: root.clone(),
                 gate: gate.clone(),
                 model: model_ref.clone(),
+                cancel: ctx.cancel.clone(),
             }));
         }
         let store = persist.then(|| Store::new(&root));
@@ -677,20 +678,31 @@ impl Runner {
             prof.max_tokens = (u64::from(prof.out_tokens()) * u64::from(boost))
                 .min(room.max(128))
                 .max(128) as u32;
-            let res = self
-                .client
-                .chat(
+            // the model request is dropped (its connection closed) as soon as the user cancels
+            let flag = self.ctx.cancel.clone();
+            let mut on_event = |e: StreamEvent| match e {
+                StreamEvent::Text(t) => ui.event(UiEvent::Text(t)),
+                StreamEvent::Reasoning(t) => ui.event(UiEvent::Reasoning(t)),
+                StreamEvent::ToolStart(n) => ui.event(UiEvent::ToolStart(n)),
+            };
+            let res = tokio::select! {
+                r = self.client.chat(
                     &self.resolved.model,
                     &prof,
                     &msgs,
                     &tools,
-                    &mut |e| match e {
-                        StreamEvent::Text(t) => ui.event(UiEvent::Text(t)),
-                        StreamEvent::Reasoning(t) => ui.event(UiEvent::Reasoning(t)),
-                        StreamEvent::ToolStart(n) => ui.event(UiEvent::ToolStart(n)),
-                    },
-                )
-                .await;
+                    &mut on_event,
+                ) => r,
+                _ = wait_cancel(flag) => {
+                    self.save();
+                    return Ok(Outcome {
+                        text: last_text,
+                        steps: step,
+                        usage: total,
+                        status: Status::Cancelled,
+                    });
+                }
+            };
             let a = match res {
                 Ok(a) => a,
                 Err(e) => {
@@ -804,7 +816,9 @@ impl Runner {
                 let sig = format!("{}:{}", call.function.name, call.function.arguments);
                 recent.push(sig.clone());
                 let same = recent.iter().rev().take(3).filter(|s| **s == sig).count();
-                let result = if same >= 3 {
+                let result = if self.ctx.cancelled() {
+                    "[cancelled by user before this call ran]".to_string()
+                } else if same >= 3 {
                     repeats += 1;
                     "You have made this exact call 3 times in a row. Stop repeating it. Try a different approach, or tell the user what blocks you.".to_string()
                 } else {
@@ -898,7 +912,23 @@ impl Runner {
         }
         let ctx = self.ctx.clone();
         let t2 = tool.clone();
-        let joined = tokio::spawn(async move { t2.run(&ctx, args).await }).await;
+        let mut handle = tokio::spawn(async move { t2.run(&ctx, args).await });
+        let flag = self.ctx.cancel.clone();
+        let joined = tokio::select! {
+            j = &mut handle => j,
+            _ = wait_cancel(flag) => {
+                // tools that watch the flag (bash, sub-agents) wind down on their own; anything else is stopped
+                match tokio::time::timeout(std::time::Duration::from_secs(3), &mut handle).await {
+                    Ok(j) => j,
+                    Err(_) => {
+                        handle.abort();
+                        Ok(Err(crate::tool::ToolError(
+                            "cancelled by user; the tool was stopped".into(),
+                        )))
+                    }
+                }
+            }
+        };
         let limit = self.resolved.profile.result_chars();
         let (ok, title, text) = match joined {
             Ok(Ok(o)) => (true, o.title, clip(&o.text, limit)),
@@ -912,6 +942,13 @@ impl Runner {
             text: text.clone(),
         });
         text
+    }
+}
+
+/// Resolves when the user asks to cancel (Esc Esc, Ctrl-C, remote interrupt).
+async fn wait_cancel(flag: Arc<std::sync::atomic::AtomicBool>) {
+    while !flag.load(Ordering::Relaxed) {
+        tokio::time::sleep(std::time::Duration::from_millis(80)).await;
     }
 }
 
@@ -955,6 +992,8 @@ struct SubAgents {
     root: std::path::PathBuf,
     gate: Arc<dyn Gate>,
     model: Option<String>,
+    /// The parent session's cancel flag: Esc Esc stops sub-agents and team workers too.
+    cancel: Arc<std::sync::atomic::AtomicBool>,
 }
 
 #[async_trait]
@@ -979,7 +1018,14 @@ impl SubRunner for SubAgents {
             false,
         )
         .await?;
-        let out = Box::pin(r.send(prompt)).await?;
+        let (parent, child) = (self.cancel.clone(), r.cancel_flag());
+        let watcher = tokio::spawn(async move {
+            wait_cancel(parent).await;
+            child.store(true, Ordering::Relaxed);
+        });
+        let out = Box::pin(r.send(prompt)).await;
+        watcher.abort();
+        let out = out?;
         Ok(if out.text.trim().is_empty() {
             format!(
                 "(sub-agent finished with status {:?} and no text)",

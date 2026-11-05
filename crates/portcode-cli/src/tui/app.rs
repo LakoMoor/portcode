@@ -121,7 +121,7 @@ pub const SLASH: &[(&str, &str)] = &[
         "yolo",
         "allow everything without asking (toggle, or on/off)",
     ),
-    ("update", "check for a newer PortCode"),
+    ("update", "install the newest PortCode release"),
     ("compact", "summarise the conversation to free up context"),
     ("new", "new session (same as /clear)"),
     ("clear", "new session"),

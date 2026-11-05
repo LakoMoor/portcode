@@ -39,6 +39,12 @@ Set them before the command, for example `$env:PORTCODE_VERSION = "v0.1.6"`.
 
 The `bash` tool runs commands with `sh` from [Git for Windows](https://git-scm.com/download/win) (`winget install Git.Git`) when it is there, and with `cmd.exe` otherwise. The deep-mode engine installers (`portcode engines install core`) need Git for Windows. WSL users can use the Linux installer instead.
 
+## Updating
+
+PortCode tells you when a newer release exists: a notice appears when it starts. Type `/update` inside PortCode, or run `portcode update` (`--check` only looks). It downloads the archive for your system, **verifies its sha256**, checks that the new binary starts, and replaces the old one. Restart PortCode afterwards. On Windows the old file is renamed to `portcode.exe.old` and removed on the next start.
+
+If PortCode came from Homebrew or `cargo install`, it tells you the right command instead of touching those files. `PORTCODE_NO_UPDATE_CHECK=1` turns the notice off.
+
 ## From source
 
 You need a recent stable Rust toolchain.

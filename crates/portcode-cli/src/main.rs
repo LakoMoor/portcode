@@ -130,8 +130,11 @@ enum Cmd {
     Providers,
     /// Check providers, toolchain and optional engines
     Doctor,
-    /// Check whether a newer PortCode is released
-    Update,
+    /// Install the newest PortCode release (sha256-checked); `--check` only looks
+    Update {
+        #[arg(long)]
+        check: bool,
+    },
     /// Serve PortCode's tools over MCP (stdio) for Claude Code or Codex; `--print-config` shows how to register it
     Mcp {
         /// Also offer the deep reverse-engineering tools
@@ -440,8 +443,15 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
         Some(Cmd::Models { provider }) => cmds::models(cfg()?, provider.or(cli.model)).await,
         Some(Cmd::Providers) => cmds::providers(cfg()?),
         Some(Cmd::Mcp { deep, print_config }) => cmds::mcp(cfg()?, deep, print_config).await,
-        Some(Cmd::Update) => {
-            println!("{}", update::report(true).await);
+        Some(Cmd::Update { check }) => {
+            println!(
+                "{}",
+                if check {
+                    update::report(true).await
+                } else {
+                    update::apply().await
+                }
+            );
             Ok(0)
         }
         Some(Cmd::Doctor) => cmds::doctor(cfg()?).await,
