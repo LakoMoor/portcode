@@ -261,13 +261,61 @@ pub async fn install(latest: &str) -> Result<String, String> {
 
 /// `/update` and `portcode update`: check, and install when a newer release exists.
 pub async fn apply() -> String {
+    apply_ex().await.0
+}
+
+/// Like [`apply`], and says whether a new binary was installed (so the app can restart into it).
+pub async fn apply_ex() -> (String, bool) {
     match latest().await {
         Ok(l) if newer(&l, current()) => match install(&l).await {
-            Ok(m) => m,
-            Err(e) => format!("could not update to {l}: {e}"),
+            Ok(m) => (m, true),
+            Err(e) => (format!("could not update to {l}: {e}"), false),
         },
-        Ok(_) => format!("PortCode {} is up to date.", current()),
-        Err(e) => format!("update check failed: {e}"),
+        Ok(_) => (format!("PortCode {} is up to date.", current()), false),
+        Err(e) => (format!("update check failed: {e}"), false),
+    }
+}
+
+/// The installed binary to start again after an update: the running path without Linux's " (deleted)" or Windows' ".old".
+fn restart_path() -> Option<std::path::PathBuf> {
+    let p = std::env::current_exe().ok()?;
+    let s = p.to_string_lossy().to_string();
+    let s = s.strip_suffix(" (deleted)").unwrap_or(&s);
+    let s = s.strip_suffix(".old").unwrap_or(s);
+    Some(std::path::PathBuf::from(s))
+}
+
+/// Replace this process with the freshly installed PortCode, same arguments, same folder, resuming `session`.
+/// Returns only if it could not start (the caller then just quits and tells the user to start it again).
+pub fn restart(session: Option<&str>) -> String {
+    let Some(exe) = restart_path() else {
+        return "updated; start PortCode again to use the new version".into();
+    };
+    let mut cmd = std::process::Command::new(&exe);
+    // the same arguments, minus a previous restart's hand-over, plus this one
+    let mut args = std::env::args_os().skip(1).peekable();
+    while let Some(a) = args.next() {
+        if a == "--restart-session" {
+            args.next();
+        } else if !a.to_string_lossy().starts_with("--restart-session=") {
+            cmd.arg(a);
+        }
+    }
+    if let Some(id) = session {
+        cmd.arg("--restart-session").arg(id);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        let e = cmd.exec();
+        format!("updated, but could not restart ({e}); start PortCode again")
+    }
+    #[cfg(not(unix))]
+    {
+        match cmd.status() {
+            Ok(s) => std::process::exit(s.code().unwrap_or(0)),
+            Err(e) => format!("updated, but could not restart ({e}); start PortCode again"),
+        }
     }
 }
 

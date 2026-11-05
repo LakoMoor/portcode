@@ -17,6 +17,8 @@ pub enum Msg {
     Resumed(String, Vec<portcode_llm::Message>),
     /// Result of a `/connect` test: the served models, or why it failed.
     Connected(Result<Vec<String>, String>),
+    /// A new version was installed: leave and start it, resuming this session when there is one.
+    Restart(Option<String>),
     /// Agent, provider, model, context window and deep flag restored with a resumed session.
     Restored(String, String, String, u32, bool),
     /// A guessed first message for the empty prompt (Tab inserts it).
@@ -204,6 +206,8 @@ pub struct App {
     pub title: Option<String>,
     pub spinner: usize,
     pub quit: bool,
+    /// Set when an update was installed: the session to resume in the new process.
+    pub restart: Option<Option<String>>,
     pub wb: Option<super::workbench::Wb>,
     pub wiz: Option<super::wizard::Wizard>,
     pub conn: Option<super::connect::Connect>,
@@ -279,6 +283,7 @@ impl App {
             title: None,
             spinner: 0,
             quit: false,
+            restart: None,
             wb: None,
             wiz: None,
             conn: None,
@@ -506,6 +511,12 @@ impl App {
             }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
+            Msg::Restart(sid) => {
+                self.items
+                    .push(Item::Info("restarting into the new version…".into()));
+                self.restart = Some(sid);
+                self.quit = true;
+            }
             Msg::Connected(r) => {
                 if let Some(c) = self.conn.as_mut() {
                     c.tested(r);
@@ -1022,6 +1033,13 @@ impl App {
                         wz.error = Some("The agent is still working. Press esc to close this, interrupt it, then try again.".into());
                     } else {
                         self.wiz = None;
+                        if l.agent == "team" {
+                            // same as /team on
+                            if !self.agents.iter().any(|x| x == "team") {
+                                self.agents.push("team".into());
+                            }
+                            let _ = self.cmd_tx.send(Cmd::Tune("team".into(), "on".into()));
+                        }
                         if self.agent != l.agent {
                             self.agent = l.agent.into();
                             let _ = self.cmd_tx.send(Cmd::SetAgent(l.agent.into()));
@@ -1404,7 +1422,11 @@ impl App {
                 let list: Vec<String> = portcode_agent::engines::ENGINES.iter().map(|e| format!("{} {}", if portcode_agent::engines::detect(e).is_some() { "✓" } else { "·" }, e.id)).collect();
                 self.items.push(Item::Info(format!("engines: {} — install: portcode engines install <id>", list.join("  "))));
             }
-            ("create", _) => self.wiz = Some(super::wizard::Wizard::default()),
+            ("create", _) => {
+                let mut w = super::wizard::Wizard::default();
+                w.detect_here(&self.root, &self.cfg.allowed_dirs);
+                self.wiz = Some(w);
+            }
             ("workbench" | "wb", a) => self.open_workbench(a),
             ("remote", a) => self.remote_req = Some(a.unwrap_or("").to_string()),
             ("style" | "effort", a) => match a {

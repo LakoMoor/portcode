@@ -46,7 +46,7 @@
 <p>Five minutes from install to your first task.</p>
 <h2 id="1-open-a-folder">1. Open a folder<a class="anchor" href="#1-open-a-folder" aria-label="Link to this section">#</a></h2>
 <p>Run <code>portcode</code> in the folder you want to work in. For a port, that is the folder that holds the program to port: put the original in <code>original/</code>.</p>
-<p>The first time PortCode starts in a folder it opens the guided start (the same screen as <code>/create</code>) with a welcome. Press <code>esc</code> there to open the normal interface; it does not come back for that folder. Set <code>PORTCODE_NO_WELCOME=1</code> to turn it off everywhere.</p>
+<p>The first time PortCode starts in a folder it opens the guided start (the same screen as <code>/create</code>) with a welcome. If the folder holds a game or a program (a <code>.app</code>, an <code>.exe</code>, a Unity game, a native executable), PortCode finds it and fills in the path for you; <code>←</code> <code>→</code> on the path field switches between the finds. Press <code>esc</code> there to open the normal interface; it does not come back for that folder. Set <code>PORTCODE_NO_WELCOME=1</code> to turn it off everywhere.</p>
 <p>When the prompt is empty, PortCode looks at the folder and puts a guess at your first message in the prompt box as grey text. Press <code>tab</code> to use it, <code>esc</code> to dismiss it, or just type something else. See <a href="tour.html#the-first-message-suggestion">A tour of the app</a>.</p>
 <h2 id="2-pick-a-model-and-give-it-a-key">2. Pick a model and give it a key<a class="anchor" href="#2-pick-a-model-and-give-it-a-key" aria-label="Link to this section">#</a></h2>
 <p>PortCode speaks the OpenAI chat protocol, so almost any server works. Choose one way:</p>

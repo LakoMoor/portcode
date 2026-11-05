@@ -6,7 +6,7 @@ Five minutes from install to your first task.
 
 Run `portcode` in the folder you want to work in. For a port, that is the folder that holds the program to port: put the original in `original/`.
 
-The first time PortCode starts in a folder it opens the guided start (the same screen as `/create`) with a welcome. Press `esc` there to open the normal interface; it does not come back for that folder. Set `PORTCODE_NO_WELCOME=1` to turn it off everywhere.
+The first time PortCode starts in a folder it opens the guided start (the same screen as `/create`) with a welcome. If the folder holds a game or a program (a `.app`, an `.exe`, a Unity game, a native executable), PortCode finds it and fills in the path for you; `←` `→` on the path field switches between the finds. Press `esc` there to open the normal interface; it does not come back for that folder. Set `PORTCODE_NO_WELCOME=1` to turn it off everywhere.
 
 When the prompt is empty, PortCode looks at the folder and puts a guess at your first message in the prompt box as grey text. Press `tab` to use it, `esc` to dismiss it, or just type something else. See [A tour of the app](tour.html#the-first-message-suggestion).
 

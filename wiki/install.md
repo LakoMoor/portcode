@@ -41,7 +41,7 @@ The `bash` tool runs commands with `sh` from [Git for Windows](https://git-scm.c
 
 ## Updating
 
-PortCode tells you when a newer release exists: a notice appears when it starts. Type `/update` inside PortCode, or run `portcode update` (`--check` only looks). It downloads the archive for your system, **verifies its sha256**, checks that the new binary starts, and replaces the old one. Restart PortCode afterwards. On Windows the old file is renamed to `portcode.exe.old` and removed on the next start.
+PortCode tells you when a newer release exists: a notice appears when it starts. Type `/update` inside PortCode, or run `portcode update` (`--check` only looks). It downloads the archive for your system, **verifies its sha256**, checks that the new binary starts, and replaces the old one. Inside the app, `/update` then restarts PortCode by itself in the new version and continues the same session; with `portcode update` from a shell, start it again yourself. On Windows the old file is renamed to `portcode.exe.old` and removed on the next start.
 
 If PortCode came from Homebrew or `cargo install`, it tells you the right command instead of touching those files. `PORTCODE_NO_UPDATE_CHECK=1` turns the notice off.
 

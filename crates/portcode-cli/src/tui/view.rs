@@ -1836,6 +1836,43 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
             Style::new().bg(c_panel2()),
         ));
         lines.push(Line::from(sp).style(Style::new().bg(c_panel2())));
+        if !w.found.is_empty() {
+            let mut row: Vec<Span> = vec![Span::styled(" found here ", Style::new().fg(c_teal()))];
+            let mut used = 12usize;
+            for (i, fd) in w.found.iter().enumerate() {
+                let label = format!(
+                    " {}{} ",
+                    clip_to(&fd.path, 34),
+                    if i == w.pick && w.auto { " ✓" } else { "" }
+                );
+                let wd = label.chars().count() + 1;
+                if used + wd > width {
+                    row.push(Span::styled(
+                        format!("+{} more", w.found.len() - i),
+                        muted(),
+                    ));
+                    break;
+                }
+                used += wd;
+                row.push(Span::styled(label, on(i == w.pick && w.auto)));
+                row.push(Span::raw(" "));
+            }
+            lines.push(Line::from(row));
+            if let Some(fd) = w.found.get(w.pick) {
+                lines.push(Line::from(Span::styled(
+                    format!(
+                        "   {}{}",
+                        fd.what,
+                        if w.found.len() > 1 && w.focus == Field::Source {
+                            " · ← → switches"
+                        } else {
+                            ""
+                        }
+                    ),
+                    muted(),
+                )));
+            }
+        }
         if let Some(n) = &w.note {
             lines.push(Line::from(Span::styled(
                 format!("  {n}"),
@@ -1928,9 +1965,15 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
                 format!("  2 {} Screenshots and a site ", box_(w.proof)),
                 Style::new().fg(if w.proof { c_text() } else { c_muted() }),
             ),
+            Span::styled(
+                format!("  3 {} Work as a team ", box_(w.team)),
+                Style::new().fg(if w.team { c_text() } else { c_muted() }),
+            ),
         ]));
         lines.push(Line::from(Span::styled(
-            if w.own_art {
+            if w.team {
+                "   A project manager, tech lead and workers run in parallel; the lead checks the result before it says done."
+            } else if w.own_art {
                 "   Same features, new look. Nothing from the original's assets, text or code."
             } else {
                 "   1:1: goldens from the original, parity PASS before it counts as done."
@@ -1969,7 +2012,9 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
     )));
     lines.push(Line::from(""));
     mark(&lines, Field::Start, &mut focus_line);
-    let who = if w.kind == Kind::Fresh {
+    let who = if w.team && !w.look_only {
+        "team"
+    } else if w.kind == Kind::Fresh {
         "build"
     } else if w.look_only {
         "reverse"

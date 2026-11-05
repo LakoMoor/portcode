@@ -38,6 +38,9 @@ struct Cli {
     /// Resume a saved session: pick from this project's history (no value), or give an id, a unique prefix or a number from `portcode sessions`
     #[arg(short = 'r', long, global = true, num_args = 0..=1, default_missing_value = "pick", value_name = "SESSION")]
     resume: Option<String>,
+    /// Used by the app itself after `/update`: the session to continue in the new process.
+    #[arg(long, global = true, hide = true, value_name = "SESSION")]
+    restart_session: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -536,7 +539,12 @@ fn tui_opts(cli: &Cli, cont: bool) -> tui::Opts {
     tui::Opts {
         model: cli.model.clone(),
         agent: cli.agent.clone().unwrap_or_else(|| "build".into()),
-        resume: cli.resume.clone().or(cont.then(|| "last".to_string())),
+        // after /update the app starts itself again and hands over the session it was in
+        resume: cli
+            .resume
+            .clone()
+            .or(cont.then(|| "last".to_string()))
+            .or_else(|| cli.restart_session.clone().filter(|s| !s.is_empty())),
         show_reasoning: cli.show_reasoning,
         cwd_label: None,
     }

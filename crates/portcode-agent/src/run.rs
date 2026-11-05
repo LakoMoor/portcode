@@ -570,6 +570,19 @@ impl Runner {
         }
     }
 
+    /// Write the session now and return its id, or `None` when nothing was said yet (nothing to resume).
+    pub fn checkpoint(&self) -> Option<String> {
+        if self
+            .messages
+            .iter()
+            .all(|m| m.role == portcode_llm::Role::System)
+        {
+            return None;
+        }
+        self.save();
+        self.store.as_ref().map(|_| self.session_id.clone())
+    }
+
     fn save(&self) {
         if let Some(s) = &self.store {
             let _ = s.save(&self.session_id, &self.messages);

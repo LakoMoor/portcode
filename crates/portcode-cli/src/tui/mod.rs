@@ -122,10 +122,12 @@ async fn runner_task(
                 });
             }
             Cmd::Update => {
-                let tx = tx.clone();
-                tokio::spawn(async move {
-                    let _ = tx.send(Msg::Info(crate::update::apply().await));
-                });
+                // inline: no turn can start while the binary is being replaced
+                let (m, installed) = crate::update::apply_ex().await;
+                let _ = tx.send(Msg::Info(m));
+                if installed {
+                    let _ = tx.send(Msg::Restart(r.checkpoint()));
+                }
             }
             Cmd::Clear => r.clear(),
             Cmd::Compact => {
@@ -261,10 +263,12 @@ async fn start(
         && !app.root_path().join(".portcode").exists();
     if first_here {
         let _ = std::fs::create_dir_all(app.root_path().join(".portcode"));
-        app.wiz = Some(wizard::Wizard {
+        let mut w = wizard::Wizard {
             welcome: true,
             ..Default::default()
-        });
+        };
+        w.detect_here(app.root_path(), &[]);
+        app.wiz = Some(w);
     }
     if !picker_rows.is_empty() {
         app.picker = Some(app::Picker {
@@ -597,6 +601,14 @@ pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
             break;
         }
     }
+    if let Some(sid) = app.restart.take() {
+        // give the terminal back first, then become the new version
+        drop(term);
+        drop(_guard);
+        println!("updated: starting the new version…");
+        eprintln!("{}", crate::update::restart(sid.as_deref()));
+        return Ok(1);
+    }
     Ok(0)
 }
 
@@ -706,6 +718,9 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
             focus: Field::Text,
             ..Default::default()
         };
+        if src.is_empty() && std::env::var_os("PORTCODE_SNAP_DETECT").is_some() {
+            w.detect_here(app.root_path(), &[]);
+        }
         w.inspect(app.root_path(), &[]);
         app.wiz = Some(w);
     }

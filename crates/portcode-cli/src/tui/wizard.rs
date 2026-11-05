@@ -11,6 +11,10 @@ pub enum Kind {
     Fresh,
 }
 
+/// Team runs lose the `port` agent's finish gate and bundled skill, so the prompt carries them.
+const TEAM_RULES: &str = "Team: you lead and delegate with the `team` tool. Every worker must first load the rustport skill (`skill` tool) and follow it: evidence as observation, inference or unknown, goldens from the original, one small piece at a time. Do not say it is done until you have run `parity` yourself and it PASSED.\n";
+const TEAM_RULES_FRESH: &str = "Team: you lead and delegate with the `team` tool: a plan from pm and techlead first, developers on different files, then tester and reviewer. Check the build and tests yourself before you say it is done.\n";
+
 /// Where new code goes: always the folder PortCode was opened in.
 const WHERE: &str = "Create all new source code inside the current folder (a subfolder such as <name>-rs/ is fine). Do not create anything outside it.\n";
 
@@ -143,6 +147,8 @@ pub struct Wizard {
     pub stack: usize,
     /// Own design and art instead of a 1:1 copy.
     pub own_art: bool,
+    /// Run it with the `team` agent: a project manager, tech lead and workers in parallel.
+    pub team: bool,
     /// Screenshots per feature and a generated site.
     pub proof: bool,
     pub text: String,
@@ -152,6 +158,135 @@ pub struct Wizard {
     pub note: Option<String>,
     /// Opened by itself the first time PortCode starts in a folder: greets, and offers the normal interface.
     pub welcome: bool,
+    /// Programs and games found in the opened folder; ← → on the path field switches between them.
+    pub found: Vec<Found>,
+    pub pick: usize,
+    /// The path was filled in by detection, so a change of kind may replace it.
+    pub auto: bool,
+}
+
+/// Something in the opened folder that looks like the program or game to recreate.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Found {
+    /// Relative to the folder PortCode was opened in; `.` for the folder itself.
+    pub path: String,
+    pub kind: Kind,
+    /// One short phrase: "Unity 2021.3 · IL2CPP", "macOS app", "Windows program".
+    pub what: String,
+}
+
+/// Look in `root` (and one folder down) for a game or program. Cheap and bounded: it never reads file contents
+/// beyond four bytes, skips hidden and build folders, and stops after a few hundred entries.
+pub fn detect(root: &std::path::Path) -> Vec<Found> {
+    const SKIP: &[&str] = &["target", "node_modules", "docs", "venv", "__pycache__"];
+    const NOT_THE_PROGRAM: &[&str] = &[
+        "unins",
+        "uninstall",
+        "vcredist",
+        "vc_redist",
+        "dxsetup",
+        "crashhandler",
+        "unitycrash",
+        "crashpad",
+        "setup",
+        "installer",
+        "updater",
+        "dotnet",
+        "redist",
+        "notification_helper",
+    ];
+    let mut out: Vec<Found> = Vec::new();
+    if let Some(u) = portcode_agent::tools::re::unity_summary(root) {
+        out.push(Found {
+            path: ".".into(),
+            kind: Kind::Game,
+            what: u,
+        });
+    }
+    let mut dirs: Vec<(std::path::PathBuf, String)> = vec![(root.to_path_buf(), String::new())];
+    if let Ok(rd) = std::fs::read_dir(root) {
+        for e in rd.flatten().take(300) {
+            let name = e.file_name().to_string_lossy().to_string();
+            let p = e.path();
+            if name.starts_with('.')
+                || SKIP.contains(&name.as_str())
+                || name.ends_with(".app")
+                || !p.is_dir()
+            {
+                continue;
+            }
+            dirs.push((p, format!("{name}/")));
+        }
+    }
+    for (dir, prefix) in dirs.into_iter().take(40) {
+        let Ok(rd) = std::fs::read_dir(&dir) else {
+            continue;
+        };
+        let entries: Vec<_> = rd.flatten().take(300).collect();
+        let names: Vec<String> = entries
+            .iter()
+            .map(|e| e.file_name().to_string_lossy().to_string())
+            .collect();
+        let game_like = names.iter().any(|n| {
+            let l = n.to_lowercase();
+            l.ends_with("_data")
+                || l == "unityplayer.dll"
+                || l == "gameassembly.dll"
+                || l == "steam_appid.txt"
+                || l.ends_with(".pak")
+        });
+        let kind = if game_like { Kind::Game } else { Kind::App };
+        for e in &entries {
+            let name = e.file_name().to_string_lossy().to_string();
+            let lower = name.to_lowercase();
+            let rel = format!("{prefix}{name}");
+            let p = e.path();
+            if name.starts_with('.') || NOT_THE_PROGRAM.iter().any(|n| lower.contains(n)) {
+                continue;
+            }
+            let what = if lower.ends_with(".app") && p.join("Contents/MacOS").is_dir() {
+                match portcode_agent::tools::re::unity_summary(&p) {
+                    Some(u) => Some((Kind::Game, u)),
+                    None => Some((kind, "macOS app".to_string())),
+                }
+            } else if lower.ends_with(".exe") {
+                Some((kind, "Windows program".to_string()))
+            } else if p.is_file() && is_native_executable(&p) {
+                Some((kind, "program".to_string()))
+            } else {
+                None
+            };
+            if let Some((k, w)) = what {
+                if !out.iter().any(|f| f.path == rel) {
+                    out.push(Found {
+                        path: rel,
+                        kind: k,
+                        what: w,
+                    });
+                }
+            }
+        }
+    }
+    out.truncate(6);
+    out
+}
+
+fn is_native_executable(p: &std::path::Path) -> bool {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if !std::fs::metadata(p).is_ok_and(|m| m.permissions().mode() & 0o111 != 0) {
+            return false;
+        }
+    }
+    let mut head = [0u8; 4];
+    std::fs::File::open(p)
+        .and_then(|mut f| std::io::Read::read_exact(&mut f, &mut head))
+        .is_ok()
+        && matches!(
+            head,
+            [0x7f, b'E', b'L', b'F'] | [0xcf, 0xfa, 0xed, 0xfe] | [0xca, 0xfe, 0xba, 0xbe]
+        )
 }
 
 /// What `Start` asks the app to do.
@@ -176,12 +311,16 @@ impl Default for Wizard {
             deep: false,
             stack: 0,
             own_art: false,
+            team: false,
             proof: true,
             text: String::new(),
             focus: Field::Kind,
             error: None,
             note: None,
             welcome: false,
+            found: Vec::new(),
+            pick: 0,
+            auto: false,
         }
     }
 }
@@ -198,6 +337,32 @@ fn magic_name(head: &[u8]) -> Option<&'static str> {
 }
 
 impl Wizard {
+    /// Fill the path (and the kind) from what is in the folder, unless the user already typed something.
+    pub fn detect_here(&mut self, root: &std::path::Path, allowed: &[String]) {
+        self.found = detect(root);
+        self.pick = 0;
+        if self.source.trim().is_empty() {
+            if let Some(f) = self.found.first().cloned() {
+                self.kind = f.kind;
+                self.source = f.path;
+                self.auto = true;
+                self.look_only = false;
+                self.inspect(root, allowed);
+            }
+        }
+    }
+
+    /// Use detected item `i`.
+    fn pick_found(&mut self, i: usize, root: &std::path::Path, allowed: &[String]) {
+        if let Some(f) = self.found.get(i).cloned() {
+            self.pick = i;
+            self.kind = f.kind;
+            self.source = f.path;
+            self.auto = true;
+            self.inspect(root, allowed);
+        }
+    }
+
     pub fn fields(&self) -> Vec<Field> {
         ORDER
             .iter()
@@ -318,22 +483,37 @@ impl Wizard {
                 if d != 0 {
                     self.kind = Kind::ALL[(i + d).rem_euclid(Kind::ALL.len() as isize) as usize];
                     self.stack = 0;
-                    self.inspect(root, allowed);
+                    self.refill(root, allowed);
                 } else if let KeyCode::Char(c @ '1'..='5') = k.code {
                     self.kind = Kind::ALL[(c as usize) - ('1' as usize)];
                     self.stack = 0;
-                    self.inspect(root, allowed);
+                    self.refill(root, allowed);
                 } else if k.code == KeyCode::Enter {
                     self.step(1);
                 }
             }
             Field::Source => match k.code {
                 KeyCode::Enter => self.step(1),
+                KeyCode::Left | KeyCode::Right if !self.found.is_empty() => {
+                    let n = self.found.len();
+                    let next = if left {
+                        (self.pick + n - 1) % n
+                    } else {
+                        (self.pick + 1) % n
+                    };
+                    self.pick_found(next, root, allowed);
+                }
                 KeyCode::Backspace => {
                     self.source.pop();
+                    self.auto = false;
                     self.inspect(root, allowed);
                 }
                 KeyCode::Char(c) if !ctrl => {
+                    if self.auto {
+                        // typing over a detected path starts a fresh one
+                        self.source.clear();
+                        self.auto = false;
+                    }
                     self.source.push(c);
                     self.inspect(root, allowed);
                 }
@@ -366,6 +546,7 @@ impl Wizard {
             Field::Options => match k.code {
                 KeyCode::Char('1') => self.own_art = !self.own_art,
                 KeyCode::Char('2') => self.proof = !self.proof,
+                KeyCode::Char('3') => self.team = !self.team,
                 KeyCode::Left => self.own_art = !self.own_art,
                 KeyCode::Right | KeyCode::Char(' ') => self.proof = !self.proof,
                 KeyCode::Enter => self.step(1),
@@ -387,6 +568,40 @@ impl Wizard {
             }
         }
         Act::None
+    }
+
+    /// After a change of kind: an empty or auto-filled path is replaced by the first detected item of that kind.
+    fn refill(&mut self, root: &std::path::Path, allowed: &[String]) {
+        if self.source.trim().is_empty() || self.auto {
+            let want_program = matches!(self.kind, Kind::App | Kind::Game);
+            let i = self
+                .found
+                .iter()
+                .position(|f| f.kind == self.kind)
+                .or_else(|| {
+                    want_program
+                        .then(|| {
+                            self.found
+                                .iter()
+                                .position(|f| matches!(f.kind, Kind::App | Kind::Game))
+                        })
+                        .flatten()
+                });
+            match i {
+                Some(i) => {
+                    if let Some(f) = self.found.get(i).cloned() {
+                        self.pick = i;
+                        self.source = f.path;
+                        self.auto = true;
+                    }
+                }
+                None => {
+                    self.source.clear();
+                    self.auto = false;
+                }
+            }
+        }
+        self.inspect(root, allowed);
     }
 
     fn start(&mut self) -> Act {
@@ -437,6 +652,9 @@ impl Wizard {
             .unwrap_or("Rust");
         let mut p = String::new();
         if self.kind == Kind::Fresh {
+            if self.team {
+                p += TEAM_RULES_FRESH;
+            }
             p += &format!("Build this from scratch in Rust, using {stack}: {want}\n");
             p += "Plan first with todowrite, build in small slices, run the checks, and add a README.\n";
             p += WHERE;
@@ -444,7 +662,7 @@ impl Wizard {
                 p += "Capture a screenshot per feature and finish with site_build.\n";
             }
             return Launch {
-                agent: "build",
+                agent: if self.team { "team" } else { "build" },
                 deep: false,
                 prompt: p,
             };
@@ -471,9 +689,18 @@ impl Wizard {
         if !self.look_only && self.proof {
             p += "Proof: a screenshot per feature and site_build at the end.\n";
         }
+        if self.team && !self.look_only {
+            p += TEAM_RULES;
+        }
         p += &format!("What I want: {want}");
         Launch {
-            agent: if self.look_only { "reverse" } else { "port" },
+            agent: if self.look_only {
+                "reverse"
+            } else if self.team {
+                "team"
+            } else {
+                "port"
+            },
             deep: self.deep || self.look_only,
             prompt: p,
         }
@@ -486,6 +713,74 @@ fn u_is_mono(s: Option<&str>) -> bool {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_game_folder_is_detected_and_fills_the_path() {
+        let d = tempfile::tempdir().unwrap();
+        let r = d.path();
+        std::fs::create_dir_all(r.join("Cool.app/Contents/MacOS")).unwrap();
+        std::fs::create_dir_all(r.join("bin/Cool_Data")).unwrap();
+        std::fs::write(r.join("bin/Cool.exe"), b"MZ").unwrap();
+        std::fs::write(r.join("bin/unins000.exe"), b"MZ").unwrap();
+        std::fs::create_dir_all(r.join(".hidden")).unwrap();
+        let f = detect(r);
+        let paths: Vec<&str> = f.iter().map(|x| x.path.as_str()).collect();
+        assert!(
+            paths.contains(&"Cool.app") && paths.contains(&"bin/Cool.exe"),
+            "{paths:?}"
+        );
+        assert!(!paths.iter().any(|p| p.contains("unins")), "{paths:?}");
+        assert!(f
+            .iter()
+            .any(|x| x.path == "bin/Cool.exe" && x.kind == Kind::Game));
+        let mut w = Wizard::default();
+        w.detect_here(r, &[]);
+        assert_eq!(w.source, f[0].path);
+        assert!(w.auto && matches!(w.kind, Kind::App | Kind::Game));
+        // left/right switches between finds; typing replaces an auto-filled path
+        w.focus = Field::Source;
+        w.on_key(KeyEvent::new(KeyCode::Right, KeyModifiers::NONE), r, &[]);
+        assert_eq!(w.source, f[1 % f.len()].path);
+        w.on_key(
+            KeyEvent::new(KeyCode::Char('x'), KeyModifiers::NONE),
+            r,
+            &[],
+        );
+        assert_eq!(w.source, "x");
+    }
+
+    #[test]
+    fn team_runs_under_the_team_agent_and_carries_the_port_rules() {
+        let w = Wizard {
+            source: "original/app".into(),
+            kind: Kind::App,
+            team: true,
+            ..Default::default()
+        };
+        let l = w.launch();
+        assert_eq!(l.agent, "team");
+        assert!(l.prompt.contains("rustport") && l.prompt.contains("`parity`"));
+        let look = Wizard {
+            look_only: true,
+            ..w
+        };
+        assert_eq!(look.launch().agent, "reverse");
+        let f = Wizard {
+            kind: Kind::Fresh,
+            team: true,
+            text: "a tool".into(),
+            ..Default::default()
+        };
+        assert_eq!(f.launch().agent, "team");
+    }
+
+    #[test]
+    fn an_empty_folder_detects_nothing_and_changes_nothing() {
+        let d = tempfile::tempdir().unwrap();
+        let mut w = Wizard::default();
+        w.detect_here(d.path(), &[]);
+        assert!(w.found.is_empty() && w.source.is_empty() && !w.auto);
+    }
+
     use super::*;
     fn key(c: KeyCode) -> KeyEvent {
         KeyEvent::new(c, KeyModifiers::NONE)
