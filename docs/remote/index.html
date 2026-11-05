@@ -54,7 +54,7 @@ form textarea{resize:none;height:44px;flex:1}
   <input id="key" type="password" placeholder="pc1.xxxxxxxx.…" autocomplete="off" spellcheck="false">
   <p style="margin-top:16px"><button id="go">Connect</button> <button class="ghost" id="forget">Forget saved</button></p>
   <div id="err" role="alert"></div>
-  <p>Not set up yet? Run <code>portcode serve</code> on your machine and read <a href="../guide/REMOTE.html">how to reach it safely</a> (Tailscale, cloudflared or an SSH tunnel). Plain <code>ws://</code> only works for <code>127.0.0.1</code>; anything else must be <code>wss://</code>.</p>
+  <p>Not set up yet? Run <code>portcode serve --tunnel</code> on your machine: it prints a link and a QR code that open this page already connected. Or read <a href="../guide/REMOTE.html">how to reach it safely</a> (Tailscale, cloudflared or an SSH tunnel). Plain <code>ws://</code> only works for <code>127.0.0.1</code>; anything else must be <code>wss://</code>.</p>
 </section>
 <section id="app">
   <header>

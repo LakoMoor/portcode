@@ -857,3 +857,15 @@ pub async fn mcp(cfg: Config, deep: bool, print_config: bool) -> Result<i32, Str
     portcode_agent::mcpserve::serve(reg, ctx).await?;
     Ok(0)
 }
+
+/// `portcode remote tunnel-install`
+pub async fn tunnel_install() -> Result<i32, String> {
+    if let Some(p) = crate::remote::tunnel::find() {
+        println!("cloudflared is already available: {}", p.display());
+        return Ok(0);
+    }
+    println!("downloading cloudflared (Cloudflare's tunnel client) and checking its sha256...");
+    let p = crate::remote::tunnel::install().await?;
+    println!("installed {}", p.display());
+    Ok(0)
+}

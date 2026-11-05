@@ -297,6 +297,7 @@ fn pump(app: &mut App, mtx: &mpsc::UnboundedSender<Msg>) {
 struct Remote {
     hub: Option<crate::remote::Hub>,
     last_state: String,
+    tunnel: Option<crate::remote::tunnel::Tunnel>,
 }
 
 impl Remote {
@@ -351,6 +352,30 @@ impl Remote {
                     text += " Keys exist; make another with /remote key.";
                 }
                 app.items.push(app::Item::Info(text));
+                use crate::remote::tunnel;
+                if tunnel::find().is_some() {
+                    app.items.push(app::Item::Info(
+                        "opening a Cloudflare tunnel for your phone...".into(),
+                    ));
+                    match tunnel::start(bound.port()).await {
+                        Ok(t) => match tunnel::link_key() {
+                            Ok(k) => {
+                                let link = tunnel::pairing_link(&t.url, &k);
+                                app.items.push(app::Item::Info(format!(
+                                    "phone link (contains your key, keep it private):\n{link}\n{}",
+                                    tunnel::qr(&link)
+                                )));
+                                self.tunnel = Some(t);
+                            }
+                            Err(e) => app.items.push(app::Item::Error(e)),
+                        },
+                        Err(e) => app.items.push(app::Item::Error(e)),
+                    }
+                } else {
+                    app.items.push(app::Item::Info(
+                        "to reach it from your phone with one tap: portcode remote tunnel-install, then /remote again".into(),
+                    ));
+                }
             }
             Err(e) => app.items.push(app::Item::Error(e)),
         }
@@ -374,7 +399,12 @@ impl Remote {
 }
 
 /// `portcode serve`: the same session as the full-screen UI, without a terminal. Drive it from the web page.
-pub async fn serve(cfg: Config, o: Opts, bind: std::net::SocketAddr) -> Result<i32, String> {
+pub async fn serve(
+    cfg: Config,
+    o: Opts,
+    bind: std::net::SocketAddr,
+    tunnel: bool,
+) -> Result<i32, String> {
     let (mut app, mut rx, mtx) = start(cfg, &o, false).await?;
     if crate::remote::keys::load().is_empty() {
         let k = crate::remote::keys::create("full")?;
@@ -397,7 +427,35 @@ pub async fn serve(cfg: Config, o: Opts, bind: std::net::SocketAddr) -> Result<i
     let mut remote = Remote {
         hub: Some(hub),
         last_state: String::new(),
+        tunnel: None,
     };
+    if tunnel {
+        use crate::remote::tunnel;
+        if tunnel::find().is_none() {
+            use std::io::IsTerminal;
+            if !std::io::stdin().is_terminal() {
+                return Err(
+                    "cloudflared is missing. Run once: portcode remote tunnel-install".into(),
+                );
+            }
+            print!("--tunnel needs cloudflared (Cloudflare's tunnel client, no account). Download it now, sha256-checked? [y/N] ");
+            let _ = std::io::Write::flush(&mut std::io::stdout());
+            let mut a = String::new();
+            let _ = std::io::stdin().read_line(&mut a);
+            if !a.trim().eq_ignore_ascii_case("y") {
+                return Err("tunnel not started".into());
+            }
+            println!("installed {}", tunnel::install().await?.display());
+        }
+        println!("opening the tunnel...");
+        let t = tunnel::start(bound.port()).await?;
+        let link = tunnel::pairing_link(&t.url, &tunnel::link_key()?);
+        println!(
+            "\nOpen this on your phone (it contains your key, keep it private):\n\n  {link}\n\n{}",
+            tunnel::qr(&link)
+        );
+        remote.tunnel = Some(t);
+    }
     loop {
         tokio::select! {
             m = rx.recv() => match m { Some(m) => app.on_msg(m), None => break },

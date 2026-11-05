@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Remote control — PortCode wiki</title><meta property="og:title" content="Remote control — PortCode wiki"><meta name="description" content="PortCode documentation: Remote control."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><script src="../copy.js" defer></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l keep" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <div class="wiki">
 <button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
 <aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
@@ -46,6 +46,11 @@
 <p>Drive a PortCode session from a browser or phone: watch the transcript, send prompts, answer permission requests, interrupt, switch agent or mode.</p>
 <p><strong>How it works.</strong> GitHub Pages hosts only a static page (<code>/portcode/remote/</code>). Your browser connects <em>directly</em> to <code>portcode serve</code> (or <code>/remote</code> inside the full-screen UI) over a WebSocket. There is no PortCode relay: nothing between you and your machine except the tunnel you choose.</p>
 <pre><code>browser (github.io page) ── wss ──▶ your tunnel ──▶ 127.0.0.1:7777  portcode serve</code></pre>
+<h2 id="easiest-one-command-and-a-qr-code">Easiest: one command and a QR code<a class="anchor" href="#easiest-one-command-and-a-qr-code" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode remote tunnel-install   # once: downloads cloudflared (sha256-checked) into the engines folder
+portcode serve --tunnel          # prints a link and a QR code; scan it with your phone
+# or inside the full-screen UI: /remote   (opens the tunnel by itself when cloudflared is installed)</code></pre>
+<p><code>serve --tunnel</code> also offers to download cloudflared the first time. It opens a free Cloudflare quick tunnel (no account), and prints <code>https://lakomoor.github.io/portcode/remote/#url=wss://….trycloudflare.com&amp;key=pc1.…</code>. The part after <code>#</code> never leaves your browser, and the page connects with that key. The address changes on every run, so scan the new code each time. The link contains your key: do not share it. Anyone who learns the tunnel address still cannot connect without the key.</p>
 <h2 id="quick-start">Quick start<a class="anchor" href="#quick-start" aria-label="Link to this section">#</a></h2>
 <pre><code class="lang-sh">portcode serve                 # prints a key once, listens on 127.0.0.1:7777
 # or, inside the full-screen UI:  /remote</code></pre>
@@ -67,7 +72,7 @@ portcode remote revoke &lt;id&gt;</code></pre>
 <p>JSON text frames. Server: <code>hello{nonce}</code> → (client <code>auth{id,mac}</code>) → <code>ready{scope,snapshot}</code>, then <code>text</code>, <code>tool_start</code>, <code>tool_call</code>, <code>tool_result</code>, <code>todos</code>, <code>usage</code>, <code>info</code>, <code>perm</code>, <code>perm_done</code>, <code>state</code>, <code>done</code>. Client (full): <code>send{text}</code>, <code>interrupt</code>, <code>perm{reply:once|always|reject}</code>, <code>agent{name}</code>, <code>model{ref}</code>, <code>deep{on}</code>, <code>clear</code>, <code>ping</code>.</p>
 <div class="pn"><a class="prev" href="cli.html"><small>Previous</small>Command line</a><a class="next" href="troubleshooting.html"><small>Next</small>Troubleshooting</a></div>
 <p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/REMOTE.md">Edit this page on GitHub</a></p></main>
-<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#quick-start">Quick start</a><a class="t2" href="#keys">Keys</a><a class="t2" href="#what-protects-you">What protects you</a><a class="t2" href="#protocol">Protocol</a></aside>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#easiest-one-command-and-a-qr-code">Easiest: one command and a QR code</a><a class="t2" href="#quick-start">Quick start</a><a class="t2" href="#keys">Keys</a><a class="t2" href="#what-protects-you">What protects you</a><a class="t2" href="#protocol">Protocol</a></aside>
 </div>
 <footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
 <script src="wiki.js"></script></body></html>

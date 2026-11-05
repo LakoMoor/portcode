@@ -7,6 +7,7 @@
 //!   server → `{"t":"ready","scope":..,"snapshot":{..}}`, then events `ui` / `perm` / `perm_done` / `state` / `done` / `info`
 //!   client (scope full) → `send`, `interrupt`, `perm`, `agent`, `model`, `deep`, `clear`
 pub mod keys;
+pub mod tunnel;
 
 use crate::tui::app::{Msg, Remote};
 use futures_util::{SinkExt, StreamExt};

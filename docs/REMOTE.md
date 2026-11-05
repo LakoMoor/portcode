@@ -8,6 +8,14 @@ Drive a PortCode session from a browser or phone: watch the transcript, send pro
 browser (github.io page) ── wss ──▶ your tunnel ──▶ 127.0.0.1:7777  portcode serve
 ```
 
+## Easiest: one command and a QR code
+```sh
+portcode remote tunnel-install   # once: downloads cloudflared (sha256-checked) into the engines folder
+portcode serve --tunnel          # prints a link and a QR code; scan it with your phone
+# or inside the full-screen UI: /remote   (opens the tunnel by itself when cloudflared is installed)
+```
+`serve --tunnel` also offers to download cloudflared the first time. It opens a free Cloudflare quick tunnel (no account), and prints `https://lakomoor.github.io/portcode/remote/#url=wss://….trycloudflare.com&key=pc1.…`. The part after `#` never leaves your browser, and the page connects with that key. The address changes on every run, so scan the new code each time. The link contains your key: do not share it. Anyone who learns the tunnel address still cannot connect without the key.
+
 ## Quick start
 ```sh
 portcode serve                 # prints a key once, listens on 127.0.0.1:7777

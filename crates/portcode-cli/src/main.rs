@@ -51,6 +51,8 @@ enum RemoteCmd {
     List,
     /// Revoke a key
     Revoke { id: String },
+    /// Download cloudflared (sha256-checked) so `serve --tunnel` and `/remote` can reach you from your phone
+    TunnelInstall,
 }
 
 #[derive(Subcommand)]
@@ -161,6 +163,9 @@ enum Cmd {
         bind: String,
         #[arg(long, default_value_t = 7777)]
         port: u16,
+        /// Open a Cloudflare quick tunnel and print a link (and QR code) that connects your phone with one tap
+        #[arg(long)]
+        tunnel: bool,
     },
     /// Manage remote-control keys
     Remote {
@@ -467,14 +472,18 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             }
             Ok(0)
         }
-        Some(Cmd::Serve { bind, port }) => {
+        Some(Cmd::Serve { bind, port, tunnel }) => {
             let ip: std::net::IpAddr = bind.parse().map_err(|_| format!("bad --bind '{bind}'"))?;
-            tui::serve(cfg()?, serve_opts, (ip, port).into()).await
+            tui::serve(cfg()?, serve_opts, (ip, port).into(), tunnel).await
         }
+        Some(Cmd::Remote {
+            sub: RemoteCmd::TunnelInstall,
+        }) => cmds::tunnel_install().await,
         Some(Cmd::Remote { sub }) => cmds::remote_keys(match sub {
             RemoteCmd::New { scope } => ("new".into(), scope),
             RemoteCmd::List => ("list".into(), String::new()),
             RemoteCmd::Revoke { id } => ("revoke".into(), id),
+            RemoteCmd::TunnelInstall => return Ok(0),
         }),
         Some(Cmd::Engines { sub }) => match sub {
             EnginesCmd::List => cmds::engines_list(),
