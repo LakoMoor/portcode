@@ -18,7 +18,9 @@
 <rect x="167.94" y="338.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="357.00" width="690.42" height="19" fill="#141414"/>
 <rect x="167.94" y="376.00" width="690.42" height="19" fill="#141414"/>
-<rect x="167.94" y="395.00" width="690.42" height="19" fill="#141414"/>
+<rect x="167.94" y="395.00" width="326.55" height="19" fill="#141414"/>
+<rect x="494.49" y="395.00" width="121.29" height="19" fill="#e06c75"/>
+<rect x="615.78" y="395.00" width="242.58" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="167.94" y="162.00" fill="#484848" textLength="690.42" lengthAdjust="spacingAndGlyphs">┌────────────────────────────────────────────────────────────────────────┐</text>
 <text x="167.94" y="181.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
@@ -47,15 +49,15 @@
 <text x="317.22" y="276.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">first-run guide: provider, key, model</text>
 <text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/update     </text>
-<text x="317.22" y="295.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">check for a newer PortCode</text>
+<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/team       </text>
+<text x="317.22" y="295.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">multi-agent team (PM, tech lead, workers): on or off</text>
 <text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/new        </text>
-<text x="317.22" y="314.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs">new session (same as /clear)</text>
+<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/venv       </text>
+<text x="317.22" y="314.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">Python virtual environments: on or off</text>
 <text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="333.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">└</text>
-<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/26 </text>
+<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/30 </text>
 <text x="233.25" y="333.00" fill="#484848" textLength="625.11" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────────┘</text>
 <text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
@@ -65,7 +67,8 @@
 <text x="186.60" y="409.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
 <text x="233.25" y="409.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs">  deepseek-chat</text>
 <text x="373.20" y="409.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="494.49" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="494.49" y="409.00" fill="#0a0a0a" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
+<text x="625.11" y="409.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
 <text x="242.58" y="447.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
 <text x="345.21" y="485.00" fill="#7fd88f" textLength="93.30" lengthAdjust="spacingAndGlyphs">● observed</text>
 <text x="438.51" y="485.00" fill="#f5a742" textLength="121.29" lengthAdjust="spacingAndGlyphs">   ● inferred</text>

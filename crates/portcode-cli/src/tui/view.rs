@@ -563,7 +563,18 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
     };
     let rows = hard_wrap(&shown, inner_w);
     let mut lines: Vec<Line> = vec![Line::from("")];
-    if app.input.is_empty() {
+    if let Some(g) = ghost(app) {
+        for r in hard_wrap(g, inner_w).iter().take(4) {
+            lines.push(Line::from(Span::styled(
+                format!(" {r}"),
+                muted().add_modifier(Modifier::ITALIC),
+            )));
+        }
+        lines.push(Line::from(vec![
+            Span::styled(" tab", bold(c_accent())),
+            Span::styled(" use this · esc dismiss · or just type", muted()),
+        ]));
+    } else if app.input.is_empty() {
         let key_hint = app
             .key_for
             .as_ref()
@@ -667,7 +678,20 @@ fn cap(s: &str) -> String {
         .unwrap_or_default()
 }
 
+/// The suggestion that is shown as ghost text, if the prompt is empty and idle.
+fn ghost(app: &App) -> Option<&str> {
+    app.suggestion
+        .as_deref()
+        .filter(|_| app.input.is_empty() && !app.busy && app.key_for.is_none())
+}
+
 fn prompt_height(app: &App, width: u16) -> u16 {
+    if let Some(g) = ghost(app) {
+        let rows = hard_wrap(g, width.saturating_sub(4) as usize)
+            .len()
+            .clamp(1, 4) as u16;
+        return rows + 4;
+    }
     let rows = hard_wrap(&app.input, width.saturating_sub(4) as usize)
         .len()
         .clamp(1, 8) as u16;
@@ -683,7 +707,9 @@ fn fmt_tokens(n: u64) -> String {
 }
 
 fn footer(f: &mut Frame, app: &App, area: Rect) {
-    let hints = if app.busy {
+    let hints = if ghost(app).is_some() {
+        "tab use suggestion · / commands".to_string()
+    } else if app.busy {
         if app.esc_armed() {
             "press esc again to cancel".to_string()
         } else {

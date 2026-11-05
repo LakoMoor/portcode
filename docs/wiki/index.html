@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Overview — PortCode wiki</title><meta property="og:title" content="Overview — PortCode wiki"><meta name="description" content="PortCode documentation: Overview."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html" class="on" aria-current="page">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Start</p>
+<h1 id="portcode-wiki">PortCode wiki<a class="anchor" href="#portcode-wiki" aria-label="Link to this section">#</a></h1>
+<p>PortCode is a terminal agent that studies a program, rewrites it in Rust, and checks the result against the original. It is built for models you run yourself (Ollama, LM Studio, llama.cpp, vLLM, <code>lakomoor.com/v1</code>), and it also works with a hosted API or with your Claude Code or Codex subscription.</p>
+<p>What sets it apart is the proof. PortCode pins the exact build of the original (sha256), writes down every fact as an <em>observation</em>, an <em>inference</em> or an <em>unknown</em>, ports one module at a time, and only calls a module done after a <code>parity</code> run passes against the original's own output.</p>
+<h2 id="where-to-start">Where to start<a class="anchor" href="#where-to-start" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>If you want to…</th><th>Read</th></tr></thead><tbody>
+<tr><td>install it</td><td><a href="install.html">Install</a></td></tr>
+<tr><td>pick a model and enter a key</td><td><a href="first-run.html">First run</a></td></tr>
+<tr><td>see what the screen shows and how to drive it</td><td><a href="tour.html">A tour of the app</a></td></tr>
+<tr><td>port a program</td><td><a href="port-workflow.html">The port workflow</a></td></tr>
+<tr><td>look inside a binary, a Unity game or a .NET app</td><td><a href="modes.html">Clean-room and deep mode</a>, <a href="engines.html">Engines</a></td></tr>
+<tr><td>use your Claude or ChatGPT subscription</td><td><a href="subscriptions.html">Claude Code and Codex</a></td></tr>
+<tr><td>run local models well</td><td><a href="providers.html">Providers and models</a></td></tr>
+<tr><td>look something up</td><td><a href="commands.html">Slash commands</a>, <a href="keys.html">Keyboard shortcuts</a>, <a href="config.html">Configuration</a>, <a href="cli.html">Command line</a></td></tr>
+</tbody></table></div>
+<h2 id="the-pieces">The pieces<a class="anchor" href="#the-pieces" aria-label="Link to this section">#</a></h2>
+<ul><li><strong>Agents</strong> decide what the model does: <code>build</code> for general work, <code>port</code> for the full port workflow, <code>reverse</code> for studying an original, <code>plan</code> for read-only planning, and <code>team</code> for several workers at once. See <a href="agents.html">Agents</a>.</li><li><strong>Tools</strong> are everything the agent can do: read and edit files, run commands, record evidence, run parity checks, take screenshots, build the site. The app, the agent and <code>portcode tool</code> share one list. See <a href="tools.html">Tools</a>.</li><li><strong>Modes</strong> decide how closely the original may be examined. The default, <em>clean-room</em>, only observes it from outside. <em>Deep</em> mode may disassemble, decompile and emulate it.</li><li><strong>Permissions</strong> keep you in charge: file edits and shell commands ask first unless you allow them. See <a href="permissions.html">Permissions</a>.</li><li><strong>The ledger</strong> is the project's memory of facts about the original, kept in <code>.portcode/evidence/</code>.</li></ul>
+<aside class="callout note"><b>Note</b><p>PortCode is an alpha. Study only software you own or have permission to examine.</p></aside>
+<h2 id="how-these-pages-are-organised">How these pages are organised<a class="anchor" href="#how-these-pages-are-organised" aria-label="Link to this section">#</a></h2>
+<p><em>Start</em> gets you running. <em>Use</em> covers daily work in the app. <em>Port and reverse</em> explains the workflow that makes PortCode different. <em>Models</em> covers providers. <em>Reference</em> lists every command, key and setting. <em>Project</em> is for people who want to read or change the code.</p>
+<div class="pn"><span></span><a class="next" href="install.html"><small>Next</small>Install</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/index.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#where-to-start">Where to start</a><a class="t2" href="#the-pieces">The pieces</a><a class="t2" href="#how-these-pages-are-organised">How these pages are organised</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

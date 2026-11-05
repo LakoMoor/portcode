@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Configuration — PortCode wiki</title><meta property="og:title" content="Configuration — PortCode wiki"><meta name="description" content="PortCode documentation: Configuration."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html" class="on" aria-current="page">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Reference</p>
+<h1 id="configuration">Configuration<a class="anchor" href="#configuration" aria-label="Link to this section">#</a></h1>
+<p>PortCode reads <code>portcode.json</code>. <code>portcode init</code> writes a commented starting file in the current folder. Comments (<code>//</code>) are allowed.</p>
+<h2 id="where-it-is-read-from">Where it is read from<a class="anchor" href="#where-it-is-read-from" aria-label="Link to this section">#</a></h2>
+<p>Later layers win:</p>
+<ol><li>built-in defaults and provider presets</li><li><code>~/.config/portcode/portcode.json</code> (your global file)</li><li><code>./portcode.json</code>, or <code>./.portcode/portcode.json</code></li><li>environment variables: <code>PORTCODE_MODEL</code>, <code>PORTCODE_BASE_URL</code>, <code>PORTCODE_API_KEY</code></li></ol>
+<p>Commit <code>portcode.json</code>. Keep keys in environment variables or in <code>portcode auth set &lt;provider&gt;</code> (stored in <code>~/.config/portcode/auth.json</code>, mode 0600). Never commit a key.</p>
+<h2 id="an-example">An example<a class="anchor" href="#an-example" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-json">{
+  &quot;model&quot;: &quot;lakomoor/deepseek-chat&quot;,
+  &quot;small_model&quot;: &quot;ollama/qwen3:4b&quot;,
+  &quot;prompt_style&quot;: &quot;auto&quot;,
+  &quot;venv&quot;: true,
+  &quot;suggest&quot;: true,
+  &quot;team&quot;: { &quot;enabled&quot;: false, &quot;parallel&quot;: 3 },
+  &quot;provider&quot;: {
+    &quot;lakomoor&quot;: { &quot;base_url&quot;: &quot;https://lakomoor.com/v1&quot;, &quot;api_key_env&quot;: &quot;LAKOMOOR_API_KEY&quot; },
+    &quot;ollama&quot;:   { &quot;base_url&quot;: &quot;http://localhost:11434/v1&quot; }
+  },
+  &quot;models&quot;: { &quot;qwen3:14b&quot;: { &quot;context_window&quot;: 32768, &quot;parallel_tool_calls&quot;: false } },
+  &quot;permission&quot;: { &quot;edit&quot;: &quot;ask&quot;, &quot;bash&quot;: { &quot;*&quot;: &quot;ask&quot;, &quot;cargo test*&quot;: &quot;allow&quot; } },
+  &quot;agent&quot;: { &quot;build&quot;: { &quot;steps&quot;: 80 } },
+  &quot;mcp&quot;: { &quot;rea&quot;: { &quot;command&quot;: [&quot;npx&quot;, &quot;-y&quot;, &quot;rea-agents@latest&quot;, &quot;mcp&quot;] } }
+}</code></pre>
+<h2 id="every-setting">Every setting<a class="anchor" href="#every-setting" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>model</code></td><td>string</td><td><code>lakomoor/deepseek-chat</code></td><td><code>provider/model</code> to use</td></tr>
+<tr><td><code>small_model</code></td><td>string</td><td>the main model</td><td>cheaper model for context compaction</td></tr>
+<tr><td><code>default_agent</code></td><td>string</td><td><code>build</code></td><td>agent to start with</td></tr>
+<tr><td><code>provider</code></td><td>map</td><td>presets</td><td>endpoints: <code>base_url</code>, <code>api_key</code>, <code>api_key_env</code>, <code>headers</code>. See <a href="providers.html">Providers</a></td></tr>
+<tr><td><code>models</code></td><td>map</td><td>built-in profiles</td><td>per-model overrides keyed by model id (the part after <code>provider/</code>): sampling, <code>context_window</code>, <code>parallel_tool_calls</code>, <code>prompt_style</code>, <code>reasoning_effort</code>…</td></tr>
+<tr><td><code>prompt_style</code></td><td><code>auto</code> <code>compact</code> <code>full</code> <code>qwen38</code></td><td><code>auto</code></td><td>prompt flavour for every model; a per-model entry wins</td></tr>
+<tr><td><code>permission</code></td><td>map</td><td>ask for edits and commands</td><td>rules per tool, see <a href="permissions.html">Permissions</a></td></tr>
+<tr><td><code>agent</code></td><td>map</td><td></td><td>per-agent <code>model</code>, <code>steps</code>, <code>prompt_append</code></td></tr>
+<tr><td><code>mcp</code></td><td>map</td><td></td><td>MCP servers: <code>command</code> (array), <code>env</code>, <code>enabled</code></td></tr>
+<tr><td><code>max_steps</code></td><td>number</td><td>per agent</td><td>upper bound on steps in one run</td></tr>
+<tr><td><code>mode</code></td><td><code>clean-room</code> <code>deep</code></td><td><code>clean-room</code></td><td>see <a href="modes.html">Clean-room and deep mode</a></td></tr>
+<tr><td><code>cli_permission</code></td><td>string</td><td><code>acceptEdits</code></td><td>Claude Code's permission mode: <code>acceptEdits</code>, <code>plan</code>, <code>bypassPermissions</code>, <code>default</code>. Read-only agents always use <code>plan</code>. See <a href="subscriptions.html">Claude Code and Codex</a></td></tr>
+<tr><td><code>team</code></td><td><code>{enabled, parallel}</code></td><td>off, 3</td><td>see <a href="team.html">Team mode</a></td></tr>
+<tr><td><code>venv</code></td><td>bool</td><td><code>true</code></td><td>see <a href="python.html">Python environments</a></td></tr>
+<tr><td><code>suggest</code></td><td>bool</td><td><code>true</code></td><td>the grey first-message suggestion, see <a href="tour.html#the-first-message-suggestion">A tour</a></td></tr>
+<tr><td><code>allowed_dirs</code></td><td>array</td><td><code>[]</code></td><td>extra folders file tools may touch without asking</td></tr>
+</tbody></table></div>
+<h2 id="remembered-choices">Remembered choices<a class="anchor" href="#remembered-choices" aria-label="Link to this section">#</a></h2>
+<p>A few choices you make in the app are remembered in a small state file in your config folder rather than in <code>portcode.json</code>: the last model (<code>/model</code>, <code>/provider</code>) and the theme (<code>/theme</code>). <code>-m</code> and <code>PORTCODE_MODEL</code> still win over the remembered model, and <code>PORTCODE_THEME</code> over the theme.</p>
+<h2 id="environment-variables">Environment variables<a class="anchor" href="#environment-variables" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Variable</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>PORTCODE_MODEL</code></td><td>model, as <code>provider/model</code></td></tr>
+<tr><td><code>PORTCODE_BASE_URL</code></td><td>endpoint of the active provider</td></tr>
+<tr><td><code>PORTCODE_API_KEY</code></td><td>key for the active provider</td></tr>
+<tr><td><code>PORTCODE_THEME</code></td><td><code>light</code> or <code>dark</code></td></tr>
+<tr><td><code>PORTCODE_NO_UPDATE_CHECK</code></td><td><code>1</code> turns off the daily update check</td></tr>
+<tr><td><code>PORTCODE_INSTALL_DIR</code></td><td>where <code>install.sh</code> puts the binary</td></tr>
+<tr><td><code>LAKOMOOR_API_KEY</code> and the other provider variables</td><td>provider keys, named in <code>api_key_env</code></td></tr>
+</tbody></table></div>
+<div class="pn"><a class="prev" href="subscriptions.html"><small>Previous</small>Claude Code and Codex</a><a class="next" href="cli.html"><small>Next</small>Command line</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/config.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#where-it-is-read-from">Where it is read from</a><a class="t2" href="#an-example">An example</a><a class="t2" href="#every-setting">Every setting</a><a class="t2" href="#remembered-choices">Remembered choices</a><a class="t2" href="#environment-variables">Environment variables</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

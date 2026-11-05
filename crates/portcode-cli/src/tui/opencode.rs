@@ -502,3 +502,34 @@ fn blocked_shows_the_whole_question_as_a_decision_card() {
         "{s}"
     );
 }
+
+#[test]
+fn a_suggestion_shows_as_ghost_text_and_tab_inserts_it() {
+    use super::app::Msg;
+    let (mut a, _rx) = app();
+    a.on_msg(Msg::Suggest("Port the parser in src/ to Rust.".into()));
+    let s = screen(&mut a, 100, 30);
+    assert!(
+        s.contains("Port the parser in src/") && s.contains("use this"),
+        "{s}"
+    );
+    let agent = a.agent.clone();
+    a.on_key(k(KeyCode::Tab));
+    assert_eq!(a.input, "Port the parser in src/ to Rust.");
+    assert_eq!(
+        a.agent, agent,
+        "tab used the suggestion, it did not switch agents"
+    );
+    assert!(a.suggestion.is_none());
+    // Esc drops it; typing hides it; a later tab switches agents again.
+    a.input.clear();
+    a.on_msg(Msg::Suggest("again please, a longer text".into()));
+    a.on_key(k(KeyCode::Esc));
+    assert!(a.suggestion.is_none());
+    a.on_key(k(KeyCode::Tab));
+    assert_ne!(a.agent, agent);
+    // A suggestion that arrives after the user started typing is ignored.
+    a.input = "hello".into();
+    a.on_msg(Msg::Suggest("late".into()));
+    assert!(a.suggestion.is_none());
+}

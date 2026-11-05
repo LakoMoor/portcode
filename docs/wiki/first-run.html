@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>First run — PortCode wiki</title><meta property="og:title" content="First run — PortCode wiki"><meta name="description" content="PortCode documentation: First run."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html" class="on" aria-current="page">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Start</p>
+<h1 id="first-run">First run<a class="anchor" href="#first-run" aria-label="Link to this section">#</a></h1>
+<p>Five minutes from install to your first task.</p>
+<h2 id="1-open-a-folder">1. Open a folder<a class="anchor" href="#1-open-a-folder" aria-label="Link to this section">#</a></h2>
+<p>Run <code>portcode</code> in the folder you want to work in. For a port, that is the folder that holds the program to port: put the original in <code>original/</code>.</p>
+<p>When the prompt is empty, PortCode looks at the folder and puts a guess at your first message in the prompt box as grey text. Press <code>tab</code> to use it, <code>esc</code> to dismiss it, or just type something else. See <a href="tour.html#the-first-message-suggestion">A tour of the app</a>.</p>
+<h2 id="2-pick-a-model-and-give-it-a-key">2. Pick a model and give it a key<a class="anchor" href="#2-pick-a-model-and-give-it-a-key" aria-label="Link to this section">#</a></h2>
+<p>PortCode speaks the OpenAI chat protocol, so almost any server works. Choose one way:</p>
+<ul><li><strong>A local model, no key.</strong> Start Ollama, LM Studio, llama.cpp or vLLM, then type <code>/provider ollama qwen3:14b</code>.</li><li><strong>Your Claude or ChatGPT subscription.</strong> Install Claude Code or Codex, sign in there once, then <code>/provider claude-code sonnet</code> or <code>/provider codex default</code>. No key and no API bill. See <a href="subscriptions.html">Claude Code and Codex</a>.</li><li><strong>A hosted API.</strong> Type <code>/key</code> and paste the key. It is hidden while you type and saved in your config folder with mode 600. From a shell: <code>portcode auth set &lt;provider&gt;</code>, or <code>portcode auth set &lt;provider&gt; --from-env NAME</code> to read it from an environment variable.</li></ul>
+<div class="tw"><table><thead><tr><th>Type</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>/provider</code></td><td>lists providers and shows which still need a key</td></tr>
+<tr><td><code>/provider &lt;name&gt; [model]</code></td><td>switches provider and model</td></tr>
+<tr><td><code>/key [provider]</code></td><td>asks for the API key, hidden</td></tr>
+<tr><td><code>/models</code></td><td>lists the models the current provider serves</td></tr>
+<tr><td><code>/model &lt;provider&gt;/&lt;model&gt;</code></td><td>picks a model</td></tr>
+<tr><td><code>/setup</code></td><td>prints these steps again</td></tr>
+</tbody></table></div>
+<p>The model you choose is remembered for the next start. <code>-m</code> and <code>PORTCODE_MODEL</code> still win.</p>
+<h2 id="3-check-that-it-works">3. Check that it works<a class="anchor" href="#3-check-that-it-works" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode doctor</code></pre>
+<p>To test the model itself (chat, tool calls, valid JSON, edits) run <code>portcode eval</code>.</p>
+<h2 id="4-start-working">4. Start working<a class="anchor" href="#4-start-working" aria-label="Link to this section">#</a></h2>
+<p>Type a task, or type <code>/create</code>. <code>/create</code> asks what you want to recreate (a website, a program, a game, a file format or nothing yet), how closely PortCode may look inside the original, and what to build it with. Then it starts the right agent in the right mode.</p>
+<pre><code class="lang-text">Port this CLI to Rust, following rustport</code></pre>
+<p>PortCode pins the original's sha256, records what it learns, and calls a module done only after <code>parity</code> passes. The details are in <a href="port-workflow.html">The port workflow</a>.</p>
+<h2 id="settings-worth-knowing-early">Settings worth knowing early<a class="anchor" href="#settings-worth-knowing-early" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Setting</th><th>Default</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>esc</code> twice</td><td></td><td>cancels the running request</td></tr>
+<tr><td><code>/yolo</code></td><td>off</td><td>approves every permission request without asking, see <a href="permissions.html">Permissions</a></td></tr>
+<tr><td><code>&quot;venv&quot;</code></td><td>on</td><td>lets the agent create and use a Python <code>.venv</code>, see <a href="python.html">Python environments</a></td></tr>
+<tr><td><code>&quot;team&quot;</code></td><td>off</td><td>adds the <code>team</code> agent, see <a href="team.html">Team mode</a></td></tr>
+<tr><td><code>&quot;suggest&quot;</code></td><td>on</td><td>the grey first-message suggestion</td></tr>
+</tbody></table></div>
+<div class="pn"><a class="prev" href="install.html"><small>Previous</small>Install</a><a class="next" href="tour.html"><small>Next</small>A tour of the app</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/first-run.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#1-open-a-folder">1. Open a folder</a><a class="t2" href="#2-pick-a-model-and-give-it-a-key">2. Pick a model and give it a key</a><a class="t2" href="#3-check-that-it-works">3. Check that it works</a><a class="t2" href="#4-start-working">4. Start working</a><a class="t2" href="#settings-worth-knowing-early">Settings worth knowing early</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

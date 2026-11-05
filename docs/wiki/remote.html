@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Remote control — PortCode wiki</title><meta property="og:title" content="Remote control — PortCode wiki"><meta name="description" content="PortCode documentation: Remote control."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html" class="on" aria-current="page">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Reference</p>
+<h1 id="remote-control">Remote control<a class="anchor" href="#remote-control" aria-label="Link to this section">#</a></h1>
+<p>Drive a PortCode session from a browser or phone: watch the transcript, send prompts, answer permission requests, interrupt, switch agent or mode.</p>
+<p><strong>How it works.</strong> GitHub Pages hosts only a static page (<code>/portcode/remote/</code>). Your browser connects <em>directly</em> to <code>portcode serve</code> (or <code>/remote</code> inside the full-screen UI) over a WebSocket. There is no PortCode relay: nothing between you and your machine except the tunnel you choose.</p>
+<pre><code>browser (github.io page) ── wss ──▶ your tunnel ──▶ 127.0.0.1:7777  portcode serve</code></pre>
+<h2 id="quick-start">Quick start<a class="anchor" href="#quick-start" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode serve                 # prints a key once, listens on 127.0.0.1:7777
+# or, inside the full-screen UI:  /remote</code></pre>
+<p>Open <code>https://lakomoor.github.io/portcode/remote/</code>, enter the address and the key. On the same machine use <code>ws://127.0.0.1:7777</code>. From elsewhere you need a tunnel, because GitHub Pages is <code>https</code> and browsers only allow <code>wss://</code> (plain <code>ws://</code> is allowed for <code>127.0.0.1</code> only):</p>
+<div class="tw"><table><thead><tr><th>Tunnel</th><th>Command</th><th>Address to enter</th></tr></thead><tbody>
+<tr><td>Tailscale (private to your devices)</td><td><code>tailscale serve --bg --https=443 http://127.0.0.1:7777</code></td><td><code>wss://&lt;machine&gt;.&lt;tailnet&gt;.ts.net</code></td></tr>
+<tr><td>Cloudflare quick tunnel</td><td><code>cloudflared tunnel --url http://127.0.0.1:7777</code></td><td><code>wss://&lt;random&gt;.trycloudflare.com</code></td></tr>
+<tr><td>SSH (your own server)</td><td><code>ssh -N -L 7777:127.0.0.1:7777 you@server</code></td><td><code>ws://127.0.0.1:7777</code> (Safari blocks this; use another browser)</td></tr>
+</tbody></table></div>
+<p>Tailscale is the best default: the address is reachable only from your own devices.</p>
+<h2 id="keys">Keys<a class="anchor" href="#keys" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode remote new [--scope view|full]   # shown once: pc1.&lt;id&gt;.&lt;secret&gt;
+portcode remote list
+portcode remote revoke &lt;id&gt;</code></pre>
+<ul><li><code>full</code> can send prompts, answer permission asks, interrupt, switch agent/model and enable deep mode. <code>view</code> only watches.</li><li>Keys live in the config directory (<code>remote-keys.json</code>, mode 0600).</li><li>The secret never travels: the server sends a random nonce and the page answers with <code>HMAC-SHA256(secret, nonce)</code>. The page keeps the key in this browser's local storage; use "Forget saved" on shared computers.</li><li>A pairing link <code>https://lakomoor.github.io/portcode/remote/#url=wss://…&amp;key=pc1.…</code> fills the form; the page removes the fragment from the address bar. The fragment is never sent to GitHub.</li></ul>
+<h2 id="what-protects-you">What protects you<a class="anchor" href="#what-protects-you" aria-label="Link to this section">#</a></h2>
+<ul><li>Binds <code>127.0.0.1</code> by default; <code>--bind 0.0.0.0</code> prints a warning (plain <code>ws://</code> is not encrypted).</li><li>The server accepts browser connections only from <code>https://lakomoor.github.io</code> and <code>localhost</code>; add more with <code>PORTCODE_REMOTE_ORIGINS=https://my.example</code>.</li><li>Wrong key: one-second delay, then disconnect. At most 4 clients, 1 MiB per message.</li><li>Slash commands are not accepted remotely, so a remote client cannot quit your session; the page has explicit controls instead.</li><li><strong>A <code>full</code> key is control of your agent</strong>, which can run commands once permitted. Treat it like an SSH key. Deep mode asks for confirmation in the page, and permission rules still apply: anything that would ask you in the terminal asks the remote client.</li></ul>
+<h2 id="protocol">Protocol<a class="anchor" href="#protocol" aria-label="Link to this section">#</a></h2>
+<p>JSON text frames. Server: <code>hello{nonce}</code> → (client <code>auth{id,mac}</code>) → <code>ready{scope,snapshot}</code>, then <code>text</code>, <code>tool_start</code>, <code>tool_call</code>, <code>tool_result</code>, <code>todos</code>, <code>usage</code>, <code>info</code>, <code>perm</code>, <code>perm_done</code>, <code>state</code>, <code>done</code>. Client (full): <code>send{text}</code>, <code>interrupt</code>, <code>perm{reply:once|always|reject}</code>, <code>agent{name}</code>, <code>model{ref}</code>, <code>deep{on}</code>, <code>clear</code>, <code>ping</code>.</p>
+<div class="pn"><a class="prev" href="cli.html"><small>Previous</small>Command line</a><a class="next" href="troubleshooting.html"><small>Next</small>Troubleshooting</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/REMOTE.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#quick-start">Quick start</a><a class="t2" href="#keys">Keys</a><a class="t2" href="#what-protects-you">What protects you</a><a class="t2" href="#protocol">Protocol</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

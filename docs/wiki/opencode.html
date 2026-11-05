@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenCode mapping — PortCode wiki</title><meta property="og:title" content="OpenCode mapping — PortCode wiki"><meta name="description" content="PortCode documentation: OpenCode mapping."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html" class="on" aria-current="page">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Project</p>
+<h1 id="opencode-portcode-mapping">OpenCode → PortCode mapping<a class="anchor" href="#opencode-portcode-mapping" aria-label="Link to this section">#</a></h1>
+<p>PortCode is a clean Rust rewrite of OpenCode's <em>design</em>, not a translation of its 20+ TypeScript/Effect packages. Status: ✅ done · ◐ partial · ⏳ not yet.</p>
+<div class="tw"><table><thead><tr><th>OpenCode</th><th>PortCode</th><th></th></tr></thead><tbody>
+<tr><td><code>core/agent</code> — <code>build</code>, <code>plan</code>, sub-agents</td><td><code>portcode-agent::agents</code> — build, plan, port, reverse, explore, general</td><td>✅</td></tr>
+<tr><td><code>core/tool/*</code> — read, write, edit, glob, grep, shell, todo, webfetch, skill, subagent</td><td><code>portcode-agent::tools</code> — same set (+ <code>ls</code>)</td><td>✅</td></tr>
+<tr><td><code>apply_patch</code>, <code>question</code>, <code>schedule</code>, <code>websearch</code>, <code>image-generate</code>, <code>artifact</code></td><td>—</td><td>⏳</td></tr>
+<tr><td>permission service (ask/allow/deny, patterns, "always")</td><td><code>permission.rs</code> + <code>Ctx::permit</code></td><td>✅</td></tr>
+<tr><td>provider layer (many SDKs)</td><td><code>portcode-llm</code> — one OpenAI-compatible client, presets for local/self-hosted</td><td>◐ (no Anthropic/Google native protocols)</td></tr>
+<tr><td>config (<code>opencode.json</code>, markdown agents)</td><td><code>portcode.json</code>, layered; markdown agents</td><td>◐ (JSON only)</td></tr>
+<tr><td>sessions in SQLite/Drizzle</td><td>JSON-lines files, resumable</td><td>◐</td></tr>
+<tr><td>skills (<code>SKILL.md</code>)</td><td><code>skills.rs</code>, bundled <code>rustport</code>, discovery in <code>.portcode/.claude/.agents</code></td><td>✅</td></tr>
+<tr><td>MCP client</td><td><code>mcp.rs</code> stdio JSON-RPC (<code>tools/list</code>, <code>tools/call</code>)</td><td>◐ (no remote/HTTP, resources, prompts)</td></tr>
+<tr><td>compaction</td><td>tool-output pruning + model summary near 75 % window</td><td>✅</td></tr>
+<tr><td>TUI (<code>packages/tui</code>)</td><td>full-screen ratatui UI: home, transcript with tool blocks, prompt box, sidebar (context · evidence · todo), slash popup, permission dialog; <code>--plain</code> line mode</td><td>◐ (no diff viewer, model/session pickers, themes)</td></tr>
+<tr><td>desktop, web app, console</td><td>—</td><td>⏳</td></tr>
+<tr><td>server / SDK / plugins / LSP / formatters / GitHub integration / share</td><td>—</td><td>⏳</td></tr>
+<tr><td>i18n READMEs</td><td>EN + RU</td><td>◐</td></tr>
+</tbody></table></div>
+<h2 id="tested-against-opencode-s-behaviour">Tested against OpenCode's behaviour<a class="anchor" href="#tested-against-opencode-s-behaviour" aria-label="Link to this section">#</a></h2>
+<p><code>crates/portcode-cli/src/tui/opencode.rs</code> pins the parts of the TUI people know from OpenCode: enter / alt+enter, history on ↑↓, readline keys, ctrl+c and esc, tab and shift+tab between primary agents, the <code>/</code> menu (filter, ↑↓, tab, enter), <code>/new</code> <code>/models</code> <code>/agents</code> <code>/help</code> <code>/exit</code>, the allow once / always / reject dialog, the home screen, the sidebar and small terminals. Not matched on purpose: OpenCode's leader key (<code>ctrl+x</code>) chords, <code>/undo</code>, <code>/share</code>, <code>/themes</code>, <code>/sessions</code> (PortCode has <code>/resume</code>) and the diff viewer.</p>
+<h2 id="portcode-only">PortCode-only<a class="anchor" href="#portcode-only" aria-label="Link to this section">#</a></h2>
+<p>Evidence ledger + pins, <code>parity</code>, differential harness hooks, terminal screenshots → SVG, static site generator, scaffold, <code>port</code>/<code>reverse</code> agents, rustport skill embedded, open-model repair layer, model profiles, <code>portcode eval</code>, scripted mock server.</p>
+<div class="pn"><a class="prev" href="architecture.html"><small>Previous</small>Architecture</a><a class="next" href="contributing.html"><small>Next</small>Contributing</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/OPENCODE_MAPPING.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#tested-against-opencode-s-behaviour">Tested against OpenCode&#x27;s behaviour</a><a class="t2" href="#portcode-only">PortCode-only</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

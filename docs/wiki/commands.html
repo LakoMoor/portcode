@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Slash commands — PortCode wiki</title><meta property="og:title" content="Slash commands — PortCode wiki"><meta name="description" content="PortCode documentation: Slash commands."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html" class="on" aria-current="page">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="slash-commands">Slash commands<a class="anchor" href="#slash-commands" aria-label="Link to this section">#</a></h1>
+<p>Type <code>/</code> in the prompt to open the command menu. Use <code>↑</code> and <code>↓</code> to choose, <code>tab</code> or <code>enter</code> to complete; the filter matches as you type. An unknown command is an error, never a prompt sent to the model.</p>
+<p>This table is generated from the app's own command list, so it matches the version you build the docs from.</p>
+<div class="tw"><table><thead><tr><th>Command</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>/agent</code></td><td>switch agent: build · port · reverse · plan</td></tr>
+<tr><td><code>/model</code></td><td>switch model: provider/model</td></tr>
+<tr><td><code>/models</code></td><td>list models of this provider</td></tr>
+<tr><td><code>/provider</code></td><td>list providers or switch: /provider &lt;name&gt; [model]</td></tr>
+<tr><td><code>/key</code></td><td>enter an API key (hidden); /key &lt;provider&gt;</td></tr>
+<tr><td><code>/setup</code></td><td>first-run guide: provider, key, model</td></tr>
+<tr><td><code>/team</code></td><td>multi-agent team (PM, tech lead, workers): on or off</td></tr>
+<tr><td><code>/venv</code></td><td>Python virtual environments: on or off</td></tr>
+<tr><td><code>/yolo</code></td><td>allow everything without asking (toggle, or on/off)</td></tr>
+<tr><td><code>/update</code></td><td>check for a newer PortCode</td></tr>
+<tr><td><code>/new</code></td><td>new session (same as /clear)</td></tr>
+<tr><td><code>/clear</code></td><td>new session</td></tr>
+<tr><td><code>/agents</code></td><td>list agents</td></tr>
+<tr><td><code>/sessions</code></td><td>list saved sessions of this project</td></tr>
+<tr><td><code>/resume</code></td><td>open a session: /resume &lt;number|id|last&gt;</td></tr>
+<tr><td><code>/tools</code></td><td>list tools</td></tr>
+<tr><td><code>/ledger</code></td><td>show the evidence ledger</td></tr>
+<tr><td><code>/deep</code></td><td>deep mode: may disassemble, decompile, emulate the original</td></tr>
+<tr><td><code>/clean</code></td><td>clean-room mode: observe the original from outside only</td></tr>
+<tr><td><code>/remote</code></td><td>start remote control (browser / phone); /remote key to pair</td></tr>
+<tr><td><code>/engines</code></td><td>installed reverse-engineering engines</td></tr>
+<tr><td><code>/create</code></td><td>guided start: what to recreate, how closely to look, what to build with</td></tr>
+<tr><td><code>/workbench</code></td><td>deep: functions, pseudo-C, disassembly, hex and evidence side by side</td></tr>
+<tr><td><code>/style</code></td><td>prompt style: auto, compact, full, qwen38</td></tr>
+<tr><td><code>/effort</code></td><td>Qwen3.8 thinking: xhigh, medium, low, none</td></tr>
+<tr><td><code>/theme</code></td><td>dark or light: /theme light</td></tr>
+<tr><td><code>/thinking</code></td><td>show / hide reasoning</td></tr>
+<tr><td><code>/sidebar</code></td><td>toggle sidebar</td></tr>
+<tr><td><code>/help</code></td><td>keys and commands</td></tr>
+<tr><td><code>/exit</code></td><td>quit</td></tr>
+</tbody></table></div>
+<h2 id="details">Details<a class="anchor" href="#details" aria-label="Link to this section">#</a></h2>
+<h3 id="choosing-a-model">Choosing a model<a class="anchor" href="#choosing-a-model" aria-label="Link to this section">#</a></h3>
+<p><code>/provider</code> lists providers and which ones lack a key. <code>/provider ollama qwen3:14b</code> switches provider and model. <code>/models</code> lists what the current provider serves; <code>/model lakomoor/deepseek-chat</code> picks one. <code>/key</code> asks for an API key without showing it. <code>/setup</code> repeats the first-run steps. See <a href="first-run.html">First run</a>.</p>
+<h3 id="tuning-the-prompt">Tuning the prompt<a class="anchor" href="#tuning-the-prompt" aria-label="Link to this section">#</a></h3>
+<p><code>/style auto|compact|full|qwen38</code> picks the prompt flavour for the session and <code>/effort xhigh|medium|low|none</code> sets Qwen3.8 thinking depth (<code>none</code> turns thinking off). See <a href="providers.html">Providers and models</a>.</p>
+<h3 id="modes-and-safety">Modes and safety<a class="anchor" href="#modes-and-safety" aria-label="Link to this section">#</a></h3>
+<p><code>/deep</code> allows looking inside the original; <code>/clean</code> returns to clean-room. <code>/yolo</code> approves everything without asking (<code>/yolo off</code> to end it). See <a href="modes.html">Clean-room and deep mode</a> and <a href="permissions.html">Permissions</a>.</p>
+<h3 id="settings">Settings<a class="anchor" href="#settings" aria-label="Link to this section">#</a></h3>
+<p><code>/team on|off</code>, <code>/venv on|off</code>, <code>/theme light|dark</code>, <code>/thinking</code> (show or hide reasoning), <code>/sidebar</code>. <code>/team</code> and <code>/venv</code> change the running session; put them in <code>portcode.json</code> to keep them. See <a href="config.html">Configuration</a>.</p>
+<h3 id="sessions">Sessions<a class="anchor" href="#sessions" aria-label="Link to this section">#</a></h3>
+<p><code>/new</code> or <code>/clear</code> start a fresh session. <code>/resume</code> and <code>/sessions</code> open the session list. See <a href="sessions.html">Sessions</a>.</p>
+<h3 id="work">Work<a class="anchor" href="#work" aria-label="Link to this section">#</a></h3>
+<p><code>/create</code> starts the guided flow. <code>/workbench [binary]</code> opens the deep code view. <code>/ledger</code> shows the evidence ledger. <code>/engines</code> lists the reverse-engineering engines. <code>/tools</code> lists the tools. <code>/agent &lt;name&gt;</code> and <code>/agents</code> switch and list agents. <code>/update</code> checks for a new release. <code>/remote</code> starts remote control.</p>
+<h3 id="slash-commands-and-remote-control">Slash commands and remote control<a class="anchor" href="#slash-commands-and-remote-control" aria-label="Link to this section">#</a></h3>
+<p>A remote client cannot send slash commands as text: the browser page has its own controls for the agent, the mode and cancelling. This is deliberate, see <a href="remote.html">Remote control</a>.</p>
+<div class="pn"><a class="prev" href="agents.html"><small>Previous</small>Agents</a><a class="next" href="keys.html"><small>Next</small>Keyboard shortcuts</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/commands.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#details">Details</a><a class="t3" href="#choosing-a-model">Choosing a model</a><a class="t3" href="#tuning-the-prompt">Tuning the prompt</a><a class="t3" href="#modes-and-safety">Modes and safety</a><a class="t3" href="#settings">Settings</a><a class="t3" href="#sessions">Sessions</a><a class="t3" href="#work">Work</a><a class="t3" href="#slash-commands-and-remote-control">Slash commands and remote control</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

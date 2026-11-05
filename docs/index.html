@@ -6,7 +6,7 @@
 <script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#first">First run</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="guide/ARCHITECTURE.html">Docs</a><a class="l" href="ru/">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#first">First run</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="wiki/">Docs</a><a class="l" href="ru/">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="top"><div>
@@ -60,7 +60,7 @@
 <div class="bento">
 <div class="t g-peach s4 tc"><h3>1. Pick a provider</h3><p>Local model, no key: <code>/provider ollama qwen3:14b</code>. Type <code>/provider</code> alone to see all of them and which need a key.</p></div>
 <div class="t g-mint s4 tc"><h3>2. Paste your key</h3><p><code>/key</code> asks for it. It is hidden while you type and saved with mode 600. Or run <code>portcode auth set &lt;provider&gt;</code> in a shell.</p></div>
-<div class="t g-light s4 tc"><h3>3. Check and start</h3><p><code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="guide/GETTING_STARTED.html">Full guide</a>.</p></div>
+<div class="t g-light s4 tc"><h3>3. Check and start</h3><p><code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="wiki/first-run.html">Full guide</a>.</p></div>
 <div class="t g-peach s6"><div class="framed"><img src="screenshots/tui-first-run.svg" alt="Home screen with the no-API-key notice"></div></div>
 <div class="t g-mint s6"><div class="framed"><img src="screenshots/tui-provider.svg" alt="The /provider menu listing providers and which need a key"></div></div>
 </div>
@@ -70,7 +70,7 @@
 <p class="sub">No API key needed. PortCode starts the official <code>claude</code> or <code>codex</code> program on your machine and lets it use the login you already have. It adds its own tools: the evidence ledger, pinning, parity checks and screenshots.</p>
 <div class="bento">
 <div class="t g-light s6 tc"><h3>PortCode on your plan</h3><p><code>portcode -m claude-code/sonnet</code> or <code>portcode -m codex/default</code>. The work shows up in the PortCode screen and the evidence goes into the same ledger.</p></div>
-<div class="t g-dark s6 tc"><h3>Your CLI uses PortCode</h3><p><code>claude mcp add portcode -- portcode mcp</code> gives Claude Code (and Codex with <code>codex mcp add</code>) PortCode's tools in the session you already use. <a href="guide/SUBSCRIPTIONS.html">Details and limits</a>.</p></div>
+<div class="t g-dark s6 tc"><h3>Your CLI uses PortCode</h3><p><code>claude mcp add portcode -- portcode mcp</code> gives Claude Code (and Codex with <code>codex mcp add</code>) PortCode's tools in the session you already use. <a href="wiki/subscriptions.html">Details and limits</a>.</p></div>
 </div></section>
 
 <section id="try"><h2>Watch a real run</h2>

@@ -3,7 +3,8 @@
 <rect width="1400" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1400" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="700" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — workbench</text>
-<rect x="401.19" y="34.00" width="74.64" height="19" fill="#f5a742"/>
+<rect x="401.19" y="34.00" width="121.29" height="19" fill="#e06c75"/>
+<rect x="531.81" y="34.00" width="74.64" height="19" fill="#f5a742"/>
 <rect x="102.63" y="53.00" width="9.33" height="19" fill="#1e1e1e"/>
 <rect x="1147.59" y="53.00" width="9.33" height="19" fill="#1e1e1e"/>
 <rect x="0.00" y="110.00" width="270.57" height="19" fill="#1e1e1e"/>
@@ -12,13 +13,16 @@
 <rect x="9.33" y="756.00" width="1380.84" height="19" fill="#141414"/>
 <rect x="9.33" y="775.00" width="1380.84" height="19" fill="#141414"/>
 <rect x="9.33" y="794.00" width="363.87" height="19" fill="#141414"/>
-<rect x="373.20" y="794.00" width="74.64" height="19" fill="#f5a742"/>
-<rect x="447.84" y="794.00" width="942.33" height="19" fill="#141414"/>
+<rect x="373.20" y="794.00" width="121.29" height="19" fill="#e06c75"/>
+<rect x="494.49" y="794.00" width="9.33" height="19" fill="#141414"/>
+<rect x="503.82" y="794.00" width="74.64" height="19" fill="#f5a742"/>
+<rect x="578.46" y="794.00" width="811.71" height="19" fill="#141414"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="0.00" y="48.00" fill="#fab283" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700"> workbench </text>
 <text x="102.63" y="48.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs"> original/wordstat </text>
 <text x="279.90" y="48.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs">macho arm64  </text>
-<text x="401.19" y="48.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="401.19" y="48.00" fill="#0a0a0a" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
+<text x="531.81" y="48.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
 <text x="0.00" y="67.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700"> Functions </text>
 <text x="102.63" y="67.00" fill="#808080" textLength="9.33" lengthAdjust="spacingAndGlyphs">2</text>
 <text x="270.57" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
@@ -250,7 +254,8 @@
 <text x="27.99" y="808.00" fill="#56b6c2" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Reverse</text>
 <text x="93.30" y="808.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">  mock/mock-model</text>
 <text x="251.91" y="808.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">  lakomoor</text>
-<text x="373.20" y="808.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="373.20" y="808.00" fill="#0a0a0a" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
+<text x="503.82" y="808.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
 <text x="0.00" y="827.00" fill="#808080" textLength="793.05" lengthAdjust="spacingAndGlyphs"> j/k function · 1 2 3 view · / filter · a ask the agent · i chat · r reload · q close</text>
 </g>
 </svg>

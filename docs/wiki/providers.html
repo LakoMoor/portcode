@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Providers and models — PortCode wiki</title><meta property="og:title" content="Providers and models — PortCode wiki"><meta name="description" content="PortCode documentation: Providers and models."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html" class="on" aria-current="page">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Models</p>
+<h1 id="providers-models-and-open-weight-tuning">Providers, models and open-weight tuning<a class="anchor" href="#providers-models-and-open-weight-tuning" aria-label="Link to this section">#</a></h1>
+<h2 id="configuration">Configuration<a class="anchor" href="#configuration" aria-label="Link to this section">#</a></h2>
+<p>Layers (later wins): built-in presets &lt; <code>~/.config/portcode/portcode.json</code> &lt; <code>./portcode.json</code> &lt; <code>./.portcode/portcode.json</code> &lt; env (<code>PORTCODE_MODEL</code>, <code>PORTCODE_BASE_URL</code>, <code>PORTCODE_API_KEY</code>). <code>//</code> comment lines are allowed. Model reference: <code>provider/model</code> (a bare id uses <code>lakomoor</code>).</p>
+<pre><code class="lang-jsonc">{
+  &quot;model&quot;: &quot;lakomoor/deepseek-chat&quot;,
+  &quot;small_model&quot;: &quot;ollama/qwen3:4b&quot;,          // used for context compaction
+  &quot;provider&quot;: {
+    &quot;lakomoor&quot;: { &quot;base_url&quot;: &quot;https://lakomoor.com/v1&quot;, &quot;api_key_env&quot;: &quot;LAKOMOOR_API_KEY&quot; },
+    &quot;mybox&quot;:    { &quot;base_url&quot;: &quot;http://10.0.0.5:8000/v1&quot;, &quot;headers&quot;: { &quot;X-Team&quot;: &quot;rev&quot; } }
+  },
+  &quot;models&quot;: { &quot;qwen3:14b&quot;: { &quot;context_window&quot;: 32768, &quot;parallel_tool_calls&quot;: false } },
+  &quot;permission&quot;: { &quot;edit&quot;: &quot;ask&quot;, &quot;bash&quot;: { &quot;*&quot;: &quot;ask&quot;, &quot;cargo test*&quot;: &quot;allow&quot; }, &quot;webfetch&quot;: &quot;deny&quot; },
+  &quot;mcp&quot;: { &quot;rea&quot;: { &quot;command&quot;: [&quot;npx&quot;, &quot;-y&quot;, &quot;rea-agents@latest&quot;, &quot;mcp&quot;] } }
+}</code></pre>
+<p>Keys: env var (<code>api_key_env</code>), or <code>portcode auth set &lt;provider&gt;</code> (<code>~/.config/portcode/auth.json</code>, mode 0600). Never commit keys.</p>
+<h2 id="what-the-client-absorbs">What the client absorbs<a class="anchor" href="#what-the-client-absorbs" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Quirk</th><th>Handling</th></tr></thead><tbody>
+<tr><td><code>reasoning_content</code> / <code>reasoning</code> deltas</td><td>shown dim, stored, not echoed back unless <code>echo_reasoning</code></td></tr>
+<tr><td>inline <code>&lt;think&gt;…&lt;/think&gt;</code> (even split across chunks)</td><td>routed to reasoning, stripped from text</td></tr>
+<tr><td>tool calls written as text (<code>&lt;tool_call&gt;{…}&lt;/tool_call&gt;</code>, fenced JSON)</td><td>promoted to real calls (known tool names only)</td></tr>
+<tr><td>truncated / trailing-comma / fenced tool-argument JSON</td><td>repaired, else the model gets an error with the tool's example</td></tr>
+<tr><td>numbers sent as strings</td><td>accepted</td></tr>
+<tr><td>server rejects <code>stream_options</code>, <code>top_k</code>, <code>tool_choice</code>… (HTTP 400)</td><td>one automatic retry with a minimal body</td></tr>
+<tr><td>429/5xx, connection errors</td><td>backoff retry (3 attempts)</td></tr>
+<tr><td>stream stalls</td><td>idle timeout (120 s) with a clear error</td></tr>
+<tr><td>empty reply / cut-off reply</td><td>up to 2 nudges, then stop</td></tr>
+<tr><td>same tool call 3× in a row</td><td>blocked; stops after repeats</td></tr>
+</tbody></table></div>
+<h2 id="profiles-modelprofile">Profiles (<code>ModelProfile</code>)<a class="anchor" href="#profiles-modelprofile" aria-label="Link to this section">#</a></h2>
+<p><code>temperature, top_p, top_k, max_tokens, context_window, parallel_tool_calls, echo_reasoning, text_tool_fallback, strip_think, prompt_style (compact|full|qwen38), tool_output_limit</code>. Built-in families by substring: <code>deepseek*</code>, <code>qwen*</code> (smaller output/context for <code>flash</code>, <code>mini</code>, <code>4b/7b/8b</code>), generic open families. <strong>These are starting points, not measured claims.</strong> Newer releases may want different values — override under <code>&quot;models&quot;</code>.</p>
+<h3 id="small-context-windows-and-short-outputs">Small context windows and short outputs<a class="anchor" href="#small-context-windows-and-short-outputs" aria-label="Link to this section">#</a></h3>
+<p>Many local servers run with a 4k to 16k window and cut replies early. PortCode accounts for it:</p>
+<ul><li>It never asks for more output than half the window, nor more than fits next to the prompt (vLLM rejects <code>prompt + max_tokens &gt; window</code>).</li><li>Tool results are capped at about an eighth of the window (<code>result_chars</code>), and old turns are compacted to stay under <code>window - output - 256</code> tokens.</li><li>A reply that stops at the output limit (<code>finish_reason: length</code>) is continued ("continue exactly where you stopped") and the pieces are joined. A <strong>tool call</strong> cut by the limit is never run, even if its JSON could be repaired: the model is told to make it smaller and gets a larger output budget (up to 3x).</li><li><code>write</code> accepts <code>append: true</code>, so a long file is written in parts.</li><li>If the instructions alone take more than a third of the window, PortCode says so once. Set the real server window in <code>portcode.json</code>: <code>&quot;models&quot;: {&quot;&lt;id&gt;&quot;: {&quot;context_window&quot;: 8192, &quot;max_tokens&quot;: 1024}}</code>.</li></ul>
+<h2 id="prompt-design-for-open-models">Prompt design for open models<a class="anchor" href="#prompt-design-for-open-models" aria-label="Link to this section">#</a></h2>
+<ul><li>Rules are numbered one-liners, most important first; a short style block last.</li><li>One worked example in the system prompt; one <code>Example arguments:</code> per tool.</li><li>Stable prefix: nothing time-dependent before the final <code>date:</code> line (prefix caches in llama.cpp/vLLM/SGLang reuse the KV).</li><li>Tool errors tell the model the fix (valid tool names, required parameter + example, "read before edit").</li><li>Large outputs are clipped head+tail with an explicit "narrow the request" hint; old tool output is trimmed, then the conversation is summarised near 75 % of <code>context_window</code>.</li><li>Skill = short router + on-demand references (<code>skill</code> tool with <code>file</code>).</li></ul>
+<h2 id="check-your-model">Check your model<a class="anchor" href="#check-your-model" aria-label="Link to this section">#</a></h2>
+<p><code>portcode eval -m &lt;provider/model&gt;</code> runs: chat, a tool call with valid JSON, and a read→edit task in a temp dir. Failing tool-call → try <code>parallel_tool_calls:false</code>, a bigger model, or a server flag that enables the model's tool parser (vLLM <code>--enable-auto-tool-choice</code>, llama.cpp <code>--jinja</code>).</p>
+<h2 id="qwen3-8-27b-flash-next">Qwen3.8 (27B, Flash-Next)<a class="anchor" href="#qwen3-8-27b-flash-next" aria-label="Link to this section">#</a></h2>
+<p>PortCode recognises <code>qwen3.8-27b</code>, <code>Qwen3.8-Flash-Next</code> and similar ids and switches to a profile built from the model cards (<a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next">Qwen3.8-Flash-Next</a>, <a href="https://unsloth.ai/docs/models/qwen3.8-27b">Unsloth's Qwen3.8-27B guide</a>):</p>
+<div class="tw"><table><thead><tr><th></th><th>thinking (default)</th><th>non-thinking</th></tr></thead><tbody>
+<tr><td>temperature</td><td>1.0</td><td>0.7</td></tr>
+<tr><td>top_p / top_k</td><td>0.95 / 20</td><td>0.8 / 20</td></tr>
+<tr><td>presence_penalty</td><td>0.0</td><td>1.5</td></tr>
+</tbody></table></div>
+<p>What changes for these models:</p>
+<ul><li><strong>Prompt.</strong> A shorter rule set (<code>prompt_style: &quot;qwen38&quot;</code>): think once, don't redo earlier reasoning, tool calls only through the tool interface, independent reads in parallel. No worked example, the model does not need one.</li><li><strong>Thinking control.</strong> Sent as <code>chat_template_kwargs</code>: <code>reasoning_effort</code> (<code>xhigh</code>, <code>medium</code>, <code>low</code>) and <code>preserve_thinking</code>. PortCode defaults to <code>medium</code> and keeps preserved thinking on. The card's own default is <code>xhigh</code>; it also notes that a lower effort does not always shorten a multi-turn agent task, so try both on your hardware. <code>none</code> turns thinking off and applies the non-thinking sampling above.</li><li><strong>Output budget.</strong> Thinking tokens count against <code>max_tokens</code>, so the default is 16384.</li><li><strong>Tool calls.</strong> Parallel calls are on. Your server must run the Qwen tool-call parser (vLLM: <code>--tool-call-parser qwen3_xml --reasoning-parser qwen3</code>; llama.cpp: <code>--jinja</code>).</li></ul>
+<p>Settings, in <code>portcode.json</code>:</p>
+<pre><code class="lang-json">{
+  &quot;prompt_style&quot;: &quot;auto&quot;,
+  &quot;models&quot;: {
+    &quot;qwen3.8-27b&quot;: { &quot;reasoning_effort&quot;: &quot;low&quot;, &quot;context_window&quot;: 131072 }
+  }
+}</code></pre>
+<p><code>prompt_style</code> is <code>auto</code> (picked from the model id), <code>compact</code>, <code>full</code> or <code>qwen38</code>, and applies to every model; a per-model entry wins. In the app, <code>/style</code> and <code>/effort</code> change them for the current session. The ids in the cards and the sampling numbers come from the sources above; I could not verify them on a running model, so run <code>portcode eval</code> on yours.</p>
+<div class="pn"><a class="prev" href="engines.html"><small>Previous</small>Engines</a><a class="next" href="subscriptions.html"><small>Next</small>Claude Code and Codex</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/PROVIDERS.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#configuration">Configuration</a><a class="t2" href="#what-the-client-absorbs">What the client absorbs</a><a class="t2" href="#profiles-modelprofile">Profiles (ModelProfile)</a><a class="t3" href="#small-context-windows-and-short-outputs">Small context windows and short outputs</a><a class="t2" href="#prompt-design-for-open-models">Prompt design for open models</a><a class="t2" href="#check-your-model">Check your model</a><a class="t2" href="#qwen3-8-27b-flash-next">Qwen3.8 (27B, Flash-Next)</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

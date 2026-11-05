@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tools — PortCode wiki</title><meta property="og:title" content="Tools — PortCode wiki"><meta name="description" content="PortCode documentation: Tools."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html" class="on" aria-current="page">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="tools">Tools<a class="anchor" href="#tools" aria-label="Link to this section">#</a></h1>
+<p>Everything PortCode can do is a tool. The app, the agent and the command line share one list, so anything the agent can do you can also run yourself:</p>
+<pre><code class="lang-sh">portcode tool read &#x27;{&quot;path&quot;: &quot;src/main.rs&quot;, &quot;limit&quot;: 40}&#x27;
+portcode tool venv &#x27;{&quot;action&quot;: &quot;status&quot;}&#x27;</code></pre>
+<p>Tools never panic, never prompt on stdin and never hang: they have deadlines, capped output, and errors that tell the model how to fix the call. Each agent sees only the tools its role needs; <code>/tools</code> in the app prints the groups.</p>
+<h2 id="reference">Reference<a class="anchor" href="#reference" aria-label="Link to this section">#</a></h2>
+<p>The table is generated from the tool definitions (first sentence of each description).</p>
+<div class="tw"><table><thead><tr><th>Tool</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>read</code></td><td>Read a text file (numbered lines) or list a directory.</td></tr>
+<tr><td><code>ls</code></td><td>List a directory (directories end with /).</td></tr>
+<tr><td><code>glob</code></td><td>Find files by glob pattern, newest first.</td></tr>
+<tr><td><code>grep</code></td><td>Search file contents with a regular expression.</td></tr>
+<tr><td><code>write</code></td><td>Create a file or fully replace one.</td></tr>
+<tr><td><code>edit</code></td><td>Replace exact text in a file.</td></tr>
+<tr><td><code>todowrite</code></td><td>Keep the task list for multi-step work.</td></tr>
+<tr><td><code>webfetch</code></td><td>Fetch a http(s) URL and return readable text (HTML tags removed).</td></tr>
+<tr><td><code>skill</code></td><td>Load a skill's instructions, or one of its reference files.</td></tr>
+<tr><td><code>task</code></td><td>Delegate a self-contained job to a sub-agent with a fresh context and get its final answer.</td></tr>
+<tr><td><code>blocked</code></td><td>Stop because you need a decision or input only the user can give (licence, missing file, ambiguous requirement, permission refused).</td></tr>
+<tr><td><code>survey</code></td><td>Inventory a source tree before porting: languages/LOC, build files, engine and graphics-API hints, assets, tests/CI, risk hotspots (globals, raw pointers, threads, RNG).</td></tr>
+<tr><td><code>pin</code></td><td>Pin the exact original build (sha256, size, format, version) to .portcode/reference.lock.json and verify it later.</td></tr>
+<tr><td><code>evidence_add</code></td><td>Record one fact about the original in the evidence ledger.</td></tr>
+<tr><td><code>evidence_list</code></td><td>List ledger records, optionally by subject prefix or only open unknowns.</td></tr>
+<tr><td><code>parity</code></td><td>Compare golden outputs recorded from the ORIGINAL with the port's outputs (numbers within tolerance, PNG per-channel).</td></tr>
+<tr><td><code>screenshot</code></td><td>Run a command and save its real output as a terminal screenshot (SVG) in docs/screenshots/, then record it as an observation in the ledger with the output's sha256.</td></tr>
+<tr><td><code>site_build</code></td><td>Generate the GitHub Pages site (docs/site/) from docs/PORT.md, the evidence ledger and docs/screenshots/.</td></tr>
+<tr><td><code>scaffold</code></td><td>Create a Rust workspace for a port: &lt;name&gt;-core (headless) + &lt;name&gt; (binary), docs/PORT.md, tests/golden, docs/screenshots.</td></tr>
+<tr><td><code>re_status</code></td><td>List the reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex, rizin…), whether each is installed, and the current mode (clean-room or deep).</td></tr>
+<tr><td><code>re_install</code></td><td>Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Ghidra and ImHex from their official releases, sha256-verified).</td></tr>
+<tr><td><code>disasm</code></td><td>Deep mode.</td></tr>
+<tr><td><code>emulate</code></td><td>Deep mode.</td></tr>
+<tr><td><code>decompile</code></td><td>Deep mode.</td></tr>
+<tr><td><code>functions</code></td><td>Deep mode.</td></tr>
+<tr><td><code>unity</code></td><td>Deep mode.</td></tr>
+<tr><td><code>dotnet</code></td><td>Deep mode.</td></tr>
+<tr><td><code>unity_assets</code></td><td>Deep mode.</td></tr>
+<tr><td><code>hexdump</code></td><td>Deep mode.</td></tr>
+<tr><td><code>bash</code></td><td>Run one shell command in the project directory (non-interactive, no stdin, default 120s timeout).</td></tr>
+<tr><td><code>team</code></td><td>Run team members at the same time and get every answer back.</td></tr>
+<tr><td><code>venv</code></td><td>Python virtual environment in .venv.</td></tr>
+</tbody></table></div>
+<h2 id="groups">Groups<a class="anchor" href="#groups" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Group</th><th>Tools</th></tr></thead><tbody>
+<tr><td>Files</td><td><code>read</code>, <code>ls</code>, <code>glob</code>, <code>grep</code>, <code>write</code>, <code>edit</code></td></tr>
+<tr><td>Run</td><td><code>bash</code>, <code>venv</code>, <code>todowrite</code>, <code>webfetch</code>, <code>skill</code>, <code>task</code>, <code>team</code>, <code>blocked</code></td></tr>
+<tr><td>Proof</td><td><code>survey</code>, <code>pin</code>, <code>evidence_add</code>, <code>evidence_list</code>, <code>parity</code>, <code>screenshot</code>, <code>scaffold</code>, <code>site_build</code></td></tr>
+<tr><td>Deep</td><td><code>re_status</code>, <code>re_install</code>, <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>dotnet</code>, <code>unity_assets</code></td></tr>
+<tr><td>More</td><td>tools from MCP servers listed in <code>portcode.json</code></td></tr>
+</tbody></table></div>
+<p>The deep tools look inside the original and are available only in <a href="modes.html">deep mode</a>.</p>
+<h2 id="mcp">MCP<a class="anchor" href="#mcp" aria-label="Link to this section">#</a></h2>
+<p>Add MCP servers under <code>&quot;mcp&quot;</code> in <code>portcode.json</code> and their tools join the list for agents that allow MCP tools:</p>
+<pre><code class="lang-json">{ &quot;mcp&quot;: { &quot;rea&quot;: { &quot;command&quot;: [&quot;npx&quot;, &quot;-y&quot;, &quot;rea-agents@latest&quot;, &quot;mcp&quot;] } } }</code></pre>
+<p>PortCode can also be an MCP server itself: <code>portcode mcp</code> serves its tools to Claude Code or Codex. See <a href="subscriptions.html">Claude Code and Codex</a>.</p>
+<h2 id="skills">Skills<a class="anchor" href="#skills" aria-label="Link to this section">#</a></h2>
+<p>A skill is a folder of instructions the agent loads on demand with the <code>skill</code> tool. PortCode ships <code>rustport</code>, the porting method. <code>portcode skill list</code>, <code>portcode skill show rustport</code> and <code>portcode skill export &lt;dir&gt;</code> manage them.</p>
+<div class="pn"><a class="prev" href="python.html"><small>Previous</small>Python environments</a><a class="next" href="port-workflow.html"><small>Next</small>The port workflow</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/tools.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#reference">Reference</a><a class="t2" href="#groups">Groups</a><a class="t2" href="#mcp">MCP</a><a class="t2" href="#skills">Skills</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keyboard shortcuts — PortCode wiki</title><meta property="og:title" content="Keyboard shortcuts — PortCode wiki"><meta name="description" content="PortCode documentation: Keyboard shortcuts."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html" class="on" aria-current="page">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="keyboard-shortcuts">Keyboard shortcuts<a class="anchor" href="#keyboard-shortcuts" aria-label="Link to this section">#</a></h1>
+<h2 id="in-the-prompt">In the prompt<a class="anchor" href="#in-the-prompt" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Keys</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>enter</code></td><td>send</td></tr>
+<tr><td><code>alt+enter</code></td><td>new line</td></tr>
+<tr><td><code>tab</code></td><td>use the start-up suggestion, or complete a <code>/</code> command, or switch to the next agent</td></tr>
+<tr><td><code>shift+tab</code></td><td>switch to the previous agent</td></tr>
+<tr><td><code>↑</code> / <code>↓</code></td><td>walk the prompt history (or move in the <code>/</code> menu)</td></tr>
+<tr><td><code>ctrl+a</code> / <code>ctrl+e</code> (or <code>home</code> / <code>end</code>)</td><td>start / end of the line</td></tr>
+<tr><td><code>ctrl+u</code></td><td>delete from the cursor to the start of the line</td></tr>
+<tr><td><code>ctrl+w</code></td><td>delete the word before the cursor</td></tr>
+<tr><td><code>ctrl+c</code></td><td>clear the prompt if it has text, otherwise quit</td></tr>
+<tr><td><code>ctrl+d</code></td><td>quit when the prompt is empty</td></tr>
+<tr><td><code>esc</code></td><td>dismiss the suggestion, close a menu, or scroll back to the bottom</td></tr>
+</tbody></table></div>
+<h2 id="while-a-request-runs">While a request runs<a class="anchor" href="#while-a-request-runs" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Keys</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>esc</code> <code>esc</code></td><td>cancel the request (the footer says <em>press esc again</em> after the first)</td></tr>
+<tr><td><code>ctrl+c</code></td><td>cancel the request at once</td></tr>
+</tbody></table></div>
+<h2 id="view">View<a class="anchor" href="#view" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Keys</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>ctrl+t</code></td><td>show or hide the model's reasoning</td></tr>
+<tr><td><code>ctrl+b</code></td><td>show or hide the sidebar</td></tr>
+<tr><td><code>pgup</code> / <code>pgdn</code></td><td>scroll the transcript</td></tr>
+<tr><td>mouse wheel</td><td>scroll the transcript</td></tr>
+</tbody></table></div>
+<h2 id="permission-dialog">Permission dialog<a class="anchor" href="#permission-dialog" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Key</th><th>Reply</th></tr></thead><tbody>
+<tr><td><code>y</code> or <code>enter</code></td><td>allow once</td></tr>
+<tr><td><code>a</code></td><td>always allow that exact request for the rest of the session</td></tr>
+<tr><td><code>n</code> or <code>esc</code></td><td>reject</td></tr>
+</tbody></table></div>
+<h2 id="session-list-resume-resume">Session list (<code>--resume</code>, <code>/resume</code>)<a class="anchor" href="#session-list-resume-resume" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>↑</code> <code>↓</code> or <code>k</code> <code>j</code></td><td>move</td></tr>
+<tr><td><code>pgup</code> <code>pgdn</code> <code>home</code> <code>end</code></td><td>jump</td></tr>
+<tr><td><code>enter</code></td><td>open the session</td></tr>
+<tr><td><code>esc</code> or <code>q</code></td><td>leave without opening one</td></tr>
+</tbody></table></div>
+<h2 id="workbench-workbench">Workbench (<code>/workbench</code>)<a class="anchor" href="#workbench-workbench" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>j</code> / <code>k</code></td><td>move in the function list</td></tr>
+<tr><td><code>1</code> <code>2</code> <code>3</code></td><td>Pseudo-C, disassembly, hex</td></tr>
+<tr><td><code>/</code></td><td>filter functions</td></tr>
+<tr><td><code>a</code></td><td>ask the agent about the selected function</td></tr>
+<tr><td><code>esc</code></td><td>clear the filter, then close</td></tr>
+</tbody></table></div>
+<div class="pn"><a class="prev" href="commands.html"><small>Previous</small>Slash commands</a><a class="next" href="sessions.html"><small>Next</small>Sessions and history</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/keys.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#in-the-prompt">In the prompt</a><a class="t2" href="#while-a-request-runs">While a request runs</a><a class="t2" href="#view">View</a><a class="t2" href="#permission-dialog">Permission dialog</a><a class="t2" href="#session-list-resume-resume">Session list (--resume, /resume)</a><a class="t2" href="#workbench-workbench">Workbench (/workbench)</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

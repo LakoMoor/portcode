@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Engines — PortCode wiki</title><meta property="og:title" content="Engines — PortCode wiki"><meta name="description" content="PortCode documentation: Engines."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html" class="on" aria-current="page">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Port and reverse</p>
+<h1 id="reverse-engineering-engines-and-modes">Reverse-engineering engines and modes<a class="anchor" href="#reverse-engineering-engines-and-modes" aria-label="Link to this section">#</a></h1>
+<p>PortCode has two modes.</p>
+<div class="tw"><table><thead><tr><th></th><th>clean-room (default)</th><th>deep</th></tr></thead><tbody>
+<tr><td>Looks at</td><td>what a user sees: run it, inputs, outputs, screenshots, public docs</td><td>also inside: disassembly, decompilation, emulation, raw bytes</td></tr>
+<tr><td>Tools</td><td><code>bash</code>, <code>parity</code>, <code>screenshot</code>, <code>survey</code>, ledger</td><td>+ <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>hexdump</code>, <code>re_install</code></td></tr>
+<tr><td>Refused</td><td><code>disasm</code> <code>emulate</code> <code>decompile</code> <code>hexdump</code>; objdump/strings/otool/gdb/r2… in <code>bash</code></td><td>nothing extra</td></tr>
+<tr><td>Evidence</td><td>mostly <code>observation</code></td><td>mostly <code>inference</code> (cite tool + address)</td></tr>
+<tr><td>Switch</td><td><code>--clean-room</code></td><td><code>--deep</code>, <code>/deep</code>, <code>&quot;mode&quot;:&quot;deep&quot;</code>, <code>PORTCODE_MODE=deep</code></td></tr>
+</tbody></table></div>
+<p>Clean-room works the way <a href="https://github.com/storytold/craft-anything">craft-anything</a> does: tools that would look inside are refused and the refusal explains how to enable deep mode. PortCode adds a <strong>two-session hand-off</strong>: a <code>reverse --deep</code> session writes <code>docs/SPEC.md</code> and ledger entries in its own words; a <code>port --clean-room</code> session builds from those only.</p>
+<h2 id="engines">Engines<a class="anchor" href="#engines" aria-label="Link to this section">#</a></h2>
+<p><code>portcode engines list</code> shows what is installed. Everything PortCode installs goes into the <code>engines/</code> folder next to the <code>portcode</code> binary (override: <code>PORTCODE_ENGINES</code>). Installs ask first and downloads are sha256-verified.</p>
+<div class="tw"><table><thead><tr><th>id</th><th>what</th><th>used by</th><th>install</th></tr></thead><tbody>
+<tr><td>capstone</td><td>disassembler (x86, ARM, ARM64, MIPS, RISC-V, PPC)</td><td><code>disasm</code></td><td>pip, private venv</td></tr>
+<tr><td>unicorn</td><td>CPU emulator</td><td><code>emulate</code></td><td>pip, private venv</td></tr>
+<tr><td>keystone</td><td>assembler</td><td>bash</td><td>pip</td></tr>
+<tr><td>lief</td><td>ELF/PE/Mach-O/DEX parser</td><td>bash/python</td><td>pip</td></tr>
+<tr><td>yara</td><td>file pattern rules</td><td>bash/python</td><td>pip</td></tr>
+<tr><td>angr</td><td>symbolic execution</td><td>python</td><td>pip (large)</td></tr>
+<tr><td>frida</td><td>dynamic instrumentation</td><td>bash</td><td>pip</td></tr>
+<tr><td>ghidra</td><td>decompiler, run headless</td><td><code>decompile</code></td><td>official release zip, sha256 from GitHub; needs a JDK</td></tr>
+<tr><td>imhex</td><td>hex editor + pattern language</td><td>you (agent writes <code>.hexpat</code>)</td><td>cask / AppImage</td></tr>
+<tr><td>rizin, radare2, binwalk, die, capa, jadx, wabt, upx</td><td>system tools</td><td><code>bash</code> (deep)</td><td>your package manager</td></tr>
+</tbody></table></div>
+<pre><code class="lang-sh">portcode engines install core        # capstone + unicorn + lief
+portcode engines install ghidra imhex
+portcode --deep -a reverse</code></pre>
+<p>Emulation never touches the host: no syscalls, a hard instruction budget, a 60 s deadline. Use only on software you own or may examine. PortCode never bypasses DRM, logins or anti-cheat.</p>
+<h2 id="workbench">Workbench<a class="anchor" href="#workbench" aria-label="Link to this section">#</a></h2>
+<p><code>/workbench [file]</code> (deep mode only; with no file it takes the first executable in <code>original/</code>) opens one screen for reading a binary:</p>
+<div class="tw"><table><thead><tr><th>area</th><th>shows</th><th>from</th></tr></thead><tbody>
+<tr><td>left</td><td>functions: address, size, name; <code>/</code> filters</td><td><code>functions</code> (LIEF)</td></tr>
+<tr><td>middle</td><td><strong>1</strong> Pseudo-C · <strong>2</strong> Disassembly · <strong>3</strong> Hex of the selected function</td><td><code>decompile</code> (Ghidra), <code>disasm</code> (Capstone), <code>hexdump</code></td></tr>
+<tr><td>right</td><td>the evidence ledger, newest first; records that mention the selected function are highlighted</td><td><code>.portcode/evidence</code></td></tr>
+<tr><td>bottom</td><td>the agent's last answer and the prompt</td><td>the current session</td></tr>
+</tbody></table></div>
+<p>Keys: <code>j</code>/<code>k</code> move, <code>1 2 3</code> or <code>h</code>/<code>l</code> switch view, <code>PgUp</code>/<code>PgDn</code> scroll, <code>/</code> filter, <code>a</code> ask the agent to explain the function and record it as an inference, <code>i</code> type to the agent, <code>r</code> reload, <code>q</code> close. The first Pseudo-C of a binary includes Ghidra's analysis, so it can take a while; later functions reuse the project. Sizes are the distance to the next symbol, so treat them as estimates. The workbench makes the same tool calls an agent would, and it refuses to open in clean-room mode.</p>
+<h2 id="unity-and-c-net">Unity and C# / .NET<a class="anchor" href="#unity-and-c-net" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>tool</th><th>does</th><th>needs</th></tr></thead><tbody>
+<tr><td><code>unity</code></td><td>surveys a game folder or <code>.app</code>: Unity version, <strong>Mono or IL2CPP</strong>, managed DLLs, native library, asset and bundle counts, next steps</td><td>nothing</td></tr>
+<tr><td><code>dotnet</code></td><td><code>info</code>, <code>types</code>, <code>type</code>, <code>strings</code>, <code>refs</code> (assembly refs and P/Invoke) of any .NET assembly, including Unity's <code>Assembly-CSharp.dll</code></td><td><code>dnfile</code> (pip)</td></tr>
+<tr><td><code>dotnet</code> mode=<code>decompile</code></td><td>C# source of one type</td><td><code>ilspy</code> (<code>dotnet tool install -g ilspycmd</code>, needs the .NET SDK)</td></tr>
+<tr><td><code>unity_assets</code></td><td><code>info</code>, <code>list</code>, <code>text</code>, <code>tree</code> of <code>.assets</code>, <code>levelN</code>, <code>globalgamemanagers</code>, bundles: scenes, TextAssets, MonoBehaviour values</td><td><code>unitypy</code> (pip)</td></tr>
+</tbody></table></div>
+<p>Install: <code>portcode engines install dnfile unitypy</code>. Mono games keep their C# in <code>Managed/*.dll</code>, so <code>dotnet</code> reads it directly. IL2CPP games compile C# to native code: run <strong>Il2CppDumper</strong> (engine <code>il2cppdumper</code>, installed by you) on <code>GameAssembly</code> and <code>global-metadata.dat</code>, then point <code>dotnet</code> at the DummyDll files it writes, and use <code>functions</code>, <code>decompile</code> and <code>disasm</code> on the native library. Obfuscated names (<code>a</code>, <code>b</code>) are normal; <code>strings</code> and <code>refs</code> orient you. As everywhere, this is deep mode: record what you see as <code>inference</code>, and port from the ledger, not from decompiled code.</p>
+<div class="pn"><a class="prev" href="modes.html"><small>Previous</small>Clean-room and deep mode</a><a class="next" href="providers.html"><small>Next</small>Providers and models</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/ENGINES.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#engines">Engines</a><a class="t2" href="#workbench">Workbench</a><a class="t2" href="#unity-and-c-net">Unity and C# / .NET</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

@@ -33,6 +33,8 @@ pub struct Config {
     pub cli_permission: Option<String>,
     /// Multi-agent team: `{ "enabled": true, "parallel": 3 }` adds the `team` orchestrator agent.
     pub team: Option<TeamCfg>,
+    /// Start-up suggestion in the prompt box (Tab inserts it). Default on; `false` turns it off.
+    pub suggest: Option<bool>,
     /// Python virtual environments (`venv` tool; bash runs with `.venv` on PATH). Default on.
     pub venv: Option<bool>,
     /// Extra directories file tools may touch without asking.
@@ -319,6 +321,8 @@ pub const INIT_TEMPLATE: &str = r#"{
   "prompt_style": "auto",
   // Python projects get a .venv (the agent creates it, installs into it, never installs globally).
   "venv": true,
+  // A guessed first message appears in the prompt box when you open PortCode in a folder; Tab uses it.
+  "suggest": true,
   // Team mode: a "team" agent (orchestrator) runs a project manager, tech lead and workers in parallel.
   "team": { "enabled": false, "parallel": 3 },
   // Override sampling / context per model id (the part after "provider/").

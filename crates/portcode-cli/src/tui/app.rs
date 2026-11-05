@@ -13,6 +13,8 @@ pub enum Msg {
     Info(String),
     /// A session was loaded: id and its messages, to redraw.
     Resumed(String, Vec<portcode_llm::Message>),
+    /// A guessed first message for the empty prompt (Tab inserts it).
+    Suggest(String),
     /// Open the session picker.
     Pick(Vec<PickRow>),
     Models(Vec<String>),
@@ -170,6 +172,8 @@ pub struct App {
     pub last_prompt: u64,
     pub todos: Vec<Todo>,
     pub perm: Option<PermAsk>,
+    /// Ghost text in the empty prompt; Tab inserts it, Esc or typing drops it.
+    pub suggestion: Option<String>,
     /// Full-screen list of saved sessions (`--resume`, `/resume`).
     pub picker: Option<Picker>,
     /// Further permission asks that arrived while one is open (parallel team workers).
@@ -261,6 +265,7 @@ impl App {
             wiz: None,
             auto_allow: false,
             perm_queue: Default::default(),
+            suggestion: None,
             picker: None,
             slash_sel: 0,
             esc_at: None,
@@ -471,6 +476,11 @@ impl App {
                 }
             }
             Msg::Info(s) => self.items.push(Item::Info(s)),
+            Msg::Suggest(s) => {
+                if self.input.is_empty() && self.items.is_empty() {
+                    self.suggestion = Some(s);
+                }
+            }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
             Msg::Models(m) => self.models = m,
@@ -971,6 +981,7 @@ impl App {
                         self.esc_at = Some(std::time::Instant::now());
                     }
                 } else {
+                    self.suggestion = None;
                     self.scroll = 0;
                 }
             }
@@ -987,6 +998,13 @@ impl App {
             (KeyCode::Tab, ..) => {
                 if !self.menu().is_empty() {
                     self.complete_slash();
+                } else if let Some(s) = self
+                    .suggestion
+                    .take()
+                    .filter(|_| self.input.is_empty() && !self.busy)
+                {
+                    self.input = s;
+                    self.cursor = self.input.chars().count();
                 } else {
                     self.cycle_agent(1);
                 }
@@ -1078,6 +1096,7 @@ impl App {
         if text.is_empty() {
             return;
         }
+        self.suggestion = None;
         if let Some(prov) = self.key_for.take() {
             self.input.clear();
             self.cursor = 0;

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Contributing — PortCode wiki</title><meta property="og:title" content="Contributing — PortCode wiki"><meta name="description" content="PortCode documentation: Contributing."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html" class="on" aria-current="page">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Project</p>
+<h1 id="contributing">Contributing<a class="anchor" href="#contributing" aria-label="Link to this section">#</a></h1>
+<p>PortCode is a Rust workspace. This page is the short version; <code>AGENTS.md</code> in the repository is the full guide for people and agents.</p>
+<h2 id="layers">Layers<a class="anchor" href="#layers" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-text">evidence (L0) → port, llm (L1) → agent (L2) → cli (L3)</code></pre>
+<p>Lower layers never import higher ones. See <a href="architecture.html">Architecture</a>.</p>
+<h2 id="rules-that-matter">Rules that matter<a class="anchor" href="#rules-that-matter" aria-label="Link to this section">#</a></h2>
+<ul><li><code>unsafe</code> is forbidden. Outside tests, no <code>unwrap</code>, <code>expect</code> or indexing on values that come from input (lints enforce it in L0 to L2).</li><li>Everything user-visible is a <code>Tool</code> in <code>crates/portcode-agent/src/tools</code>. The app, the agent and <code>portcode tool</code> share it.</li><li>Tools never panic, never prompt on stdin, never hang: deadlines, capped output, errors that tell the model the fix.</li><li>Prompts in <code>crates/portcode-agent/prompts</code> and the <code>rustport</code> skill are written for open-weight models: short numbered rules, an example per tool, nothing time-dependent before the <code>date:</code> line. Tests enforce size and prefix stability.</li><li>Facts about an original go in the ledger as observation, inference or unknown. Never claim parity without a <code>parity</code> pass.</li><li>No secrets and no personal paths in code, tests, screenshots or docs. Screenshots come from <code>scripts/make_screenshots.sh</code> or <code>portcode port shot</code>, never by hand.</li><li>Deep tools must call <code>ctx.need_deep(..)</code>. Engines install only under the engines folder, only after approval, and downloads need a published sha256.</li><li>The app's state (<code>App</code>) holds no terminal I/O, so it stays testable. The event loop runs the tools.</li></ul>
+<h2 id="before-you-push">Before you push<a class="anchor" href="#before-you-push" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">cargo fmt --all &amp;&amp; cargo clippy --workspace --all-targets &amp;&amp; cargo test --workspace</code></pre>
+<p>If you changed how output is drawn, rerun <code>scripts/make_screenshots.sh</code> and <code>examples/wordstat/demo.sh</code>. If you changed the docs, rerun <code>scripts/build_site.sh</code>.</p>
+<h2 id="where-the-docs-come-from">Where the docs come from<a class="anchor" href="#where-the-docs-come-from" aria-label="Link to this section">#</a></h2>
+<p>The wiki pages are Markdown in <code>wiki/</code> (and a few in <code>docs/</code>). <code>scripts/build_wiki.py</code> turns them into <code>docs/wiki/</code>. The slash-command table, the tool table and the command-line page are generated from the code, so they stay correct. Do not edit the generated HTML.</p>
+<h2 id="releases">Releases<a class="anchor" href="#releases" aria-label="Link to this section">#</a></h2>
+<p>Pushing a <code>v*</code> tag runs the release workflow, which builds the four archives with checksums and publishes them. <code>install.sh</code> must keep verifying sha256; test it with <code>PORTCODE_DOWNLOAD_URL</code> against a local <code>packaging/package.sh</code> archive.</p>
+<div class="pn"><a class="prev" href="opencode.html"><small>Previous</small>OpenCode mapping</a><a class="next" href="roadmap.html"><small>Next</small>Roadmap</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/contributing.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#layers">Layers</a><a class="t2" href="#rules-that-matter">Rules that matter</a><a class="t2" href="#before-you-push">Before you push</a><a class="t2" href="#where-the-docs-come-from">Where the docs come from</a><a class="t2" href="#releases">Releases</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

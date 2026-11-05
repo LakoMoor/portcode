@@ -12,7 +12,7 @@ T = [
  ('PortCode on your plan', 'PortCode на твоей подписке'),
  ('<code>portcode -m claude-code/sonnet</code> or <code>portcode -m codex/default</code>. The work shows up in the PortCode screen and the evidence goes into the same ledger.', '<code>portcode -m claude-code/sonnet</code> или <code>portcode -m codex/default</code>. Работа видна в окне PortCode, а доказательства попадают в тот же журнал.'),
  ('Your CLI uses PortCode', 'Твой CLI использует PortCode'),
- ('<code>claude mcp add portcode -- portcode mcp</code> gives Claude Code (and Codex with <code>codex mcp add</code>) PortCode\'s tools in the session you already use. <a href="guide/SUBSCRIPTIONS.html">Details and limits</a>.', '<code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="guide/SUBSCRIPTIONS.html">Подробности и ограничения</a>.'),
+ ('<code>claude mcp add portcode -- portcode mcp</code> gives Claude Code (and Codex with <code>codex mcp add</code>) PortCode\'s tools in the session you already use. <a href="wiki/subscriptions.html">Details and limits</a>.', '<code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="wiki/subscriptions.html">Подробности и ограничения</a>.'),
  ('>First run</a>', '>Первый запуск</a>'),
  ('<h2>First run</h2>', '<h2>Первый запуск</h2>'),
  ('Three steps, all inside the app. Type <code>/setup</code> any time to see them again.', 'Три шага, все внутри приложения. <code>/setup</code> покажет их снова.'),
@@ -21,7 +21,7 @@ T = [
  ('2. Paste your key', '2. Вставь ключ'),
  ('<code>/key</code> asks for it. It is hidden while you type and saved with mode 600. Or run <code>portcode auth set &lt;provider&gt;</code> in a shell.', '<code>/key</code> спросит его. Пока вводишь, он скрыт; сохраняется с правами 600. Или в терминале: <code>portcode auth set &lt;provider&gt;</code>.'),
  ('3. Check and start', '3. Проверь и начни'),
- ('<code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="guide/GETTING_STARTED.html">Full guide</a>.', '<code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="guide/GETTING_STARTED.html">Подробная инструкция</a>.'),
+ ('<code>portcode doctor</code> tests the setup. Then <code>/create</code>, or just type a task. <a href="wiki/first-run.html">Full guide</a>.', '<code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="wiki/first-run.html">Подробная инструкция</a>.'),
  ('Updates: <code>portcode update</code> or <code>/update</code> compares your version with the latest release. Once a day the app checks quietly. <code>PORTCODE_NO_UPDATE_CHECK=1</code> turns it off. Nothing installs by itself.', 'Обновления: <code>portcode update</code> или <code>/update</code> сравнивает твою версию с последним релизом. Раз в день приложение проверяет тихо. <code>PORTCODE_NO_UPDATE_CHECK=1</code> отключает. Сами обновления не ставятся.'),
  ('Watch a real run', 'Посмотри настоящий запуск'),
  ("This is the wordstat port. The tool calls and their output were recorded from a real run, and the model's replies are scripted so it is repeatable. Nothing here is typed by hand.", 'Это порт wordstat. Вызовы инструментов и их вывод записаны с настоящего запуска, а ответы модели заранее написаны, чтобы запуск повторялся. Ничего не напечатано вручную.'),
@@ -149,9 +149,9 @@ for a, b in T:
     out = out.replace(a, b)
 # the language switch and local paths
 out = out.replace('href="ru/"', 'href="../"')
-for d in ("style.css", "toolkit.css", "theme.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "remote/"):
+for d in ("style.css", "toolkit.css", "theme.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "wiki/", "remote/"):
     out = out.replace(f'href="{d}', f'href="../{d}').replace(f'src="{d}', f'src="../{d}')
-out = out.replace('<a class="l" href="../guide/ARCHITECTURE.html">Документация</a>', '<a class="l" href="../guide/ARCHITECTURE.html">Документация</a>')
+out = out.replace('<a class="l" href="../wiki/">Документация</a>', '<a class="l" href="../wiki/">Документация</a>')
 out = out.replace('href="#"', 'href="./"')
 (root / "docs/ru").mkdir(exist_ok=True)
 (root / "docs/ru/index.html").write_text(out)

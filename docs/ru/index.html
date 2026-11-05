@@ -6,7 +6,7 @@
 <script src="../theme.js"></script>
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="../toolkit.css"></head><body>
-<nav><div class="wrap"><a class="brand" href="./"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Режим deep</a><a class="l" href="#first">Первый запуск</a><a class="l" href="#how">Как это работает</a><a class="l" href="#llm">Модели</a><a class="l" href="#ports">Порты</a><a class="l" href="../remote/">Пульт</a><a class="l" href="../guide/ARCHITECTURE.html">Документация</a><a class="l" href="../">EN</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<nav><div class="wrap"><a class="brand" href="./"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Режим deep</a><a class="l" href="#first">Первый запуск</a><a class="l" href="#how">Как это работает</a><a class="l" href="#llm">Модели</a><a class="l" href="#ports">Порты</a><a class="l" href="../remote/">Пульт</a><a class="l" href="../wiki/">Документация</a><a class="l" href="../">EN</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
 <main class="wrap">
 <header class="hero">
 <div class="top"><div>
@@ -60,7 +60,7 @@
 <div class="bento">
 <div class="t g-peach s4 tc"><h3>1. Выбери провайдера</h3><p>Локальная модель, ключ не нужен: <code>/provider ollama qwen3:14b</code>. Просто <code>/provider</code> покажет все и у каких нет ключа.</p></div>
 <div class="t g-mint s4 tc"><h3>2. Вставь ключ</h3><p><code>/key</code> спросит его. Пока вводишь, он скрыт; сохраняется с правами 600. Или в терминале: <code>portcode auth set &lt;provider&gt;</code>.</p></div>
-<div class="t g-light s4 tc"><h3>3. Проверь и начни</h3><p><code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="../guide/GETTING_STARTED.html">Подробная инструкция</a>.</p></div>
+<div class="t g-light s4 tc"><h3>3. Проверь и начни</h3><p><code>portcode doctor</code> проверит настройку. Потом <code>/create</code> или просто напиши задачу. <a href="../wiki/first-run.html">Подробная инструкция</a>.</p></div>
 <div class="t g-peach s6"><div class="framed"><img src="../screenshots/tui-first-run.svg" alt="Home screen with the no-API-key notice"></div></div>
 <div class="t g-mint s6"><div class="framed"><img src="../screenshots/tui-provider.svg" alt="The /provider menu listing providers and which need a key"></div></div>
 </div>
@@ -70,7 +70,7 @@
 <p class="sub">Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.</p>
 <div class="bento">
 <div class="t g-light s6 tc"><h3>PortCode на твоей подписке</h3><p><code>portcode -m claude-code/sonnet</code> или <code>portcode -m codex/default</code>. Работа видна в окне PortCode, а доказательства попадают в тот же журнал.</p></div>
-<div class="t g-dark s6 tc"><h3>Твой CLI использует PortCode</h3><p><code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="../guide/SUBSCRIPTIONS.html">Подробности и ограничения</a>.</p></div>
+<div class="t g-dark s6 tc"><h3>Твой CLI использует PortCode</h3><p><code>claude mcp add portcode -- portcode mcp</code> даёт Claude Code (а Codex через <code>codex mcp add</code>) инструменты PortCode в привычной сессии. <a href="../wiki/subscriptions.html">Подробности и ограничения</a>.</p></div>
 </div></section>
 
 <section id="try"><h2>Посмотри настоящий запуск</h2>

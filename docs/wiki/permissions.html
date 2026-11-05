@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Permissions and allow-all — PortCode wiki</title><meta property="og:title" content="Permissions and allow-all — PortCode wiki"><meta name="description" content="PortCode documentation: Permissions and allow-all."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html" class="on" aria-current="page">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="permissions-and-allow-all">Permissions and allow-all<a class="anchor" href="#permissions-and-allow-all" aria-label="Link to this section">#</a></h1>
+<p>PortCode keeps you in charge. A tool that changes something asks first, unless a rule says otherwise.</p>
+<h2 id="what-asks-by-default">What asks by default<a class="anchor" href="#what-asks-by-default" aria-label="Link to this section">#</a></h2>
+<p>File edits and shell commands ask. Reading, listing and searching files do not. Fetching a web page asks. Every question names the tool and the exact target (the command, the path).</p>
+<p>Read-only agents (<code>plan</code>, and the read-only sub-agents) never ask: anything that would need approval is simply denied, and the model is told.</p>
+<h2 id="answering">Answering<a class="anchor" href="#answering" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Key</th><th>Reply</th></tr></thead><tbody>
+<tr><td><code>y</code> or <code>enter</code></td><td>allow once</td></tr>
+<tr><td><code>a</code></td><td>always allow that exact request for the rest of the session</td></tr>
+<tr><td><code>n</code> or <code>esc</code></td><td>reject</td></tr>
+</tbody></table></div>
+<p>When several workers ask at once in <a href="team.html">team mode</a>, the dialogs queue and you answer them one after another.</p>
+<h2 id="rules-in-portcode-json">Rules in <code>portcode.json</code><a class="anchor" href="#rules-in-portcode-json" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-json">{
+  &quot;permission&quot;: {
+    &quot;edit&quot;: &quot;ask&quot;,
+    &quot;bash&quot;: { &quot;*&quot;: &quot;ask&quot;, &quot;cargo test*&quot;: &quot;allow&quot;, &quot;git push*&quot;: &quot;deny&quot; },
+    &quot;webfetch&quot;: &quot;deny&quot;
+  }
+}</code></pre>
+<p>A rule is <code>allow</code>, <code>ask</code> or <code>deny</code>. For tools that take a target (<code>bash</code>, <code>edit</code>, <code>write</code>), you can give a map of patterns; <code>*</code> matches anything. A <code>deny</code> rule hides the tool from the model entirely when it applies to the whole tool.</p>
+<h2 id="folders-outside-the-project">Folders outside the project<a class="anchor" href="#folders-outside-the-project" aria-label="Link to this section">#</a></h2>
+<p>File tools stay inside the project folder. To let them touch other folders without asking, list them in <code>&quot;allowed_dirs&quot;</code>.</p>
+<h2 id="allow-all">Allow-all<a class="anchor" href="#allow-all" aria-label="Link to this section">#</a></h2>
+<p><code>/yolo</code> approves every permission request without asking. While it is on, a red <strong>⚠ allow-all</strong> chip stays on screen. <code>/yolo off</code> ends it, and so does a new run of PortCode: it is never saved.</p>
+<ul><li>Rules that say <code>deny</code> still deny.</li><li>With Claude Code as the backend, allow-all sets its permission mode to <code>bypassPermissions</code>; turning it off returns to <code>acceptEdits</code>.</li><li>From a script, <code>portcode run -y &quot;task&quot;</code> does the same for one run.</li></ul>
+<aside class="callout warning"><b>Careful</b><p>Allow-all lets the agent run any shell command and edit any file in the project without asking. Use it only in a project and on a machine you trust, ideally in a throwaway folder or a container.</p></aside>
+<h2 id="clean-room-guard">Clean-room guard<a class="anchor" href="#clean-room-guard" aria-label="Link to this section">#</a></h2>
+<p>Separately from permissions, <code>bash</code> refuses tools that look inside programs (disassemblers, decompilers, debuggers) while the session is in clean-room mode. See <a href="modes.html">Clean-room and deep mode</a>.</p>
+<h2 id="secrets">Secrets<a class="anchor" href="#secrets" aria-label="Link to this section">#</a></h2>
+<p>Commands the agent runs do not inherit your API-key environment variables (the ones your providers use are removed), and the agent is told never to print or store secrets.</p>
+<div class="pn"><a class="prev" href="sessions.html"><small>Previous</small>Sessions and history</a><a class="next" href="team.html"><small>Next</small>Team mode</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/permissions.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#what-asks-by-default">What asks by default</a><a class="t2" href="#answering">Answering</a><a class="t2" href="#rules-in-portcode-json">Rules in portcode.json</a><a class="t2" href="#folders-outside-the-project">Folders outside the project</a><a class="t2" href="#allow-all">Allow-all</a><a class="t2" href="#clean-room-guard">Clean-room guard</a><a class="t2" href="#secrets">Secrets</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

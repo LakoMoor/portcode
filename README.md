@@ -27,7 +27,7 @@ It is a Rust rewrite of the OpenCode architecture (agents, tools, permissions, s
 1. Install (below), then run `portcode` in your project folder.
 2. Local model: `/provider ollama qwen3:14b`. Hosted API: `/key` and paste the key (hidden, saved with mode 600).
    Have a Claude or ChatGPT plan? `portcode -m claude-code/sonnet` or `portcode -m codex/default` runs on it through the official CLI, no key ([docs/SUBSCRIPTIONS.md](docs/SUBSCRIPTIONS.md)). `portcode mcp --print-config` shows how to give Claude Code and Codex PortCode's tools.
-3. `portcode doctor` checks the setup, `/create` starts a guided port. Full steps: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md). `portcode update` checks for a new release.
+3. `portcode doctor` checks the setup, `/create` starts a guided port. Full steps: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md). The whole manual, with search, is the **[wiki](https://lakomoor.github.io/portcode/wiki/)**. `portcode update` checks for a new release.
 
 ## Install
 ```sh

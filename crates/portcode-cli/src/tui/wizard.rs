@@ -11,6 +11,9 @@ pub enum Kind {
     Fresh,
 }
 
+/// Where new code goes: always the folder PortCode was opened in.
+const WHERE: &str = "Create all new source code inside the current folder (a subfolder such as <name>-rs/ is fine). Do not create anything outside it.\n";
+
 impl Kind {
     pub const ALL: [Kind; 5] = [
         Kind::Website,
@@ -433,6 +436,7 @@ impl Wizard {
         if self.kind == Kind::Fresh {
             p += &format!("Build this from scratch in Rust, using {stack}: {want}\n");
             p += "Plan first with todowrite, build in small slices, run the checks, and add a README.\n";
+            p += WHERE;
             if self.proof {
                 p += "Capture a screenshot per feature and finish with site_build.\n";
             }
@@ -452,6 +456,9 @@ impl Wizard {
             } else {
                 "Fidelity: 1:1 behaviour. Capture goldens from the original and prove parity before you say it is done; never claim parity without a parity PASS.\n"
             };
+        }
+        if !self.look_only {
+            p += WHERE;
         }
         if self.deep {
             p += "Mode: deep. You may look inside the original (functions, disasm, decompile, emulate, hexdump, and for Unity or C#: unity, dotnet, unity_assets). Record what you read as inference.\n";
@@ -517,6 +524,10 @@ mod tests {
                 && l.prompt.contains("axum")
         );
         assert!(l.prompt.contains("What I want: Recreate this website"));
+        assert!(
+            l.prompt.contains("inside the current folder"),
+            "new code is created where PortCode was opened"
+        );
     }
     #[test]
     fn looking_inside_means_the_reverse_agent_in_deep_mode() {

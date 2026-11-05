@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Architecture — PortCode wiki</title><meta property="og:title" content="Architecture — PortCode wiki"><meta name="description" content="PortCode documentation: Architecture."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html" class="on" aria-current="page">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Project</p>
+<h1 id="architecture">Architecture<a class="anchor" href="#architecture" aria-label="Link to this section">#</a></h1>
+<pre><code>L0 portcode-evidence   Evidence, Ledger (JSONL, E-0001 ids, unknown→resolved), Pin (sha256/format), sniff()
+L1 portcode-port       survey, parity (token-wise numeric tolerance + PNG), scaffold, shot (ANSI→SVG), site (md→html, safe)
+L1 portcode-llm        Client (SSE), ModelProfile, repair_json, parse_text_tool_calls, strip_think
+L2 portcode-agent      config → permission → tool(+Ctx) → tools/* → skills → mcp → agents(prompts) → run(loop) → session
+L3 portcode-cli        clap commands, terminal UI (Ui + Gate impls), doctor, eval
+   portcode-testkit    scripted /v1 server (tests, demos)</code></pre>
+<p>Layering: a crate depends only on lower layers. <code>unsafe_code = &quot;forbid&quot;</code> workspace-wide. Input-facing crates deny <code>unwrap/expect/indexing</code>.</p>
+<h2 id="agent-loop-run-rs">Agent loop (<code>run.rs</code>)<a class="anchor" href="#agent-loop-run-rs" aria-label="Link to this section">#</a></h2>
+<p><code>send(text)</code> → for each step: fit context (prune old tool output → summarise) → <code>chat</code> with the agent's visible tools → push assistant message → for each tool call: loop guard, <code>exec</code> → push tool message → persist. <code>exec</code> validates the object/required params, runs the tool in its own task (a panic becomes an error string), clips output to the profile limit.</p>
+<h2 id="tool-contract-tool-rs">Tool contract (<code>tool.rs</code>)<a class="anchor" href="#tool-contract-tool-rs" aria-label="Link to this section">#</a></h2>
+<p><code>name, description, schema, example, run(ctx, args)</code>. <code>Ctx</code> carries the project root, permission rules + gate, per-session state (files read with mtimes, todos), the ledger, cancel flag, read-only flag. Paths resolve lexically then via the longest existing ancestor's real path (symlink escapes ask <code>external_directory</code>); <code>.git</code> is write-protected; <code>.env</code>/keys ask <code>secret_file</code>.</p>
+<h2 id="permissions">Permissions<a class="anchor" href="#permissions" aria-label="Link to this section">#</a></h2>
+<p><code>Rules::check(tool, target, default)</code>: most specific pattern wins; ties → deny &gt; ask &gt; allow. <code>bash</code>: hard-deny list first, then explicit patterns, then a read-only allowlist (never when the command contains <code>; &amp; | &gt; &lt; \</code> $(<code>). Read-only agents deny </code>edit` and every prompt.</p>
+<h2 id="subprocesses">Subprocesses<a class="anchor" href="#subprocesses" aria-label="Link to this section">#</a></h2>
+<p><code>run_command</code>: <code>sh -c</code>, stdin null, own process group, wall-clock deadline, 1 MB capture per stream (drained so the child never blocks), group <code>SIGKILL</code> on timeout/cancel, provider key env vars scrubbed.</p>
+<h2 id="evidence-flow">Evidence flow<a class="anchor" href="#evidence-flow" aria-label="Link to this section">#</a></h2>
+<p><code>pin</code>/<code>screenshot</code>/<code>evidence_add</code> → ledger → <code>docs/PORT.md</code> cites ids → <code>site_build</code> groups evidence by subject with attached screenshots and open unknowns. Screenshots are produced from captured output with its sha256 recorded; they are not drawn.</p>
+<div class="pn"><a class="prev" href="troubleshooting.html"><small>Previous</small>Troubleshooting</a><a class="next" href="opencode.html"><small>Next</small>OpenCode mapping</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/ARCHITECTURE.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#agent-loop-run-rs">Agent loop (run.rs)</a><a class="t2" href="#tool-contract-tool-rs">Tool contract (tool.rs)</a><a class="t2" href="#permissions">Permissions</a><a class="t2" href="#subprocesses">Subprocesses</a><a class="t2" href="#evidence-flow">Evidence flow</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

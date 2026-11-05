@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The port workflow — PortCode wiki</title><meta property="og:title" content="The port workflow — PortCode wiki"><meta name="description" content="PortCode documentation: The port workflow."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html" class="on" aria-current="page">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Port and reverse</p>
+<h1 id="the-port-workflow">The port workflow<a class="anchor" href="#the-port-workflow" aria-label="Link to this section">#</a></h1>
+<p>PortCode's reason to exist: port a program and <em>prove</em> the port behaves the same. The <code>port</code> agent follows the rustport method and the runtime enforces its finish line.</p>
+<h2 id="the-idea">The idea<a class="anchor" href="#the-idea" aria-label="Link to this section">#</a></h2>
+<ol><li><strong>Pin the original.</strong> Its exact build is hashed (sha256), so every later claim is about a known artifact.</li><li><strong>Write down facts, with their weight.</strong> Each fact goes into the ledger as one of three kinds:</li></ol>
+<p>| Kind | Meaning | |---|---| | <code>observation</code> | I saw or ran it. | | <code>inference</code> | I worked it out from observations. | | <code>unknown</code> | I do not know yet. |</p>
+<p>An unknown stays open until something resolves it. PortCode never claims parity without a passing <code>parity</code> run.</p>
+<ol><li><strong>Port one module at a time.</strong> Each module is compared with golden output captured from the <strong>original</strong>, not from your port.</li><li><strong>Check with parity.</strong> A differential run compares the port's output with the golden files, with tolerances for floating point.</li><li><strong>Show it.</strong> A screenshot per feature and a generated site for GitHub Pages.</li></ol>
+<h2 id="start">Start<a class="anchor" href="#start" aria-label="Link to this section">#</a></h2>
+<p>Put the original in <code>original/</code> and run:</p>
+<pre><code class="lang-sh">portcode -a port</code></pre>
+<p>or type <code>/create</code> and answer the questions. The agent begins by reading the ledger and <code>docs/PORT.md</code> if they exist, and says which phase it is in.</p>
+<h2 id="the-finish-gate">The finish gate<a class="anchor" href="#the-finish-gate" aria-label="Link to this section">#</a></h2>
+<p><code>port</code> does not stop early. If any of these is true when it tries to finish, it is sent back to work and given more steps:</p>
+<ul><li>a behaviour of the original (an option, an output format, an exit code, an error message) is not in the todo list,</li><li>a todo is still open,</li><li>the last <code>parity</code> run did not pass on the final code.</li></ul>
+<p>The only exit is <code>blocked</code>: the agent stops and shows a <strong>Needs your decision</strong> card with its questions. Your answer resumes the run.</p>
+<h2 id="the-tools">The tools<a class="anchor" href="#the-tools" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Tool</th><th>Does</th></tr></thead><tbody>
+<tr><td><code>survey</code></td><td>inventories a source tree: languages and size, build files, engine and graphics hints, assets, tests, risk hotspots</td></tr>
+<tr><td><code>pin</code></td><td>pins the original build (sha256, size, format, version) in <code>.portcode/reference.lock.json</code> and verifies it later</td></tr>
+<tr><td><code>evidence_add</code></td><td>adds an observation, inference or unknown to the ledger</td></tr>
+<tr><td><code>evidence_list</code></td><td>reads the ledger, by subject or only the unknowns</td></tr>
+<tr><td><code>parity</code></td><td>compares golden output recorded from the original with the port's (numbers within tolerance, PNG per channel); missing, extra or empty output is a failure</td></tr>
+<tr><td><code>screenshot</code></td><td>runs a command, saves its real output as an SVG terminal screenshot in <code>docs/screenshots/</code> and records it as an observation</td></tr>
+<tr><td><code>scaffold</code></td><td>creates a Rust workspace: <code>&lt;name&gt;-core</code> (headless) plus <code>&lt;name&gt;</code> (binary), <code>docs/PORT.md</code>, <code>tests/golden</code>, <code>docs/screenshots</code></td></tr>
+<tr><td><code>site_build</code></td><td>generates the GitHub Pages site in <code>docs/site/</code> from <code>docs/PORT.md</code>, the ledger and the screenshots</td></tr>
+</tbody></table></div>
+<p>The same things exist on the command line as <code>portcode port survey|pin|parity|scaffold|shot|site|render|ledger</code>.</p>
+<h2 id="where-the-port-is-created">Where the port is created<a class="anchor" href="#where-the-port-is-created" aria-label="Link to this section">#</a></h2>
+<p>Always inside the folder you opened PortCode in. <code>scaffold</code> creates <code>&lt;name&gt;-rs/</code> there (or the <code>dest</code> you give, relative to that folder), and the agent is told to use relative paths and never write beside or above the project. Anything outside the folder needs your approval first.</p>
+<h2 id="where-things-live">Where things live<a class="anchor" href="#where-things-live" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Path</th><th>Holds</th></tr></thead><tbody>
+<tr><td><code>original/</code></td><td>the program being ported</td></tr>
+<tr><td><code>.portcode/evidence/</code></td><td>the evidence ledger</td></tr>
+<tr><td><code>.portcode/reference.lock.json</code></td><td>the pinned build of the original</td></tr>
+<tr><td><code>.portcode/sessions/</code></td><td>saved sessions</td></tr>
+<tr><td><code>docs/PORT.md</code></td><td>the port plan and status</td></tr>
+<tr><td><code>docs/SPEC.md</code></td><td>the written spec, when you use the two-session setup</td></tr>
+</tbody></table></div>
+<h2 id="an-example">An example<a class="anchor" href="#an-example" aria-label="Link to this section">#</a></h2>
+<p><code>examples/wordstat</code> in the repository is a complete small port with real data, and <code>docs/ports/wordstat/</code> is the site generated from it. Run <code>examples/wordstat/demo.sh</code> to replay it.</p>
+<h2 id="two-sessions-for-a-strict-clean-room">Two sessions for a strict clean room<a class="anchor" href="#two-sessions-for-a-strict-clean-room" aria-label="Link to this section">#</a></h2>
+<p>For the strictest separation, run a <code>reverse --deep</code> session that studies the original and writes <code>docs/SPEC.md</code> in its own words. Then run a <code>port --clean-room</code> session that builds the port from that spec alone and never looks inside the original. See <a href="modes.html">Clean-room and deep mode</a>.</p>
+<div class="pn"><a class="prev" href="tools.html"><small>Previous</small>Tools</a><a class="next" href="modes.html"><small>Next</small>Clean-room and deep mode</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/port-workflow.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#the-idea">The idea</a><a class="t2" href="#start">Start</a><a class="t2" href="#the-finish-gate">The finish gate</a><a class="t2" href="#the-tools">The tools</a><a class="t2" href="#where-the-port-is-created">Where the port is created</a><a class="t2" href="#where-things-live">Where things live</a><a class="t2" href="#an-example">An example</a><a class="t2" href="#two-sessions-for-a-strict-clean-room">Two sessions for a strict clean room</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

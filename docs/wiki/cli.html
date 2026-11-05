@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Command line — PortCode wiki</title><meta property="og:title" content="Command line — PortCode wiki"><meta name="description" content="PortCode documentation: Command line."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html" class="on" aria-current="page">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Reference</p>
+<h1 id="command-line">Command line<a class="anchor" href="#command-line" aria-label="Link to this section">#</a></h1>
+<p><code>portcode</code> with no command opens the app. These are all the commands and global options, taken from the binary:</p>
+<pre><code class="lang-text">PortCode — port programs to Rust with evidence, using local or self-hosted LLMs (lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM…)
+
+Usage: portcode [OPTIONS] [COMMAND]
+
+Commands:
+  chat         Interactive chat (default)
+  sessions     List, show or delete the saved sessions of this project
+  run          Run one prompt non-interactively
+  models       List models served by a provider
+  providers    Show configured and built-in providers
+  doctor       Check providers, toolchain and optional engines
+  update       Check whether a newer PortCode is released
+  mcp          Serve PortCode&#x27;s tools over MCP (stdio) for Claude Code or Codex; `--print-config` shows how to register it
+  eval         Probe a model: chat, tool-calling, JSON validity, edit accuracy
+  init         Create portcode.json in this directory
+  auth         Store an API key (mode 0600)
+  completions  Print shell completions (bash, zsh, fish, powershell, elvish)
+  agents       List agents
+  serve        Run a session you can drive from the browser (remote control); see docs/REMOTE.md
+  remote       Manage remote-control keys
+  engines      Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path
+  skill        Skills: list, show, export
+  port         Porting workbench (survey, pin, parity, scaffold, shot, site, ledger)
+  tool         Run any built-in tool directly with JSON arguments
+  help         Print this message or the help of the given subcommand(s)
+
+Options:
+  -m, --model &lt;MODEL&gt;       Model as provider/model, e.g. lakomoor/deepseek-chat or ollama/qwen3:14b
+  -a, --agent &lt;AGENT&gt;       Agent: build, port, reverse, plan
+      --show-reasoning      Show the model&#x27;s reasoning stream
+      --deep                Deep mode: may disassemble, decompile and emulate the original (you own it or may examine it)
+      --clean-room          Clean-room mode (default): observe the original from outside only
+  -r, --resume [&lt;SESSION&gt;]  Resume a saved session: pick from this project&#x27;s history (no value), or give an id, a unique prefix or a number from `portcode sessions`
+  -h, --help                Print help
+  -V, --version             Print version</code></pre>
+<h2 id="common-uses">Common uses<a class="anchor" href="#common-uses" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode                              # the app, in this folder
+portcode -m ollama/qwen3:14b          # a local model
+portcode -a port --deep               # the port agent, deep mode
+portcode --resume                     # pick an earlier session
+portcode run &quot;list the TODOs&quot;         # one prompt, no screen
+portcode run -c &quot;now fix the first&quot;   # continue the latest session
+portcode run -y &quot;run the tests&quot;       # approve everything for this run
+echo &quot;summarise README.md&quot; | portcode run</code></pre>
+<h2 id="run"><code>run</code><a class="anchor" href="#run" aria-label="Link to this section">#</a></h2>
+<p>Runs one prompt without the screen and prints the answer. Options: <code>-y</code> approves every permission request (only in a sandbox or a trusted project), <code>-c</code> continues the latest session, <code>--json</code> emits JSON lines. The prompt can come from the arguments or from stdin.</p>
+<h2 id="sessions"><code>sessions</code><a class="anchor" href="#sessions" aria-label="Link to this section">#</a></h2>
+<p><code>portcode sessions [list | show &lt;n|id&gt; | rm &lt;n|id&gt;]</code>. See <a href="sessions.html">Sessions</a>.</p>
+<h2 id="port"><code>port</code><a class="anchor" href="#port" aria-label="Link to this section">#</a></h2>
+<p>The porting workbench on the command line: <code>survey</code>, <code>pin</code>, <code>parity &lt;golden&gt; &lt;port&gt;</code>, <code>scaffold &lt;name&gt;</code>, <code>shot</code>, <code>site</code>, <code>render</code>, <code>page</code>, <code>ledger</code>. They do what the tools of the same names do, without a model. See <a href="port-workflow.html">The port workflow</a>.</p>
+<h2 id="tool"><code>tool</code><a class="anchor" href="#tool" aria-label="Link to this section">#</a></h2>
+<p><code>portcode tool &lt;name&gt; &#x27;&lt;json&gt;&#x27;</code> runs any built-in tool directly. See <a href="tools.html">Tools</a>.</p>
+<h2 id="engines"><code>engines</code><a class="anchor" href="#engines" aria-label="Link to this section">#</a></h2>
+<p><code>portcode engines list|install &lt;id…&gt;|path</code>. <code>install core</code> installs Capstone, Unicorn and LIEF; <code>install all</code> installs everything installable. See <a href="engines.html">Engines</a>.</p>
+<h2 id="auth-providers-models-doctor-eval"><code>auth</code>, <code>providers</code>, <code>models</code>, <code>doctor</code>, <code>eval</code><a class="anchor" href="#auth-providers-models-doctor-eval" aria-label="Link to this section">#</a></h2>
+<p><code>portcode auth set &lt;provider&gt;</code> stores a key. <code>portcode providers</code> shows configured and built-in providers. <code>portcode models</code> lists what a provider serves. <code>portcode doctor</code> checks the setup. <code>portcode eval</code> probes a model.</p>
+<h2 id="serve-remote-mcp"><code>serve</code>, <code>remote</code>, <code>mcp</code><a class="anchor" href="#serve-remote-mcp" aria-label="Link to this section">#</a></h2>
+<p><code>portcode serve</code> runs a session you can drive from a browser, <code>portcode remote new|list|revoke</code> manages pairing keys (see <a href="remote.html">Remote control</a>), and <code>portcode mcp</code> serves the tools over MCP (see <a href="subscriptions.html">Claude Code and Codex</a>).</p>
+<div class="pn"><a class="prev" href="config.html"><small>Previous</small>Configuration</a><a class="next" href="remote.html"><small>Next</small>Remote control</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/cli.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#common-uses">Common uses</a><a class="t2" href="#run">run</a><a class="t2" href="#sessions">sessions</a><a class="t2" href="#port">port</a><a class="t2" href="#tool">tool</a><a class="t2" href="#engines">engines</a><a class="t2" href="#auth-providers-models-doctor-eval">auth, providers, models, doctor, eval</a><a class="t2" href="#serve-remote-mcp">serve, remote, mcp</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

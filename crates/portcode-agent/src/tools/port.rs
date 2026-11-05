@@ -465,7 +465,7 @@ impl Tool for Scaffold {
         "scaffold".into()
     }
     fn description(&self) -> String {
-        "Create a Rust workspace for a port: <name>-core (headless) + <name> (binary), docs/PORT.md, tests/golden, docs/screenshots. Refuses to overwrite existing files.".into()
+        "Create a Rust workspace for a port: <name>-core (headless) + <name> (binary), docs/PORT.md, tests/golden, docs/screenshots. Created inside the project folder (dest is relative to it; default <name>-rs). Refuses to overwrite existing files.".into()
     }
     fn example(&self) -> String {
         r#"{"name": "mygame", "dest": "mygame-rs"}"#.into()
@@ -503,5 +503,30 @@ impl Tool for Scaffold {
                     .join("\n")
             ),
         ))
+    }
+}
+
+#[cfg(test)]
+mod where_tests {
+    use super::*;
+    use crate::permission::{AutoGate, Reply, Rules};
+    use std::sync::Arc;
+
+    #[tokio::test]
+    async fn scaffold_creates_the_workspace_inside_the_opened_folder() {
+        let root = std::env::temp_dir().join(format!("pc-scaf-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        std::fs::create_dir_all(&root).unwrap();
+        let ctx = Ctx::new(
+            root.clone(),
+            Arc::new(AutoGate(Reply::Once)),
+            Rules::default(),
+        );
+        Scaffold.run(&ctx, json!({"name": "game"})).await.unwrap();
+        assert!(
+            root.join("game-rs/docs/PORT.md").is_file(),
+            "default dest is <name>-rs in the project"
+        );
+        let _ = std::fs::remove_dir_all(&root);
     }
 }

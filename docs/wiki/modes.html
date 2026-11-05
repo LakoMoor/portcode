@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Clean-room and deep mode — PortCode wiki</title><meta property="og:title" content="Clean-room and deep mode — PortCode wiki"><meta name="description" content="PortCode documentation: Clean-room and deep mode."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html" class="on" aria-current="page">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Port and reverse</p>
+<h1 id="clean-room-and-deep-mode">Clean-room and deep mode<a class="anchor" href="#clean-room-and-deep-mode" aria-label="Link to this section">#</a></h1>
+<p>The mode decides how closely PortCode may examine the original.</p>
+<div class="tw"><table><thead><tr><th></th><th>Clean-room (default)</th><th>Deep</th></tr></thead><tbody>
+<tr><td>Observe from outside: run it, feed inputs, compare outputs</td><td>yes</td><td>yes</td></tr>
+<tr><td>Read its documentation and public files</td><td>yes</td><td>yes</td></tr>
+<tr><td>Disassemble, decompile, emulate, hexdump</td><td>no</td><td>yes</td></tr>
+<tr><td>Inspect Unity, .NET and IL2CPP internals</td><td>no</td><td>yes</td></tr>
+<tr><td>Chip in the app</td><td><code>▣ clean-room</code></td><td><code>◉ deep</code></td></tr>
+</tbody></table></div>
+<h2 id="switching">Switching<a class="anchor" href="#switching" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode --deep          # start in deep mode
+portcode --clean-room    # explicitly clean-room (the default)</code></pre>
+<p>In the app: <code>/deep</code> and <code>/clean</code>. You can also set <code>&quot;mode&quot;: &quot;deep&quot;</code> in <code>portcode.json</code>.</p>
+<h2 id="what-is-enforced">What is enforced<a class="anchor" href="#what-is-enforced" aria-label="Link to this section">#</a></h2>
+<p>The deep tools (<code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>dotnet</code>, <code>unity_assets</code>) refuse to run in clean-room mode and say how to switch. <code>bash</code> also refuses commands that look inside programs (disassemblers, decompilers, debuggers, and the like) in clean-room mode.</p>
+<aside class="callout note"><b>Note</b><p>The guard is a seatbelt, not a sandbox. Use deep mode only on software you own or may examine.</p></aside>
+<h2 id="the-deep-tools">The deep tools<a class="anchor" href="#the-deep-tools" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Tool</th><th>For</th></tr></thead><tbody>
+<tr><td><code>disasm</code></td><td>disassembly with Capstone (x86, ARM, ARM64, MIPS, RISC-V, PPC…)</td></tr>
+<tr><td><code>emulate</code></td><td>run a function or decoder in isolation with Unicorn</td></tr>
+<tr><td><code>decompile</code></td><td>Pseudo-C from Ghidra, run headless (needs a JDK)</td></tr>
+<tr><td><code>functions</code></td><td>list the functions of a binary</td></tr>
+<tr><td><code>hexdump</code></td><td>bytes at an address</td></tr>
+<tr><td><code>unity</code></td><td>a Unity project, Mono or IL2CPP</td></tr>
+<tr><td><code>dotnet</code></td><td>types, methods, strings and decompilation of C# and .NET (ILSpy)</td></tr>
+<tr><td><code>unity_assets</code></td><td>scenes, TextAssets and MonoBehaviour data</td></tr>
+</tbody></table></div>
+<p>Engines install on request, after you approve, into an <code>engines/</code> folder next to the binary, and every download has a published sha256 that is checked. See <a href="engines.html">Engines</a>.</p>
+<h2 id="the-workbench">The workbench<a class="anchor" href="#the-workbench" aria-label="Link to this section">#</a></h2>
+<p><code>/workbench</code> (deep mode) shows functions, Pseudo-C, disassembly, hex and the evidence log side by side. <code>j</code> and <code>k</code> move, <code>1</code> <code>2</code> <code>3</code> switch the view, <code>/</code> filters, and <code>a</code> asks the agent about the selected function.</p>
+<h2 id="the-strict-two-session-method">The strict two-session method<a class="anchor" href="#the-strict-two-session-method" aria-label="Link to this section">#</a></h2>
+<ol><li><code>portcode --deep -a reverse</code>: study the original and write <code>docs/SPEC.md</code> in your own words.</li><li><code>portcode --clean-room -a port</code>: build the port from that spec only.</li></ol>
+<p>The second session never sees the original's internals, which is what "clean room" means.</p>
+<div class="pn"><a class="prev" href="port-workflow.html"><small>Previous</small>The port workflow</a><a class="next" href="engines.html"><small>Next</small>Engines</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/modes.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#switching">Switching</a><a class="t2" href="#what-is-enforced">What is enforced</a><a class="t2" href="#the-deep-tools">The deep tools</a><a class="t2" href="#the-workbench">The workbench</a><a class="t2" href="#the-strict-two-session-method">The strict two-session method</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

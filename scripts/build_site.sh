@@ -1,11 +1,9 @@
 #!/bin/sh
-# Rebuilds the GitHub Pages site in docs/: guide pages from markdown, the example port site, 404.
+# Rebuilds the GitHub Pages site in docs/: the wiki (docs/wiki), the Russian page, the example port site, 404.
 set -eu
 cd "$(dirname "$0")/.."
 PC="$PWD/target/release/portcode"
-for p in GETTING_STARTED:"Getting started" SUBSCRIPTIONS:"Claude Code and Codex on your subscription" ARCHITECTURE:Architecture PROVIDERS:"Providers, models and open-weight tuning" OPENCODE_MAPPING:"OpenCode → PortCode mapping" ENGINES:"Engines and modes" REMOTE:"Remote control" ROADMAP:Roadmap; do
-  "$PC" port page "docs/${p%%:*}.md" "docs/guide/${p%%:*}.html" --title "${p#*:}" >/dev/null
-done
+python3 scripts/build_wiki.py "$PC" >/dev/null
 python3 scripts/build_ru.py >/dev/null
 "$PC" port page README.ru.md docs/ru.html --title "PortCode по-русски" --css style.css --home ./ >/dev/null
 "$PC" port page /dev/stdin docs/404.html --title "Page not found" --css /portcode/style.css --home /portcode/ >/dev/null <<'MD'

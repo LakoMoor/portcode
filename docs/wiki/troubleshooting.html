@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Troubleshooting — PortCode wiki</title><meta property="og:title" content="Troubleshooting — PortCode wiki"><meta name="description" content="PortCode documentation: Troubleshooting."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html" class="on" aria-current="page">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Reference</p>
+<h1 id="troubleshooting">Troubleshooting<a class="anchor" href="#troubleshooting" aria-label="Link to this section">#</a></h1>
+<p>Start with <code>portcode doctor</code>: it tests providers, the Rust toolchain and the engines, and says what to fix.</p>
+<h2 id="install-and-update">Install and update<a class="anchor" href="#install-and-update" aria-label="Link to this section">#</a></h2>
+<p><strong><code>GLIBC_2.39 not found</code> on Linux.</strong> This only affected the first upload of v0.1.0. Current archives need glibc 2.34 or newer (Ubuntu 22.04, Debian 12). Run the installer again, or build with <code>cargo install --git https://github.com/LakoMoor/portcode portcode-cli</code>.</p>
+<p><strong><code>could not set up TLS</code> or "builder error" on a minimal Linux.</strong> Install <code>ca-certificates</code>.</p>
+<p><strong><code>portcode: command not found</code> after installing.</strong> The installer puts the binary in <code>~/.local/bin</code>. Add that folder to your <code>PATH</code>, or set <code>PORTCODE_INSTALL_DIR</code> and install again.</p>
+<h2 id="models-and-keys">Models and keys<a class="anchor" href="#models-and-keys" aria-label="Link to this section">#</a></h2>
+<p><strong>No API key.</strong> Type <code>/key</code>, or choose a local provider with <code>/provider</code>. Local servers need no key.</p>
+<p><strong>Connection refused.</strong> The local server is not running, or the port in <code>portcode.json</code> differs from the server's.</p>
+<p><strong>Model not found.</strong> <code>/models</code> shows the exact names the server offers.</p>
+<p><strong>Small context window.</strong> Set <code>context_window</code> for the model under <code>&quot;models&quot;</code> in <code>portcode.json</code>. PortCode then shortens tool output and compacts old turns to fit. See <a href="providers.html">Providers and models</a>.</p>
+<p><strong>The model writes tool calls as plain text, or breaks JSON.</strong> PortCode repairs the common cases. If a model still struggles, run <code>portcode eval</code> against it and try <code>/style compact</code>. For Qwen3.8 models see the profile notes in <a href="providers.html">Providers and models</a>.</p>
+<h2 id="in-the-app">In the app<a class="anchor" href="#in-the-app" aria-label="Link to this section">#</a></h2>
+<p><strong>Nothing happens when I press <code>esc</code>.</strong> Cancelling needs two presses within two seconds. The footer shows <em>press esc again to cancel</em> after the first. <code>ctrl+c</code> cancels at once.</p>
+<p><strong>The agent stopped and shows "Needs your decision".</strong> It cannot continue without you. Answer the questions in the prompt and it carries on.</p>
+<p><strong>It keeps asking for permission.</strong> Answer <code>a</code> to always allow that exact request for the session, add <code>allow</code> rules in <code>portcode.json</code> (see <a href="permissions.html">Permissions</a>), or use <code>/yolo</code> in a project you trust.</p>
+<p><strong>No suggestion appears in the prompt.</strong> It only shows in a fresh session with an empty prompt, and <code>&quot;suggest&quot;: false</code> turns it off. If the provider has no key you get a local guess, not a model's.</p>
+<p><strong><code>/team</code> says nothing happens.</strong> Switch to the <code>team</code> agent with <code>tab</code> after turning team mode on.</p>
+<p><strong>The <code>venv</code> tool says virtual environments are off.</strong> <code>&quot;venv&quot;: false</code> is set, or you ran <code>/venv off</code>. Use <code>/venv on</code>.</p>
+<p><strong><code>python3 -m venv</code> fails.</strong> Install Python 3 and, on Debian and Ubuntu, <code>python3-venv</code>.</p>
+<h2 id="deep-mode">Deep mode<a class="anchor" href="#deep-mode" aria-label="Link to this section">#</a></h2>
+<p><strong>A deep tool says it needs deep mode.</strong> Start with <code>--deep</code> or type <code>/deep</code>.</p>
+<p><strong>An engine is missing.</strong> <code>portcode engines list</code> shows what is installed. <code>portcode engines install core</code> installs Capstone, Unicorn and LIEF. Engines that are not Python packages (Ghidra, rizin and others) are installed with your package manager; the list shows the command.</p>
+<h2 id="subscriptions">Subscriptions<a class="anchor" href="#subscriptions" aria-label="Link to this section">#</a></h2>
+<p><strong>Claude Code or Codex is not found.</strong> Install the official CLI and sign in once, then check <code>portcode doctor</code>. See <a href="subscriptions.html">Claude Code and Codex</a>.</p>
+<h2 id="still-stuck">Still stuck<a class="anchor" href="#still-stuck" aria-label="Link to this section">#</a></h2>
+<p>Open an issue at <a href="https://github.com/LakoMoor/portcode/issues">github.com/LakoMoor/portcode/issues</a> with the output of <code>portcode doctor</code> and the version from <code>portcode --version</code>. Remove keys and personal paths first.</p>
+<div class="pn"><a class="prev" href="remote.html"><small>Previous</small>Remote control</a><a class="next" href="architecture.html"><small>Next</small>Architecture</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/troubleshooting.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#install-and-update">Install and update</a><a class="t2" href="#models-and-keys">Models and keys</a><a class="t2" href="#in-the-app">In the app</a><a class="t2" href="#deep-mode">Deep mode</a><a class="t2" href="#subscriptions">Subscriptions</a><a class="t2" href="#still-stuck">Still stuck</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

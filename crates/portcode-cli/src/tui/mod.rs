@@ -186,6 +186,7 @@ async fn start(
             _ => p,
         }
     });
+    let sug_ctx = (cfg.clone(), root.clone());
     let mut app = App::new(
         cfg,
         root,
@@ -218,6 +219,17 @@ async fn start(
             if let Some(m) = crate::update::passive().await {
                 let _ = tx.send(Msg::Info(m));
             }
+        });
+    }
+    if !gate_auto
+        && o.resume.is_none()
+        && portcode_agent::suggest::enabled(&sug_ctx.0)
+        && app.items.is_empty()
+    {
+        let (tx, (cfg, root)) = (mtx.clone(), sug_ctx);
+        tokio::spawn(async move {
+            let s = portcode_agent::suggest::suggest(&cfg, &root).await;
+            let _ = tx.send(Msg::Suggest(s));
         });
     }
     tokio::spawn(runner_task(runner, ctx_rx, mtx.clone()));

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agents — PortCode wiki</title><meta property="og:title" content="Agents — PortCode wiki"><meta name="description" content="PortCode documentation: Agents."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html" class="on" aria-current="page">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="agents">Agents<a class="anchor" href="#agents" aria-label="Link to this section">#</a></h1>
+<p>An agent is a role: a system prompt, a set of tools, a step limit and a permission stance. Switch with <code>tab</code> and <code>shift+tab</code>, with <code>/agent &lt;name&gt;</code>, or start with <code>portcode -a &lt;name&gt;</code>. <code>portcode agents</code> lists them all.</p>
+<h2 id="the-agents-you-switch-between">The agents you switch between<a class="anchor" href="#the-agents-you-switch-between" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Agent</th><th>Use it to</th><th>Tools</th><th>Steps</th></tr></thead><tbody>
+<tr><td><code>build</code></td><td>do general work: implement, fix, refactor. The default.</td><td>all</td><td>60</td></tr>
+<tr><td><code>port</code></td><td>port a program to Rust with evidence, goldens, screenshots and a site (the <em>rustport</em> workflow)</td><td>all</td><td>150</td></tr>
+<tr><td><code>reverse</code></td><td>study a binary, app or file format and record evidence. Does not change code.</td><td>the deep tools, read tools</td><td>80</td></tr>
+<tr><td><code>plan</code></td><td>investigate and produce a plan. Read-only: edits are denied and nothing prompts.</td><td>read tools</td><td>40</td></tr>
+<tr><td><code>team</code></td><td>lead a team of workers in parallel. Only listed when team mode is on.</td><td>read tools, <code>bash</code>, <code>team</code></td><td>80</td></tr>
+</tbody></table></div>
+<h3 id="build">build<a class="anchor" href="#build" aria-label="Link to this section">#</a></h3>
+<p>The everyday agent. It reads before it edits, makes small changes, runs your project's build or tests, and reads the first error before fixing.</p>
+<h3 id="port">port<a class="anchor" href="#port" aria-label="Link to this section">#</a></h3>
+<p><code>port</code> follows the rustport skill phase by phase and does not stop early. It has a <strong>finish gate</strong>: if a behaviour of the original is not in the todo list, a todo is open, or the last <code>parity</code> run did not pass on the final code, the run is sent back to work and given more steps. The only way out is <code>blocked</code>, when it needs a decision only you can give. See <a href="port-workflow.html">The port workflow</a>.</p>
+<h3 id="reverse">reverse<a class="anchor" href="#reverse" aria-label="Link to this section">#</a></h3>
+<p><code>reverse</code> studies an original and records what it learns. Run it with <code>--deep</code> to let it use <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>hexdump</code> and the Unity and .NET tools. A strict two-session setup works well: a <code>reverse --deep</code> session writes <code>docs/SPEC.md</code> in its own words, then a <code>port --clean-room</code> session builds the port from that spec alone. See <a href="modes.html">Clean-room and deep mode</a>.</p>
+<h3 id="plan">plan<a class="anchor" href="#plan" aria-label="Link to this section">#</a></h3>
+<p>Use <code>plan</code> when you want a plan and no changes. It cannot edit, and it never asks for permission.</p>
+<h3 id="team">team<a class="anchor" href="#team" aria-label="Link to this section">#</a></h3>
+<p>Orchestrator for <a href="team.html">Team mode</a>.</p>
+<h2 id="sub-agents">Sub-agents<a class="anchor" href="#sub-agents" aria-label="Link to this section">#</a></h2>
+<p>Sub-agents run inside another agent's turn with a fresh context. You do not switch to them. They are reached with the <code>task</code> tool (<code>explore</code>, <code>general</code>) and the <code>team</code> tool (the roles).</p>
+<div class="tw"><table><thead><tr><th>Sub-agent</th><th>Job</th><th>Edits files</th></tr></thead><tbody>
+<tr><td><code>explore</code></td><td>fast read-only search and summaries</td><td>no</td></tr>
+<tr><td><code>general</code></td><td>a self-contained job</td><td>yes</td></tr>
+<tr><td><code>pm</code></td><td>turn a goal into steps and done-criteria</td><td>no</td></tr>
+<tr><td><code>techlead</code></td><td>design the work and assign files to developers</td><td>no</td></tr>
+<tr><td><code>researcher</code></td><td>find facts with file:line evidence</td><td>no</td></tr>
+<tr><td><code>developer</code></td><td>implement an assigned block of files</td><td>yes</td></tr>
+<tr><td><code>tester</code></td><td>run and write tests</td><td>yes (tests)</td></tr>
+<tr><td><code>reviewer</code></td><td>review changes for bugs and slips</td><td>no</td></tr>
+</tbody></table></div>
+<p>A sub-agent sees nothing of your conversation, so the task you give it must be complete.</p>
+<h2 id="per-agent-settings">Per-agent settings<a class="anchor" href="#per-agent-settings" aria-label="Link to this section">#</a></h2>
+<p>In <code>portcode.json</code>, <code>&quot;agent&quot;: { &quot;build&quot;: { &quot;model&quot;: &quot;ollama/qwen3:14b&quot;, &quot;steps&quot;: 80, &quot;prompt_append&quot;: &quot;Always run cargo clippy.&quot; } }</code> gives an agent its own model, step limit or extra prompt text. See <a href="config.html">Configuration</a>.</p>
+<div class="pn"><a class="prev" href="tour.html"><small>Previous</small>A tour of the app</a><a class="next" href="commands.html"><small>Next</small>Slash commands</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/agents.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#the-agents-you-switch-between">The agents you switch between</a><a class="t3" href="#build">build</a><a class="t3" href="#port">port</a><a class="t3" href="#reverse">reverse</a><a class="t3" href="#plan">plan</a><a class="t3" href="#team">team</a><a class="t2" href="#sub-agents">Sub-agents</a><a class="t2" href="#per-agent-settings">Per-agent settings</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

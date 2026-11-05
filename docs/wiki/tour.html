@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A tour of the app — PortCode wiki</title><meta property="og:title" content="A tour of the app — PortCode wiki"><meta name="description" content="PortCode documentation: A tour of the app."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html" class="on" aria-current="page">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Start</p>
+<h1 id="a-tour-of-the-app">A tour of the app<a class="anchor" href="#a-tour-of-the-app" aria-label="Link to this section">#</a></h1>
+<p>The interface is a full-screen terminal app in the style of OpenCode. <code>portcode chat --plain</code> gives a plain line-by-line mode instead.</p>
+<h2 id="the-home-screen">The home screen<a class="anchor" href="#the-home-screen" aria-label="Link to this section">#</a></h2>
+<p>When a session is empty you see the logo, the prompt box and a row of hints. The prompt box has a coloured bar on its left edge: the colour is the active agent. Under it you see the model, the provider and the mode (<code>▣ clean-room</code>, or a yellow <code>◉ deep</code>).</p>
+<h2 id="the-first-message-suggestion">The first-message suggestion<a class="anchor" href="#the-first-message-suggestion" aria-label="Link to this section">#</a></h2>
+<p>In a fresh session, when you have not typed anything, PortCode reads the folder and shows a grey, italic guess at what you want to do first, for example <em>Read this Rust project, run its tests, and tell me what is unfinished or broken.</em> The box tells you the keys: <code>tab</code> uses it, <code>esc</code> dismisses it, typing replaces it.</p>
+<p>How it works:</p>
+<ol><li>PortCode lists the top level of the folder (and the first entries of each subfolder) and reads the first lines of a <strong>fixed list</strong> of project files: <code>README*</code>, <code>Cargo.toml</code>, <code>package.json</code>, <code>pyproject.toml</code>, <code>go.mod</code>, <code>Makefile</code>, <code>CMakeLists.txt</code> and <code>docs/SPEC.md</code>. It never reads <code>.env</code>, keys or any other file.</li><li>It asks the model you already chose for one message you might send, in the language of your README.</li><li>If the provider needs a key and has none, if you use a subscription backend, or if the model does not answer within 15 seconds, it falls back to a local guess based on what is in the folder (an <code>original/</code> folder, a <code>Cargo.toml</code>, and so on).</li></ol>
+<aside class="callout note"><b>Note</b><p>Step 2 sends the folder listing and those file heads to your configured provider. Set <code>&quot;suggest&quot;: false</code> in <code>portcode.json</code> to turn the whole feature off.</p></aside>
+<h2 id="the-transcript">The transcript<a class="anchor" href="#the-transcript" aria-label="Link to this section">#</a></h2>
+<p>Your messages, the agent's answers and every tool call appear in order. A tool call is one line with an icon (a spinner while it runs, <code>✓</code> or <code>✗</code> after), the tool name and a short summary; the first lines of its output hang under it. File edits show as coloured diffs. A <code>parity</code> run ends with a green <strong>PASS</strong> or red <strong>FAIL</strong> banner.</p>
+<p>Evidence ids such as <code>E-0003</code> and unknown ids are coloured chips so you can follow them.</p>
+<p>When the agent cannot go on without you, it stops with a yellow <strong>Needs your decision</strong> card that shows the whole question. Answer in the prompt and it continues.</p>
+<p>Press <code>ctrl+t</code> to show or hide the model's reasoning. Press <code>pgup</code> / <code>pgdn</code> to scroll.</p>
+<h2 id="the-prompt">The prompt<a class="anchor" href="#the-prompt" aria-label="Link to this section">#</a></h2>
+<ul><li><code>enter</code> sends, <code>alt+enter</code> adds a new line.</li><li><code>↑</code> and <code>↓</code> walk your history, and bring back your draft when you reach the end.</li><li>Type <code>/</code> for the command menu: <code>↑</code> <code>↓</code> to choose, <code>tab</code> or <code>enter</code> to complete.</li><li>While a request runs, press <code>esc</code> twice to cancel it. The footer says <em>press esc again to cancel</em> after the first press.</li></ul>
+<h2 id="the-sidebar">The sidebar<a class="anchor" href="#the-sidebar" aria-label="Link to this section">#</a></h2>
+<p>On terminals at least 110 columns wide the right-hand side shows the session: title, context use, the todo list, the evidence ledger counts (observed, inferred, unknown) and the last parity result. <code>ctrl+b</code> hides it.</p>
+<h2 id="permission-dialog">Permission dialog<a class="anchor" href="#permission-dialog" aria-label="Link to this section">#</a></h2>
+<p>A tool that needs approval pauses the run and asks. Press <code>y</code> to allow once, <code>a</code> to always allow that exact request for the rest of the session, <code>n</code> to reject. If several workers ask at once (team mode), the requests queue up. See <a href="permissions.html">Permissions</a>.</p>
+<h2 id="screens-beyond-the-chat">Screens beyond the chat<a class="anchor" href="#screens-beyond-the-chat" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Open with</th><th>What it is</th></tr></thead><tbody>
+<tr><td><code>/create</code></td><td>a guided start: what to recreate, how closely to look, what to build on</td></tr>
+<tr><td><code>/workbench</code></td><td>functions, Pseudo-C, disassembly, hex and the evidence log side by side (deep mode)</td></tr>
+<tr><td><code>/resume</code></td><td>the list of this project's saved sessions, see <a href="sessions.html">Sessions</a></td></tr>
+<tr><td><code>/ledger</code></td><td>the evidence ledger</td></tr>
+<tr><td><code>/remote</code></td><td>remote control from a browser or phone, see <a href="remote.html">Remote control</a></td></tr>
+</tbody></table></div>
+<h2 id="themes">Themes<a class="anchor" href="#themes" aria-label="Link to this section">#</a></h2>
+<p><code>/theme light</code> and <code>/theme dark</code> switch the colours and are remembered. <code>PORTCODE_THEME</code> overrides the saved choice.</p>
+<div class="pn"><a class="prev" href="first-run.html"><small>Previous</small>First run</a><a class="next" href="agents.html"><small>Next</small>Agents</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/tour.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#the-home-screen">The home screen</a><a class="t2" href="#the-first-message-suggestion">The first-message suggestion</a><a class="t2" href="#the-transcript">The transcript</a><a class="t2" href="#the-prompt">The prompt</a><a class="t2" href="#the-sidebar">The sidebar</a><a class="t2" href="#permission-dialog">Permission dialog</a><a class="t2" href="#screens-beyond-the-chat">Screens beyond the chat</a><a class="t2" href="#themes">Themes</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

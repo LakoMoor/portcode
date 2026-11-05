@@ -14,6 +14,7 @@ pub mod permission;
 pub mod run;
 pub mod session;
 pub mod skills;
+pub mod suggest;
 pub mod tool;
 pub mod tools;
 

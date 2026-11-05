@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sessions and history — PortCode wiki</title><meta property="og:title" content="Sessions and history — PortCode wiki"><meta name="description" content="PortCode documentation: Sessions and history."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html" class="on" aria-current="page">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="sessions-and-history">Sessions and history<a class="anchor" href="#sessions-and-history" aria-label="Link to this section">#</a></h1>
+<p>Every conversation is saved in your project, in <code>.portcode/sessions/</code> as one file per session. You can leave and come back to it later.</p>
+<h2 id="resuming">Resuming<a class="anchor" href="#resuming" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Command</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>portcode --resume</code> (or <code>-r</code>)</td><td>opens a list of this project's sessions to pick from</td></tr>
+<tr><td><code>portcode --resume 2</code></td><td>opens session number 2 of that list</td></tr>
+<tr><td><code>portcode --resume s-1762300000</code></td><td>opens a session by id; a unique prefix of an id is enough</td></tr>
+<tr><td><code>portcode -c</code></td><td>continues the latest session (<code>chat -c</code>, <code>run -c</code> too)</td></tr>
+<tr><td><code>/resume</code> or <code>/sessions</code></td><td>in the app: the same list</td></tr>
+<tr><td><code>/resume 2</code>, <code>/resume last</code></td><td>in the app: open directly</td></tr>
+</tbody></table></div>
+<p>The list shows, newest first, each session's first message as its title, how long ago it was used and how many messages it holds. Pick with <code>↑</code> <code>↓</code> and <code>enter</code>; <code>esc</code> starts a new session.</p>
+<p>When a session opens, the old transcript is drawn again, including tool calls. The model's reasoning is not kept on screen.</p>
+<p><code>portcode run</code> has no screen, so <code>--resume</code> without a value is refused there: give a number or id, or use <code>-c</code>.</p>
+<h2 id="managing-sessions-from-the-shell">Managing sessions from the shell<a class="anchor" href="#managing-sessions-from-the-shell" aria-label="Link to this section">#</a></h2>
+<pre><code class="lang-sh">portcode sessions            # list, newest first
+portcode sessions show 2     # print the conversation
+portcode sessions rm 2       # delete one (not the one in use)</code></pre>
+<h2 id="new-sessions">New sessions<a class="anchor" href="#new-sessions" aria-label="Link to this section">#</a></h2>
+<p><code>/new</code> and <code>/clear</code> start a fresh session. The old one stays on disk.</p>
+<h2 id="good-to-know">Good to know<a class="anchor" href="#good-to-know" aria-label="Link to this section">#</a></h2>
+<ul><li>Sessions belong to the folder you ran PortCode in. Another folder has its own list.</li><li>With the Claude Code or Codex backends, a resumed session starts a new conversation inside that CLI, so the CLI itself does not remember the earlier turns. PortCode's own record and the on-screen transcript are restored.</li><li>Long sessions are compacted automatically when they near the model's context window; the summary keeps the goal, decisions, files changed and evidence ids. <code>small_model</code> in the config picks a cheaper model for that.</li></ul>
+<div class="pn"><a class="prev" href="keys.html"><small>Previous</small>Keyboard shortcuts</a><a class="next" href="permissions.html"><small>Next</small>Permissions and allow-all</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/sessions.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#resuming">Resuming</a><a class="t2" href="#managing-sessions-from-the-shell">Managing sessions from the shell</a><a class="t2" href="#new-sessions">New sessions</a><a class="t2" href="#good-to-know">Good to know</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

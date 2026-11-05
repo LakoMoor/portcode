@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Team mode — PortCode wiki</title><meta property="og:title" content="Team mode — PortCode wiki"><meta name="description" content="PortCode documentation: Team mode."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html" class="on" aria-current="page">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="team-mode">Team mode<a class="anchor" href="#team-mode" aria-label="Link to this section">#</a></h1>
+<p>Team mode lets one agent lead a small team that works at the same time: a project manager, a tech lead, researchers, developers, a tester and a reviewer.</p>
+<h2 id="turning-it-on">Turning it on<a class="anchor" href="#turning-it-on" aria-label="Link to this section">#</a></h2>
+<p>Either way adds the <code>team</code> agent to the <code>tab</code> cycle:</p>
+<pre><code class="lang-json">{ &quot;team&quot;: { &quot;enabled&quot;: true, &quot;parallel&quot;: 3 } }</code></pre>
+<p>or, for the running session, <code>/team on</code> (and <code>/team off</code>). <code>parallel</code> is how many workers may run at once: 3 by default, 8 at most.</p>
+<h2 id="how-a-run-goes">How a run goes<a class="anchor" href="#how-a-run-goes" aria-label="Link to this section">#</a></h2>
+<p>You switch to the <code>team</code> agent and describe the goal. The orchestrator does not write code itself. It follows this order:</p>
+<ol><li><strong>Plan.</strong> It asks <code>pm</code> for scope, steps and done-criteria, and for code work <code>techlead</code> for a design and which files each developer owns.</li><li><strong>Do.</strong> It runs researchers on different questions and developers on <strong>different files</strong> together in one <code>team</code> call.</li><li><strong>Check.</strong> <code>tester</code> runs or writes the tests, <code>reviewer</code> reads the changes. Failures go back to a developer with the exact error.</li><li><strong>Verify.</strong> The orchestrator runs the build or tests itself before it says it is done. It never takes a worker's word for it.</li><li><strong>Report.</strong> What each role did, the verified result, and what is left.</li></ol>
+<p>While workers run, the transcript shows <code>team ▸ developer: api started</code> and <code>team ■ developer: api done</code> lines.</p>
+<h2 id="the-roles">The roles<a class="anchor" href="#the-roles" aria-label="Link to this section">#</a></h2>
+<div class="tw"><table><thead><tr><th>Role</th><th>Reads</th><th>Edits</th><th>Job</th></tr></thead><tbody>
+<tr><td><code>pm</code></td><td>yes</td><td>no</td><td>scope, numbered steps, done-criteria, risks</td></tr>
+<tr><td><code>techlead</code></td><td>yes</td><td>no</td><td>design, files per developer, interfaces, the check to run</td></tr>
+<tr><td><code>researcher</code></td><td>yes</td><td>no</td><td>answers one question with file:line evidence</td></tr>
+<tr><td><code>developer</code></td><td>yes</td><td>yes</td><td>implements the files it was assigned</td></tr>
+<tr><td><code>tester</code></td><td>yes</td><td>tests only</td><td>runs the project's tests and reports each failure</td></tr>
+<tr><td><code>reviewer</code></td><td>yes</td><td>no</td><td>lists problems with severity, file:line and a fix</td></tr>
+</tbody></table></div>
+<p>Workers get fresh context and only the tool list their role needs.</p>
+<h2 id="the-team-tool">The <code>team</code> tool<a class="anchor" href="#the-team-tool" aria-label="Link to this section">#</a></h2>
+<p>The orchestrator calls one tool with up to 8 tasks:</p>
+<pre><code class="lang-json">{&quot;tasks&quot;: [
+  {&quot;role&quot;: &quot;researcher&quot;, &quot;task&quot;: &quot;Where is the config file parsed? Answer with file:line.&quot;},
+  {&quot;role&quot;: &quot;developer&quot;, &quot;name&quot;: &quot;api&quot;, &quot;task&quot;: &quot;Add a --json flag in src/cli.rs ...&quot;}
+]}</code></pre>
+<p>A failing worker is reported as <code>FAILED</code> with its error and does not stop the others.</p>
+<h2 id="permissions-and-cost">Permissions and cost<a class="anchor" href="#permissions-and-cost" aria-label="Link to this section">#</a></h2>
+<p>Workers share your permission dialog and rules, so requests queue up; <code>/yolo</code> approves them all. Each worker is its own model conversation: a team run uses several times the tokens of a single agent. On a local model with a small context window, keep <code>parallel</code> low.</p>
+<aside class="callout tip"><b>Tip</b><p>Team mode pays off on work that splits cleanly into separate files or questions. For a small change, <code>build</code> is faster and cheaper.</p></aside>
+<div class="pn"><a class="prev" href="permissions.html"><small>Previous</small>Permissions and allow-all</a><a class="next" href="python.html"><small>Next</small>Python environments</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/team.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#turning-it-on">Turning it on</a><a class="t2" href="#how-a-run-goes">How a run goes</a><a class="t2" href="#the-roles">The roles</a><a class="t2" href="#the-team-tool">The team tool</a><a class="t2" href="#permissions-and-cost">Permissions and cost</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

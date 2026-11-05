@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Python environments — PortCode wiki</title><meta property="og:title" content="Python environments — PortCode wiki"><meta name="description" content="PortCode documentation: Python environments."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html" class="on" aria-current="page">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Use</p>
+<h1 id="python-environments">Python environments<a class="anchor" href="#python-environments" aria-label="Link to this section">#</a></h1>
+<p>For Python work the agent keeps everything in a virtual environment inside the project, never in your global Python.</p>
+<h2 id="what-happens">What happens<a class="anchor" href="#what-happens" aria-label="Link to this section">#</a></h2>
+<ol><li>The agent calls the <code>venv</code> tool with <code>action: &quot;create&quot;</code>. PortCode runs <code>python3 -m venv .venv</code> in the project (after you approve it).</li><li>From then on, every <code>bash</code> command runs with <code>VIRTUAL_ENV</code> set and <code>.venv/bin</code> first on <code>PATH</code>, so <code>python</code>, <code>pip</code> and <code>pytest</code> mean the project's own.</li><li>The agent installs packages with <code>venv</code> and <code>action: &quot;install&quot;</code>, which runs <code>pip install</code> inside <code>.venv</code>.</li></ol>
+<p>The tool has three actions:</p>
+<div class="tw"><table><thead><tr><th>Action</th><th>Does</th></tr></thead><tbody>
+<tr><td><code>status</code> (default)</td><td>says whether <code>.venv</code> exists and which Python it has</td></tr>
+<tr><td><code>create</code></td><td>creates <code>.venv</code>; does nothing if it exists</td></tr>
+<tr><td><code>install</code></td><td>installs the listed packages into <code>.venv</code></td></tr>
+</tbody></table></div>
+<pre><code class="lang-json">{&quot;action&quot;: &quot;install&quot;, &quot;packages&quot;: [&quot;numpy&quot;, &quot;pytest&gt;=8&quot;]}</code></pre>
+<h2 id="safe-by-construction">Safe by construction<a class="anchor" href="#safe-by-construction" aria-label="Link to this section">#</a></h2>
+<ul><li>Package names must be plain requirements (<code>pytest&gt;=8</code>, <code>requests[socks]==2.32.0</code>). Flags, URLs and anything with shell characters are refused, so the model cannot pass <code>--index-url</code> or a git URL.</li><li>Creating the environment and installing both ask for permission.</li><li>The project's API-key variables are removed from the environment of these commands.</li></ul>
+<h2 id="turning-it-off">Turning it off<a class="anchor" href="#turning-it-off" aria-label="Link to this section">#</a></h2>
+<p>It is on by default. Set <code>&quot;venv&quot;: false</code> in <code>portcode.json</code>, or use <code>/venv off</code> for the running session (<code>/venv on</code> to bring it back). When it is off, <code>create</code> explains that and <code>bash</code> keeps your normal <code>PATH</code>.</p>
+<p>If creation fails, the error says whether Python 3 or, on Debian and Ubuntu, <code>python3-venv</code> is missing.</p>
+<div class="pn"><a class="prev" href="team.html"><small>Previous</small>Team mode</a><a class="next" href="tools.html"><small>Next</small>Tools</a></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/python.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#what-happens">What happens</a><a class="t2" href="#safe-by-construction">Safe by construction</a><a class="t2" href="#turning-it-off">Turning it off</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>
