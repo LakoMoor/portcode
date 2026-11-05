@@ -175,10 +175,19 @@ pub struct Found {
     pub what: String,
 }
 
-/// Look in `root` (and one folder down) for a game or program. Cheap and bounded: it never reads file contents
-/// beyond four bytes, skips hidden and build folders, and stops after a few hundred entries.
+/// Look in `root` and up to three folders down for a game or program. Cheap and bounded: it never reads file
+/// contents beyond four bytes, skips hidden and build folders, does not open `.app` bundles, and stops after a
+/// few hundred entries per folder and a few dozen folders. If nothing is found but the folder is not a code
+/// project either, the folder itself is offered (a game's install folder is a valid path).
 pub fn detect(root: &std::path::Path) -> Vec<Found> {
-    const SKIP: &[&str] = &["target", "node_modules", "docs", "venv", "__pycache__"];
+    const SKIP: &[&str] = &[
+        "target",
+        "node_modules",
+        "docs",
+        "venv",
+        "__pycache__",
+        "original",
+    ];
     const NOT_THE_PROGRAM: &[&str] = &[
         "unins",
         "uninstall",
@@ -194,6 +203,16 @@ pub fn detect(root: &std::path::Path) -> Vec<Found> {
         "dotnet",
         "redist",
         "notification_helper",
+        "helper",
+        "launcher_crash",
+    ];
+    const PROJECT_MARKERS: &[&str] = &[
+        "Cargo.toml",
+        "package.json",
+        "pyproject.toml",
+        "go.mod",
+        "pom.xml",
+        "CMakeLists.txt",
     ];
     let mut out: Vec<Found> = Vec::new();
     if let Some(u) = portcode_agent::tools::re::unity_summary(root) {
@@ -203,22 +222,25 @@ pub fn detect(root: &std::path::Path) -> Vec<Found> {
             what: u,
         });
     }
-    let mut dirs: Vec<(std::path::PathBuf, String)> = vec![(root.to_path_buf(), String::new())];
-    if let Ok(rd) = std::fs::read_dir(root) {
-        for e in rd.flatten().take(300) {
-            let name = e.file_name().to_string_lossy().to_string();
-            let p = e.path();
-            if name.starts_with('.')
-                || SKIP.contains(&name.as_str())
-                || name.ends_with(".app")
-                || !p.is_dir()
-            {
-                continue;
-            }
-            dirs.push((p, format!("{name}/")));
-        }
+    // the folder the user opened may itself be a macOS app (they opened `X.app`)
+    if root.join("Contents/MacOS").is_dir() {
+        out.push(Found {
+            path: ".".into(),
+            kind: Kind::App,
+            what: "macOS app".into(),
+        });
     }
-    for (dir, prefix) in dirs.into_iter().take(40) {
+    let mut queue: std::collections::VecDeque<(std::path::PathBuf, String, u8)> =
+        std::collections::VecDeque::new();
+    queue.push_back((root.to_path_buf(), String::new(), 0));
+    let mut visited = 0usize;
+    let mut root_has_files = false;
+    let mut root_is_project = false;
+    while let Some((dir, prefix, depth)) = queue.pop_front() {
+        visited += 1;
+        if visited > 60 {
+            break;
+        }
         let Ok(rd) = std::fs::read_dir(&dir) else {
             continue;
         };
@@ -227,6 +249,10 @@ pub fn detect(root: &std::path::Path) -> Vec<Found> {
             .iter()
             .map(|e| e.file_name().to_string_lossy().to_string())
             .collect();
+        if depth == 0 {
+            root_has_files = names.iter().any(|n| !n.starts_with('.'));
+            root_is_project = names.iter().any(|n| PROJECT_MARKERS.contains(&n.as_str()));
+        }
         let game_like = names.iter().any(|n| {
             let l = n.to_lowercase();
             l.ends_with("_data")
@@ -256,18 +282,37 @@ pub fn detect(root: &std::path::Path) -> Vec<Found> {
             } else {
                 None
             };
-            if let Some((k, w)) = what {
-                if !out.iter().any(|f| f.path == rel) {
-                    out.push(Found {
-                        path: rel,
-                        kind: k,
-                        what: w,
-                    });
+            match what {
+                Some((k, w)) => {
+                    if !out.iter().any(|f| f.path == rel) {
+                        out.push(Found {
+                            path: rel,
+                            kind: k,
+                            what: w,
+                        });
+                    }
                 }
+                None if depth < 3
+                    && p.is_dir()
+                    && !lower.ends_with(".app")
+                    && !SKIP.contains(&name.as_str()) =>
+                {
+                    queue.push_back((p, format!("{rel}/"), depth + 1));
+                }
+                None => {}
             }
         }
     }
+    // shallow finds first: the program next to the game's data is usually the one wanted
+    out.sort_by_key(|f| (f.path != ".", f.path.matches('/').count()));
     out.truncate(6);
+    if out.is_empty() && root_has_files && !root_is_project {
+        out.push(Found {
+            path: ".".into(),
+            kind: Kind::App,
+            what: "this folder: the install folder of the program or game".into(),
+        });
+    }
     out
 }
 
@@ -436,6 +481,7 @@ impl Wizard {
     pub fn on_key(&mut self, k: KeyEvent, root: &std::path::Path, allowed: &[String]) -> Act {
         let ctrl = k.modifiers.contains(KeyModifiers::CONTROL);
         let alt = k.modifiers.contains(KeyModifiers::ALT);
+        self.error = None;
         match k.code {
             KeyCode::Esc => return Act::Cancel,
             KeyCode::Char('c') if ctrl => return Act::Cancel,
@@ -771,6 +817,28 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(f.launch().agent, "team");
+    }
+
+    #[test]
+    fn a_game_installed_two_levels_down_is_found_and_a_plain_folder_is_offered() {
+        let d = tempfile::tempdir().unwrap();
+        let r = d.path();
+        std::fs::create_dir_all(r.join("bin/x64")).unwrap();
+        std::fs::write(r.join("bin/x64/factorio.exe"), b"MZ").unwrap();
+        std::fs::create_dir_all(r.join("data")).unwrap();
+        let f = detect(r);
+        assert!(f.iter().any(|x| x.path == "bin/x64/factorio.exe"), "{f:?}");
+        // nothing runnable, not a code project: the folder itself is the path
+        let e = tempfile::tempdir().unwrap();
+        std::fs::create_dir_all(e.path().join("data")).unwrap();
+        std::fs::write(e.path().join("readme.txt"), b"x").unwrap();
+        let g = detect(e.path());
+        assert_eq!(g.len(), 1);
+        assert_eq!(g[0].path, ".");
+        // a Rust project is not mistaken for a game folder
+        let c = tempfile::tempdir().unwrap();
+        std::fs::write(c.path().join("Cargo.toml"), b"[package]").unwrap();
+        assert!(detect(c.path()).is_empty());
     }
 
     #[test]
