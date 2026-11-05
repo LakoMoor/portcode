@@ -181,7 +181,21 @@ pub async fn run_command_with(
             }
         }
     };
-    let (o, e) = (ho.await.unwrap_or_default(), he.await.unwrap_or_default());
+    // After a kill, a grandchild that escaped (Windows) can keep the pipes open: do not wait for it forever.
+    let (o, e) = if timed_out || cancelled {
+        let grace = Duration::from_secs(2);
+        let (mut ho, mut he) = (ho, he);
+        let o = tokio::time::timeout(grace, &mut ho).await;
+        let e = tokio::time::timeout(grace, &mut he).await;
+        ho.abort();
+        he.abort();
+        (
+            o.ok().and_then(|r| r.ok()).unwrap_or_default(),
+            e.ok().and_then(|r| r.ok()).unwrap_or_default(),
+        )
+    } else {
+        (ho.await.unwrap_or_default(), he.await.unwrap_or_default())
+    };
     let mut out = String::from_utf8_lossy(&o).to_string();
     if !e.is_empty() {
         if !out.is_empty() && !out.ends_with('\n') {

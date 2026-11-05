@@ -36,6 +36,8 @@ pub const RUSTPORT_FILES: &[(&str, &str)] = emb![
 ];
 
 pub fn parse_frontmatter(text: &str) -> (Option<String>, Option<String>, String) {
+    // Files checked out with CRLF line endings (Windows) must parse the same.
+    let text = &text.replace("\r\n", "\n");
     let Some(rest) = text.strip_prefix("---\n") else {
         return (None, None, text.to_string());
     };
