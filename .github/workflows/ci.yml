@@ -28,6 +28,7 @@ jobs:
         shell: pwsh
         run: |
           ./packaging/package.ps1
+          ./packaging/check-static.ps1 ./target/x86_64-pc-windows-msvc/release/portcode.exe
           $env:PORTCODE_DOWNLOAD_URL = (Resolve-Path dist).Path
           $env:PORTCODE_INSTALL_DIR = Join-Path $env:RUNNER_TEMP 'pc-bin'
           Get-Content install.ps1 -Raw | Invoke-Expression

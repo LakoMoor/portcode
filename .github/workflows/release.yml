@@ -44,13 +44,7 @@ jobs:
       - name: The x64 binary must start on a clean machine (static runtime, no extra DLLs)
         if: ${{ matrix.target == 'x86_64-pc-windows-msvc' }}
         shell: pwsh
-        run: |
-          $out = & ./target/${{ matrix.target }}/release/portcode.exe --version
-          Write-Host $out
-          if ($LASTEXITCODE -ne 0) { throw 'portcode.exe did not start' }
-          $dll = (dumpbin /dependents ./target/${{ matrix.target }}/release/portcode.exe) -join "`n"
-          Write-Host $dll
-          if ($dll -match 'VCRUNTIME|MSVCP|api-ms-win-crt') { throw 'the binary depends on the Visual C++ runtime' }
+        run: ./packaging/check-static.ps1 ./target/${{ matrix.target }}/release/portcode.exe
       - uses: actions/upload-artifact@v4
         with: { name: "portcode-${{ matrix.target }}", path: dist/* }
   publish:
