@@ -15,6 +15,8 @@ pub enum Msg {
     Idle,
     /// A session was loaded: id and its messages, to redraw.
     Resumed(String, Vec<portcode_llm::Message>),
+    /// Result of a `/connect` test: the served models, or why it failed.
+    Connected(Result<Vec<String>, String>),
     /// Agent, provider, model, context window and deep flag restored with a resumed session.
     Restored(String, String, String, u32, bool),
     /// A guessed first message for the empty prompt (Tab inserts it).
@@ -56,6 +58,10 @@ pub enum Cmd {
     /// (`style` | `effort`, value) for the current model.
     Tune(String, String),
     SetDeep(bool),
+    /// `/connect`: contact an endpoint (base_url, key) and list its models.
+    ConnectTest(String, String),
+    /// A provider was added: reload the configuration so `provider/model` resolves.
+    Reload(Box<Config>),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -113,6 +119,10 @@ pub const SLASH: &[(&str, &str)] = &[
         "list providers or switch: /provider <name> [model]",
     ),
     ("key", "enter an API key (hidden); /key <provider>"),
+    (
+        "connect",
+        "add an OpenAI-compatible endpoint: address, key, model",
+    ),
     ("setup", "first-run guide: provider, key, model"),
     (
         "team",
@@ -196,6 +206,7 @@ pub struct App {
     pub quit: bool,
     pub wb: Option<super::workbench::Wb>,
     pub wiz: Option<super::wizard::Wizard>,
+    pub conn: Option<super::connect::Connect>,
     pub auto_allow: bool,
     /// Highlighted row of the `/` menu (arrows move it).
     pub slash_sel: usize,
@@ -270,6 +281,7 @@ impl App {
             quit: false,
             wb: None,
             wiz: None,
+            conn: None,
             auto_allow: false,
             perm_queue: Default::default(),
             suggestion: None,
@@ -494,6 +506,11 @@ impl App {
             }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
+            Msg::Connected(r) => {
+                if let Some(c) = self.conn.as_mut() {
+                    c.tested(r);
+                }
+            }
             Msg::Restored(agent, provider, model, window, deep) => {
                 self.agent = agent;
                 self.provider = provider;
@@ -618,6 +635,10 @@ impl App {
     }
 
     pub fn on_paste(&mut self, s: &str) {
+        if let Some(c) = self.conn.as_mut() {
+            c.paste(s);
+            return;
+        }
         self.insert(&s.replace('\r', ""));
     }
 
@@ -721,6 +742,50 @@ impl App {
             && p.api_key_env
                 .as_deref()
                 .is_some_and(|e| std::env::var(e).map_or(true, |v| v.is_empty()))
+    }
+
+    /// `/connect` finished: keep the key private, record the address, reload the config and switch to it.
+    fn connect_save(&mut self, s: super::connect::Save) {
+        if self.busy {
+            if let Some(c) = self.conn.as_mut() {
+                c.error = Some(
+                    "The agent is still working. Press esc to interrupt it, then save.".into(),
+                );
+            }
+            return;
+        }
+        if !s.key.is_empty() {
+            if let Err(e) = portcode_agent::config::store_key(&s.name, &s.key) {
+                if let Some(c) = self.conn.as_mut() {
+                    c.error = Some(format!("could not save the key: {e}"));
+                }
+                return;
+            }
+        }
+        if let Err(e) = portcode_agent::config::save_provider(&s.name, &s.url) {
+            if let Some(c) = self.conn.as_mut() {
+                c.error = Some(e);
+            }
+            return;
+        }
+        match Config::load(&self.root) {
+            Ok(cfg) => {
+                self.cfg = cfg.clone();
+                let _ = self.cmd_tx.send(Cmd::Reload(Box::new(cfg)));
+            }
+            Err(e) => {
+                if let Some(c) = self.conn.as_mut() {
+                    c.error = Some(e);
+                }
+                return;
+            }
+        }
+        self.conn = None;
+        self.items.push(Item::Info(format!(
+            "connected {} ({}). Using {}/{}.",
+            s.name, s.url, s.name, s.model
+        )));
+        self.slash(&format!("model {}/{}", s.name, s.model));
     }
 
     fn ask_key(&mut self, prov: &str) {
@@ -932,6 +997,18 @@ impl App {
                 }
                 KeyCode::Esc | KeyCode::Char('q') => self.picker = None,
                 _ => {}
+            }
+            return;
+        }
+        if let Some(cn) = self.conn.as_mut() {
+            use super::connect::Act;
+            match cn.on_key(k) {
+                Act::Cancel => self.conn = None,
+                Act::Test(url, key) => {
+                    let _ = self.cmd_tx.send(Cmd::ConnectTest(url, key));
+                }
+                Act::Save(s) => self.connect_save(s),
+                Act::None => {}
             }
             return;
         }
@@ -1224,6 +1301,17 @@ impl App {
             ("key", a) => {
                 let pv = a.map(String::from).unwrap_or_else(|| self.provider.clone());
                 self.ask_key(&pv);
+            }
+            ("connect", a) => {
+                self.conn = Some(match a.and_then(|n| {
+                    self.cfg
+                        .resolve(Some(&format!("{n}/x")))
+                        .ok()
+                        .map(|r| (n.to_string(), r.provider.base_url))
+                }) {
+                    Some((n, u)) => super::connect::Connect::for_provider(&n, &u),
+                    None => super::connect::Connect::default(),
+                });
             }
             ("setup", _) => self.setup_guide(),
             ("team", a) => match a {

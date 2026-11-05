@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1157" height="870" viewBox="0 0 1157 870" role="img" aria-label="portcode — new project">
+<rect width="1157" height="870" rx="10" fill="#0a0a0a"/>
+<rect width="1157" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1157" height="10" fill="#1b1b1b"/>
+<circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
+<text x="578" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — new project</text>
+<rect x="102.63" y="129.00" width="195.93" height="19" fill="#16264e"/>
+<rect x="307.89" y="129.00" width="167.94" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="224.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="262.00" width="139.95" height="19" fill="#16264e"/>
+<rect x="251.91" y="262.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="354.54" y="262.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="457.17" y="262.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="625.11" y="262.00" width="223.92" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="319.00" width="755.73" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="376.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="376.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="395.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="395.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="414.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="414.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="223.92" y="452.00" width="121.29" height="19" fill="#16264e"/>
+<rect x="354.54" y="452.00" width="121.29" height="19" fill="#1e1e1e"/>
+<rect x="485.16" y="452.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="528.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="566.00" width="223.92" height="19" fill="#1e1e1e"/>
+<rect x="690.42" y="623.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="661.00" width="317.22" height="19" fill="#1e1e1e"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="93.30" y="48.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▍</text>
+<text x="102.63" y="48.00" fill="#eeeeee" textLength="149.28" lengthAdjust="spacingAndGlyphs" font-weight="700"> Welcome to port</text>
+<text x="251.91" y="48.00" fill="#fab283" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">code</text>
+<text x="93.30" y="67.00" fill="#808080" textLength="839.70" lengthAdjust="spacingAndGlyphs">  Nothing is set up in this folder yet. Say what you want to make, PortCode does the rest.</text>
+<text x="93.30" y="86.00" fill="#808080" textLength="765.06" lengthAdjust="spacingAndGlyphs">  Just want to chat or work on existing files? Press esc for the normal interface.</text>
+<text x="93.30" y="105.00" fill="#2e2e2e" textLength="895.68" lengthAdjust="spacingAndGlyphs">────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="102.63" y="143.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> Make my own version </text>
+<text x="307.89" y="143.00" fill="#808080" textLength="167.94" lengthAdjust="spacingAndGlyphs"> Just look inside </text>
+<text x="93.30" y="181.00" fill="#eeeeee" textLength="233.25" lengthAdjust="spacingAndGlyphs" font-weight="700">What do you want to make?</text>
+<text x="93.30" y="200.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs">Choose what to recreate, say what you want, then press Start.</text>
+<text x="0.00" y="238.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           1 </text>
+<text x="121.29" y="238.00" fill="#eeeeee" textLength="289.23" lengthAdjust="spacingAndGlyphs" font-weight="700">  What do you want to recreate?</text>
+<text x="102.63" y="276.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◍ A website ✓ </text>
+<text x="251.91" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ▭ An app </text>
+<text x="354.54" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
+<text x="457.17" y="276.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
+<text x="625.11" y="276.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs"> ✦ Nothing, start fresh </text>
+<text x="93.30" y="314.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs"> Type the website's address:</text>
+<text x="0.00" y="333.00" fill="#eeeeee" textLength="1156.92" lengthAdjust="spacingAndGlyphs">            https://example.com                                                                                             </text>
+<text x="93.30" y="371.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> How closely may we look at it?</text>
+<text x="0.00" y="390.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">            ▣ Clean room ✓                                    </text>
+<text x="578.46" y="390.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs"> ◉ Deep                                           </text>
+<text x="0.00" y="409.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">              Nothing inside it is read. We work from         </text>
+<text x="578.46" y="409.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   We read its code and files with every tool:    </text>
+<text x="0.00" y="428.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">              what you can see: running it, its output.       </text>
+<text x="578.46" y="428.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   Ghidra, Capstone, dotnet. For private use.     </text>
+<text x="102.63" y="466.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
+<text x="223.92" y="466.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> Rust + axum </text>
+<text x="354.54" y="466.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Static site </text>
+<text x="485.16" y="466.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> Leptos </text>
+<text x="102.63" y="485.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs"> 1 [ ] Its own design and art </text>
+<text x="382.53" y="485.00" fill="#eeeeee" textLength="774.39" lengthAdjust="spacingAndGlyphs">  2 [x] Screenshots and a site                                                     </text>
+<text x="93.30" y="504.00" fill="#808080" textLength="671.76" lengthAdjust="spacingAndGlyphs">   1:1: goldens from the original, parity PASS before it counts as done.</text>
+<text x="0.00" y="542.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           2 </text>
+<text x="121.29" y="542.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs" font-weight="700">  Say what you want</text>
+<text x="93.30" y="580.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▎</text>
+<text x="102.63" y="580.00" fill="#808080" textLength="205.26" lengthAdjust="spacingAndGlyphs"> Recreate this website</text>
+<text x="307.89" y="580.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
+<text x="93.30" y="599.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
+<text x="102.63" y="637.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
+<text x="195.93" y="637.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model</text>
+<text x="401.19" y="637.00" fill="#9d7cd8" textLength="130.62" lengthAdjust="spacingAndGlyphs">  agent port  </text>
+<text x="531.81" y="637.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
+<text x="662.43" y="637.00" fill="#eeeeee" textLength="494.49" lengthAdjust="spacingAndGlyphs">     ✦ Start                                         </text>
+<text x="0.00" y="675.00" fill="#eeeeee" textLength="419.85" lengthAdjust="spacingAndGlyphs">             esc  Open the normal interface  </text>
+<text x="419.85" y="675.00" fill="#808080" textLength="251.91" lengthAdjust="spacingAndGlyphs">   tab moves · enter starts</text>
+</g>
+</svg>

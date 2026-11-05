@@ -317,6 +317,11 @@ impl Runner {
         Ok(())
     }
 
+    /// Use a freshly loaded configuration (a provider was added from the app).
+    pub fn reload_config(&mut self, cfg: Config) {
+        self.cfg = cfg;
+    }
+
     pub fn set_model(&mut self, reference: &str) -> Result<(), String> {
         let r = self.cfg.resolve(Some(reference))?;
         self.client = Client::new(r.provider.clone()).map_err(err_text)?;

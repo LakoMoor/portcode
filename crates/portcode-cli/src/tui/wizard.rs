@@ -150,6 +150,8 @@ pub struct Wizard {
     pub error: Option<String>,
     /// What PortCode noticed about the source (file format, Unity backend, outside the project…).
     pub note: Option<String>,
+    /// Opened by itself the first time PortCode starts in a folder: greets, and offers the normal interface.
+    pub welcome: bool,
 }
 
 /// What `Start` asks the app to do.
@@ -179,6 +181,7 @@ impl Default for Wizard {
             focus: Field::Kind,
             error: None,
             note: None,
+            welcome: false,
         }
     }
 }

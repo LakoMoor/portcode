@@ -43,6 +43,10 @@ ls "$OUT"
 # /create: the guided start (real UI; the source is inspected on disk)
 ( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create.svg" --size 124x42 --create "website:https://example.com" $L >/dev/null \
   && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create-look.svg" --size 124x42 --create "look-app:original/wordstat" $L >/dev/null )
+# /connect: add an OpenAI-compatible endpoint (the key shown is a dummy)
+( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-connect.svg" --size 100x46 --connect ollama $L >/dev/null )
+# the greeting on the first start in a folder
+( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-welcome.svg" --size 124x44 --create "welcome-website:https://example.com" $L >/dev/null )
 # interactive demo on the site: the events of a real (scripted-model) run
 "$MOCK" examples/wordstat/demo-session.json 18091 >/dev/null & mp=$!; sleep 1
 ( cd "$W" && rm -rf .portcode && PORTCODE_BASE_URL="http://127.0.0.1:18091/v1" "$P" run -a port -m mock/mock-model -y --json "Port the wordstat CLI to Rust, following rustport." 2>/dev/null > "$W/events.jsonl" ); kill $mp 2>/dev/null || true

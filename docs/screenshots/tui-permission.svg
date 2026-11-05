@@ -3,203 +3,73 @@
 <rect width="1232" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1232" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="616" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — Port the wordstat CLI to Rust, following ru…</text>
-<rect x="877.02" y="34.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="53.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="53.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="72.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="72.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="91.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="91.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="110.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="129.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="148.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="167.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="186.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="205.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="224.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="243.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="262.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="281.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="300.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="319.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="338.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="357.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="376.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="395.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="414.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="433.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="452.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="471.00" width="354.54" height="19" fill="#141414"/>
-<rect x="261.24" y="490.00" width="970.32" height="19" fill="#141414"/>
-<rect x="261.24" y="509.00" width="970.32" height="19" fill="#141414"/>
-<rect x="261.24" y="528.00" width="970.32" height="19" fill="#141414"/>
-<rect x="261.24" y="547.00" width="9.33" height="19" fill="#141414"/>
-<rect x="270.57" y="547.00" width="625.11" height="19" fill="#1e1e1e"/>
-<rect x="895.68" y="547.00" width="335.88" height="19" fill="#141414"/>
-<rect x="261.24" y="566.00" width="970.32" height="19" fill="#141414"/>
-<rect x="261.24" y="585.00" width="970.32" height="19" fill="#141414"/>
-<rect x="261.24" y="604.00" width="9.33" height="19" fill="#141414"/>
-<rect x="270.57" y="604.00" width="27.99" height="19" fill="#7fd88f"/>
-<rect x="298.56" y="604.00" width="130.62" height="19" fill="#141414"/>
-<rect x="429.18" y="604.00" width="27.99" height="19" fill="#fab283"/>
-<rect x="457.17" y="604.00" width="93.30" height="19" fill="#141414"/>
-<rect x="550.47" y="604.00" width="27.99" height="19" fill="#e06c75"/>
-<rect x="578.46" y="604.00" width="653.10" height="19" fill="#141414"/>
-<rect x="261.24" y="623.00" width="970.32" height="19" fill="#141414"/>
-<rect x="877.02" y="642.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="661.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="680.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="699.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="718.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="737.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="756.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="775.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="794.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="813.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="832.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="851.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="870.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="889.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="908.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="927.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="946.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="965.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="984.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="1003.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="1003.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="1022.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="1022.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="1041.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="1041.00" width="354.54" height="19" fill="#141414"/>
-<rect x="9.33" y="1060.00" width="858.36" height="19" fill="#141414"/>
-<rect x="877.02" y="1060.00" width="354.54" height="19" fill="#141414"/>
-<rect x="877.02" y="1079.00" width="354.54" height="19" fill="#141414"/>
+<rect x="139.95" y="129.00" width="195.93" height="19" fill="#16264e"/>
+<rect x="345.21" y="129.00" width="167.94" height="19" fill="#1e1e1e"/>
+<rect x="130.62" y="224.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="262.00" width="139.95" height="19" fill="#16264e"/>
+<rect x="289.23" y="262.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="391.86" y="262.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="494.49" y="262.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="662.43" y="262.00" width="223.92" height="19" fill="#1e1e1e"/>
+<rect x="130.62" y="319.00" width="755.73" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="376.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="615.78" y="376.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="395.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="615.78" y="395.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="414.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="615.78" y="414.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="261.24" y="452.00" width="121.29" height="19" fill="#16264e"/>
+<rect x="391.86" y="452.00" width="121.29" height="19" fill="#1e1e1e"/>
+<rect x="522.48" y="452.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="130.62" y="528.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="130.62" y="566.00" width="214.59" height="19" fill="#1e1e1e"/>
+<rect x="727.74" y="623.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="661.00" width="317.22" height="19" fill="#1e1e1e"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
-<text x="877.02" y="48.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="67.00" fill="#5c9cf5" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="877.02" y="67.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="67.00" fill="#fab283" textLength="279.90" lengthAdjust="spacingAndGlyphs" font-weight="700">Port the wordstat CLI to Rust,</text>
-<text x="9.33" y="86.00" fill="#5c9cf5" textLength="18.66" lengthAdjust="spacingAndGlyphs">┃ </text>
-<text x="27.99" y="86.00" fill="#eeeeee" textLength="849.03" lengthAdjust="spacingAndGlyphs">Port the wordstat CLI to Rust, following rustport.                                         </text>
-<text x="877.02" y="86.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="86.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700">following ru…</text>
-<text x="9.33" y="105.00" fill="#5c9cf5" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="877.02" y="105.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="124.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="124.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Mode</text>
-<text x="942.33" y="124.00" fill="#2e2e2e" textLength="270.57" lengthAdjust="spacingAndGlyphs"> ────────────────────────────</text>
-<text x="0.00" y="143.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Recording the gap I already see as an unknown.                                             </text>
-<text x="877.02" y="143.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="143.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
-<text x="1016.97" y="143.00" fill="#808080" textLength="130.62" lengthAdjust="spacingAndGlyphs">  outside only</text>
-<text x="877.02" y="162.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="27.99" y="181.00" fill="#7fd88f" textLength="18.66" lengthAdjust="spacingAndGlyphs">✓ </text>
-<text x="46.65" y="181.00" fill="#7fd88f" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">evidence_add</text>
-<text x="177.27" y="181.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0001</text>
-<text x="877.02" y="181.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="181.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">Context</text>
-<text x="970.32" y="181.00" fill="#2e2e2e" textLength="242.58" lengthAdjust="spacingAndGlyphs"> ─────────────────────────</text>
-<text x="46.65" y="200.00" fill="#2e2e2e" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="65.31" y="200.00" fill="#808080" textLength="83.97" lengthAdjust="spacingAndGlyphs">Recorded </text>
-<text x="149.28" y="200.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">E-0001</text>
-<text x="205.26" y="200.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> (Unknown, Low) for cli.locale.</text>
-<text x="877.02" y="200.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="200.00" fill="#484848" textLength="130.62" lengthAdjust="spacingAndGlyphs">▱▱▱▱▱▱▱▱▱▱▱▱▱▱</text>
-<text x="1035.63" y="200.00" fill="#808080" textLength="27.99" lengthAdjust="spacingAndGlyphs"> 0%</text>
-<text x="877.02" y="219.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="219.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs">200 of 32.8k · 360 in / 60 out</text>
-<text x="0.00" y="238.00" fill="#eeeeee" textLength="877.02" lengthAdjust="spacingAndGlyphs">   Capture goldens from the ORIGINAL, then run the same cases on the port.                    </text>
-<text x="877.02" y="238.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="257.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="257.00" fill="#eeeeee" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700">Evidence</text>
-<text x="979.65" y="257.00" fill="#2e2e2e" textLength="233.25" lengthAdjust="spacingAndGlyphs"> ────────────────────────</text>
-<text x="27.99" y="276.00" fill="#f5a742" textLength="18.66" lengthAdjust="spacingAndGlyphs">⠋ </text>
-<text x="46.65" y="276.00" fill="#eeeeee" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">bash</text>
-<text x="83.97" y="276.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs">  run port on golden cases</text>
-<text x="877.02" y="276.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="276.00" fill="#e06c75" textLength="130.62" lengthAdjust="spacingAndGlyphs">██████████████</text>
-<text x="877.02" y="295.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="295.00" fill="#7fd88f" textLength="74.64" lengthAdjust="spacingAndGlyphs">0 seen  </text>
-<text x="979.65" y="295.00" fill="#f5a742" textLength="111.96" lengthAdjust="spacingAndGlyphs">0 inferred  </text>
-<text x="1091.61" y="295.00" fill="#e06c75" textLength="55.98" lengthAdjust="spacingAndGlyphs">1 open</text>
-<text x="877.02" y="314.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="314.00" fill="#e06c75" textLength="18.66" lengthAdjust="spacingAndGlyphs">? </text>
-<text x="923.67" y="314.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs">E-0001 isalnum()/tolower() are</text>
-<text x="877.02" y="333.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="333.00" fill="#e06c75" textLength="18.66" lengthAdjust="spacingAndGlyphs">? </text>
-<text x="923.67" y="333.00" fill="#808080" textLength="270.57" lengthAdjust="spacingAndGlyphs">locale-dependent for bytes &gt;=</text>
-<text x="877.02" y="352.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="371.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="371.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Proof</text>
-<text x="951.66" y="371.00" fill="#2e2e2e" textLength="261.24" lengthAdjust="spacingAndGlyphs"> ───────────────────────────</text>
-<text x="877.02" y="390.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="390.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs">no parity run yet</text>
-<text x="877.02" y="409.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="428.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="447.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="466.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="485.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="504.00" fill="#f5a742" textLength="709.08" lengthAdjust="spacingAndGlyphs">╭──────────────────────────────────────────────────────────────────────────╮</text>
-<text x="261.24" y="523.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="270.57" y="523.00" fill="#f5a742" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> Permission required </text>
-<text x="466.50" y="523.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700"> bash</text>
-<text x="960.99" y="523.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="542.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="960.99" y="542.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="561.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="270.57" y="561.00" fill="#eeeeee" textLength="690.42" lengthAdjust="spacingAndGlyphs"> ./tests/run_cases.sh port/target/release/wordstat /tmp/pc_demo_out       </text>
-<text x="960.99" y="561.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="580.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="270.57" y="580.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs"> run port on golden cases</text>
-<text x="960.99" y="580.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="599.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="960.99" y="599.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="618.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="270.57" y="618.00" fill="#0a0a0a" textLength="27.99" lengthAdjust="spacingAndGlyphs"> y </text>
-<text x="298.56" y="618.00" fill="#eeeeee" textLength="130.62" lengthAdjust="spacingAndGlyphs"> allow once   </text>
-<text x="429.18" y="618.00" fill="#0a0a0a" textLength="27.99" lengthAdjust="spacingAndGlyphs"> a </text>
-<text x="457.17" y="618.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs"> always   </text>
-<text x="550.47" y="618.00" fill="#0a0a0a" textLength="27.99" lengthAdjust="spacingAndGlyphs"> n </text>
-<text x="578.46" y="618.00" fill="#eeeeee" textLength="382.53" lengthAdjust="spacingAndGlyphs"> reject                                  </text>
-<text x="960.99" y="618.00" fill="#f5a742" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="261.24" y="637.00" fill="#f5a742" textLength="709.08" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────╯</text>
-<text x="877.02" y="656.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="675.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="694.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="713.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="732.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="751.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="770.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="789.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="808.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="827.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="846.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="865.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="884.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="903.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="922.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="941.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="960.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="979.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="877.02" y="998.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="1017.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="877.02" y="1017.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="1036.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="18.66" y="1036.00" fill="#808080" textLength="242.58" lengthAdjust="spacingAndGlyphs"> working… esc to interrupt</text>
-<text x="877.02" y="1036.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="1055.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="877.02" y="1055.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="9.33" y="1074.00" fill="#9d7cd8" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
-<text x="27.99" y="1074.00" fill="#9d7cd8" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">Port</text>
-<text x="65.31" y="1074.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">  mock/mock-model</text>
-<text x="223.92" y="1074.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs">  ollama</text>
-<text x="326.55" y="1074.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
-<text x="877.02" y="1074.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="905.01" y="1074.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs">port</text>
-<text x="942.33" y="1074.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">code </text>
-<text x="988.98" y="1074.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">0.1.9</text>
-<text x="0.00" y="1093.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
-<text x="727.74" y="1093.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs">esc esc cancel  </text>
-<text x="877.02" y="1093.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="130.62" y="48.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▍</text>
+<text x="139.95" y="48.00" fill="#eeeeee" textLength="149.28" lengthAdjust="spacingAndGlyphs" font-weight="700"> Welcome to port</text>
+<text x="289.23" y="48.00" fill="#fab283" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">code</text>
+<text x="130.62" y="67.00" fill="#808080" textLength="839.70" lengthAdjust="spacingAndGlyphs">  Nothing is set up in this folder yet. Say what you want to make, PortCode does the rest.</text>
+<text x="130.62" y="86.00" fill="#808080" textLength="765.06" lengthAdjust="spacingAndGlyphs">  Just want to chat or work on existing files? Press esc for the normal interface.</text>
+<text x="130.62" y="105.00" fill="#2e2e2e" textLength="895.68" lengthAdjust="spacingAndGlyphs">────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="139.95" y="143.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> Make my own version </text>
+<text x="345.21" y="143.00" fill="#808080" textLength="167.94" lengthAdjust="spacingAndGlyphs"> Just look inside </text>
+<text x="130.62" y="181.00" fill="#eeeeee" textLength="233.25" lengthAdjust="spacingAndGlyphs" font-weight="700">What do you want to make?</text>
+<text x="130.62" y="200.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs">Choose what to recreate, say what you want, then press Start.</text>
+<text x="0.00" y="238.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">               1 </text>
+<text x="158.61" y="238.00" fill="#eeeeee" textLength="289.23" lengthAdjust="spacingAndGlyphs" font-weight="700">  What do you want to recreate?</text>
+<text x="130.62" y="276.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▎</text>
+<text x="139.95" y="276.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◍ A website ✓ </text>
+<text x="289.23" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ▭ An app </text>
+<text x="391.86" y="276.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
+<text x="494.49" y="276.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
+<text x="662.43" y="276.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs"> ✦ Nothing, start fresh </text>
+<text x="130.62" y="314.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs"> Type the website's address:</text>
+<text x="139.95" y="333.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> https://example.com</text>
+<text x="130.62" y="371.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> How closely may we look at it?</text>
+<text x="0.00" y="390.00" fill="#eeeeee" textLength="615.78" lengthAdjust="spacingAndGlyphs">                ▣ Clean room ✓                                    </text>
+<text x="615.78" y="390.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs"> ◉ Deep                                           </text>
+<text x="0.00" y="409.00" fill="#eeeeee" textLength="615.78" lengthAdjust="spacingAndGlyphs">                  Nothing inside it is read. We work from         </text>
+<text x="615.78" y="409.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   We read its code and files with every tool:    </text>
+<text x="0.00" y="428.00" fill="#eeeeee" textLength="615.78" lengthAdjust="spacingAndGlyphs">                  what you can see: running it, its output.       </text>
+<text x="615.78" y="428.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   Ghidra, Capstone, dotnet. For private use.     </text>
+<text x="139.95" y="466.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
+<text x="261.24" y="466.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> Rust + axum </text>
+<text x="391.86" y="466.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Static site </text>
+<text x="522.48" y="466.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> Leptos </text>
+<text x="139.95" y="485.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs"> 1 [ ] Its own design and art </text>
+<text x="419.85" y="485.00" fill="#eeeeee" textLength="811.71" lengthAdjust="spacingAndGlyphs">  2 [x] Screenshots and a site                                                         </text>
+<text x="130.62" y="504.00" fill="#808080" textLength="671.76" lengthAdjust="spacingAndGlyphs">   1:1: goldens from the original, parity PASS before it counts as done.</text>
+<text x="0.00" y="542.00" fill="#eeeeee" textLength="158.61" lengthAdjust="spacingAndGlyphs">               2 </text>
+<text x="158.61" y="542.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs" font-weight="700">  Say what you want</text>
+<text x="139.95" y="580.00" fill="#808080" textLength="205.26" lengthAdjust="spacingAndGlyphs"> Recreate this website</text>
+<text x="130.62" y="599.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
+<text x="139.95" y="637.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
+<text x="233.25" y="637.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model</text>
+<text x="438.51" y="637.00" fill="#9d7cd8" textLength="130.62" lengthAdjust="spacingAndGlyphs">  agent port  </text>
+<text x="569.13" y="637.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
+<text x="699.75" y="637.00" fill="#eeeeee" textLength="531.81" lengthAdjust="spacingAndGlyphs">     ✦ Start                                             </text>
+<text x="0.00" y="675.00" fill="#eeeeee" textLength="457.17" lengthAdjust="spacingAndGlyphs">                 esc  Open the normal interface  </text>
+<text x="457.17" y="675.00" fill="#808080" textLength="251.91" lengthAdjust="spacingAndGlyphs">   tab moves · enter starts</text>
 </g>
 </svg>

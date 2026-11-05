@@ -1211,6 +1211,10 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         wizard(f, app, area);
         return;
     }
+    if app.conn.is_some() {
+        connect(f, app, area);
+        return;
+    }
     if app.wb.is_some() {
         workbench(f, app, area);
         permission(f, app, area);
@@ -1728,13 +1732,34 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
             *fl = lines.len();
         }
     };
-    lines.push(Line::from(vec![
-        Span::styled("New project", bold(c_text())),
-        Span::styled(
-            "   enter or ctrl+s starts · tab moves · esc closes",
+    if w.welcome {
+        lines.push(Line::from(vec![
+            Span::styled("▍", Style::new().fg(c_accent())),
+            Span::styled(" Welcome to ", bold(c_text())),
+            Span::styled("port", bold(c_text())),
+            Span::styled("code", bold(c_accent())),
+        ]));
+        lines.push(Line::from(Span::styled(
+            "  Nothing is set up in this folder yet. Say what you want to make, PortCode does the rest.",
             muted(),
-        ),
-    ]));
+        )));
+        lines.push(Line::from(Span::styled(
+            "  Just want to chat or work on existing files? Press esc for the normal interface.",
+            muted(),
+        )));
+        lines.push(Line::from(Span::styled(
+            "─".repeat(width.min(96)),
+            Style::new().fg(c_rule()),
+        )));
+    } else {
+        lines.push(Line::from(vec![
+            Span::styled("New project", bold(c_text())),
+            Span::styled(
+                "   enter or ctrl+s starts · tab moves · esc closes",
+                muted(),
+            ),
+        ]));
+    }
     lines.push(Line::from(""));
     // goal
     mark(&lines, Field::Goal, &mut focus_line);
@@ -1987,6 +2012,17 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
             },
         ),
     ]));
+    if w.welcome {
+        lines.push(Line::from(""));
+        lines.push(Line::from(vec![
+            Span::raw(" "),
+            Span::styled(
+                "  esc  Open the normal interface  ",
+                Style::new().fg(c_text()).bg(c_panel2()),
+            ),
+            Span::styled("   tab moves · enter starts", muted()),
+        ]));
+    }
     if let Some(e) = &w.error {
         lines.push(Line::from(Span::styled(
             format!(" {e}"),
@@ -1996,6 +2032,248 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
     let h = area.height as usize;
     let off = focus_line
         .saturating_sub(h.saturating_sub(6))
+        .min(lines.len().saturating_sub(h));
+    let vis: Vec<Line> = lines.into_iter().skip(off).take(h).collect();
+    f.render_widget(
+        Paragraph::new(vis),
+        Rect {
+            x: left,
+            y: area.y,
+            width: width as u16,
+            height: area.height,
+        },
+    );
+}
+
+/// `/connect`: add an OpenAI-compatible endpoint. One column: where it runs, address, key, model, name.
+fn connect(f: &mut Frame, app: &mut App, area: Rect) {
+    use super::connect::{Field, Status, PRESETS};
+    let Some(c) = app.conn.as_ref() else {
+        return;
+    };
+    let width = (area.width as usize).saturating_sub(4).clamp(40, 92);
+    let left = area.x + (area.width.saturating_sub(width as u16)) / 2;
+    let on = |sel: bool| {
+        if sel {
+            Style::new()
+                .fg(c_text())
+                .bg(Color::Rgb(22, 38, 78))
+                .add_modifier(Modifier::BOLD)
+        } else {
+            Style::new().fg(c_muted()).bg(c_panel2())
+        }
+    };
+    let mark = |fld: Field| {
+        if c.focus == fld {
+            Span::styled("▎", Style::new().fg(c_accent()))
+        } else {
+            Span::raw(" ")
+        }
+    };
+    let step = |n: &str, title: &str, hint: &str| {
+        Line::from(vec![
+            Span::styled(format!(" {n} "), Style::new().fg(c_text()).bg(c_panel2())),
+            Span::styled(format!("  {title}"), bold(c_text())),
+            Span::styled(format!("   {hint}"), muted()),
+        ])
+    };
+    // a text field: value (or placeholder), caret when focused, a filled bar so it reads as an input
+    let input = |fld: Field, value: String, placeholder: &str| {
+        let focused = c.focus == fld;
+        let mut sp = vec![mark(fld)];
+        if value.is_empty() {
+            sp.push(Span::styled(format!(" {placeholder}"), muted()));
+        } else {
+            sp.push(Span::styled(format!(" {value}"), text()));
+        }
+        if focused {
+            sp.push(Span::styled("▏", Style::new().fg(c_accent())));
+        }
+        let used: usize = sp.iter().map(|s| s.content.chars().count()).sum();
+        sp.push(Span::raw(" ".repeat(width.saturating_sub(used + 1))));
+        Line::from(sp).style(Style::new().bg(c_panel2()))
+    };
+    let mut lines: Vec<Line> = Vec::new();
+    let mut focus_line = 0usize;
+    let mut at = |lines: &Vec<Line>, fld: Field| {
+        if c.focus == fld {
+            focus_line = lines.len();
+        }
+    };
+    lines.push(Line::from(vec![
+        Span::styled("Connect a model server", bold(c_text())),
+        Span::styled(
+            "   tab moves · ctrl+t tests · ctrl+s saves · esc closes",
+            muted(),
+        ),
+    ]));
+    lines.push(Line::from(Span::styled(
+        "Any server that speaks the OpenAI API (/v1/chat/completions) works: local or hosted.",
+        muted(),
+    )));
+    lines.push(Line::from(""));
+    // 1 where
+    lines.push(step("1", "Where does it run?", "← → to choose"));
+    lines.push(Line::from(""));
+    at(&lines, Field::Preset);
+    let mut row: Vec<Span> = vec![mark(Field::Preset)];
+    let mut used = 1usize;
+    for (i, (name, _, _, _)) in PRESETS.iter().enumerate() {
+        let label = format!(" {}{} ", name, if i == c.preset { " ✓" } else { "" });
+        let w = label.chars().count() + 1;
+        if used + w > width && !row.is_empty() {
+            lines.push(Line::from(std::mem::take(&mut row)));
+            row.push(Span::raw(" "));
+            used = 1;
+        }
+        used += w;
+        row.push(Span::styled(label, on(i == c.preset)));
+        row.push(Span::raw(" "));
+    }
+    lines.push(Line::from(row));
+    if let Some((_, _, key, note)) = PRESETS.get(c.preset) {
+        lines.push(Line::from(Span::styled(
+            format!("   {note}{}", if *key { " · needs an API key" } else { "" }),
+            muted(),
+        )));
+    }
+    lines.push(Line::from(""));
+    // 2 address
+    lines.push(step("2", "Address", "the base URL, usually ending in /v1"));
+    lines.push(Line::from(""));
+    at(&lines, Field::Url);
+    lines.push(input(Field::Url, c.url.clone(), "http://localhost:8000/v1"));
+    lines.push(Line::from(""));
+    // 3 key
+    lines.push(step(
+        "3",
+        "API key",
+        if c.needs_key() {
+            "required by this server"
+        } else {
+            "leave empty if it has none"
+        },
+    ));
+    lines.push(Line::from(""));
+    at(&lines, Field::Key);
+    let hidden = "•".repeat(c.key.chars().count().min(48));
+    lines.push(input(
+        Field::Key,
+        hidden,
+        "paste it here (hidden, kept in your config folder, mode 600)",
+    ));
+    lines.push(Line::from(""));
+    // test result
+    let (glyph, color, msg) = match &c.status {
+        Status::Idle => (
+            "○",
+            c_muted(),
+            "not tested yet: press enter on the key, or ctrl+t".to_string(),
+        ),
+        Status::Testing => ("◌", c_yellow(), "contacting the server…".to_string()),
+        Status::Ok(m) => ("●", c_green(), m.clone()),
+        Status::Fail(e) => ("✕", c_red(), e.clone()),
+    };
+    lines.push(Line::from(vec![
+        Span::raw("   "),
+        Span::styled(glyph, Style::new().fg(color)),
+        Span::styled(
+            format!(" {}", clip_to(&msg, width.saturating_sub(8))),
+            Style::new().fg(color),
+        ),
+    ]));
+    lines.push(Line::from(""));
+    // 4 model
+    lines.push(step(
+        "4",
+        "Model",
+        if c.models.is_empty() {
+            "type its id"
+        } else {
+            "↑ ↓ to pick, or type"
+        },
+    ));
+    lines.push(Line::from(""));
+    at(&lines, Field::Model);
+    lines.push(input(Field::Model, c.model.clone(), "qwen3:14b"));
+    if !c.models.is_empty() {
+        let mut row: Vec<Span> = vec![Span::raw("   ")];
+        let mut used = 3usize;
+        let cur = c.models.iter().position(|m| *m == c.model).unwrap_or(0);
+        let from = cur.saturating_sub(2);
+        for m in c.models.iter().skip(from).take(8) {
+            let label = format!(" {} ", clip_to(m, 28));
+            let w = label.chars().count() + 1;
+            if used + w > width {
+                break;
+            }
+            used += w;
+            row.push(Span::styled(label, on(*m == c.model)));
+            row.push(Span::raw(" "));
+        }
+        if c.models.len() > 8 + from {
+            row.push(Span::styled(
+                format!("+{} more", c.models.len() - from - 8),
+                muted(),
+            ));
+        }
+        lines.push(Line::from(row));
+    }
+    lines.push(Line::from(""));
+    // 5 name
+    lines.push(step("5", "Name", "what you type after /provider"));
+    lines.push(Line::from(""));
+    at(&lines, Field::Name);
+    lines.push(input(Field::Name, c.name.clone(), "mybox"));
+    lines.push(Line::from(Span::styled(
+        format!(
+            "   you will select it as {}/{}",
+            if c.name.is_empty() {
+                "<name>"
+            } else {
+                c.name.as_str()
+            },
+            if c.model.is_empty() {
+                "<model>"
+            } else {
+                c.model.as_str()
+            }
+        ),
+        muted(),
+    )));
+    lines.push(Line::from(""));
+    let ready = c.problem().is_none();
+    lines.push(Line::from(vec![
+        Span::raw(" "),
+        Span::styled(
+            if ready {
+                "  Save and use  ctrl+s  "
+            } else {
+                "  Save and use  "
+            },
+            if ready {
+                Style::new()
+                    .fg(Color::Rgb(10, 10, 10))
+                    .bg(c_accent())
+                    .add_modifier(Modifier::BOLD)
+            } else {
+                Style::new().fg(c_muted()).bg(c_panel2())
+            },
+        ),
+    ]));
+    if let Some(e) = c.error.as_ref().cloned().or_else(|| {
+        (!ready && c.focus == Field::Name)
+            .then(|| c.problem())
+            .flatten()
+    }) {
+        lines.push(Line::from(Span::styled(
+            format!(" {e}"),
+            Style::new().fg(c_red()),
+        )));
+    }
+    let h = area.height as usize;
+    let off = focus_line
+        .saturating_sub(h.saturating_sub(8))
         .min(lines.len().saturating_sub(h));
     let vis: Vec<Line> = lines.into_iter().skip(off).take(h).collect();
     f.render_widget(

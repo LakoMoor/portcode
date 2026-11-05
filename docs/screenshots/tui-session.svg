@@ -249,7 +249,7 @@
 <text x="877.02" y="1074.00" fill="#2e2e2e" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="905.01" y="1074.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs">port</text>
 <text x="942.33" y="1074.00" fill="#fab283" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">code </text>
-<text x="988.98" y="1074.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs">0.1.9</text>
+<text x="988.98" y="1074.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">0.1.11</text>
 <text x="0.00" y="1093.00" fill="#808080" textLength="186.60" lengthAdjust="spacingAndGlyphs"> ~/projects/wordstat</text>
 <text x="186.60" y="1093.00" fill="#7fd88f" textLength="139.95" lengthAdjust="spacingAndGlyphs">  ✓ parity PASS</text>
 <text x="485.16" y="1093.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">tab agents · / commands · ctrl+b sidebar  </text>

@@ -2,6 +2,7 @@
 //! sidebar (context, evidence, todo), slash-command popup, permission dialog. Real runs and headless snapshots
 //! share the same `App` + `view`, so screenshots are produced by the real UI code.
 pub mod app;
+pub mod connect;
 #[cfg(test)]
 mod opencode;
 pub mod svg;
@@ -90,6 +91,36 @@ async fn runner_task(
                 let _ = tx.send(Msg::Info(m));
             }
             Cmd::SetDeep(d) => r.ctx.deep.store(d, std::sync::atomic::Ordering::Relaxed),
+            Cmd::Reload(c) => r.reload_config(*c),
+            Cmd::ConnectTest(url, key) => {
+                let tx = tx.clone();
+                tokio::spawn(async move {
+                    let p = portcode_llm::ProviderConfig {
+                        name: "test".into(),
+                        base_url: url,
+                        api_key: (!key.is_empty()).then_some(key),
+                        api_key_env: None,
+                        headers: Default::default(),
+                    };
+                    let res = match portcode_llm::Client::new(p) {
+                        Ok(c) => {
+                            match tokio::time::timeout(
+                                std::time::Duration::from_secs(12),
+                                c.list_models(),
+                            )
+                            .await
+                            {
+                                Ok(r) => r.map_err(|e| e.to_string()),
+                                Err(_) => {
+                                    Err("no answer in 12 seconds. Is the server running?".into())
+                                }
+                            }
+                        }
+                        Err(e) => Err(e.to_string()),
+                    };
+                    let _ = tx.send(Msg::Connected(res));
+                });
+            }
             Cmd::Update => {
                 let tx = tx.clone();
                 tokio::spawn(async move {
@@ -220,6 +251,21 @@ async fn start(
         app.deep = runner.ctx.is_deep();
         app.load_history(id, h);
     }
+    // First time in this folder: open the guided start. esc leaves it for the normal interface.
+    // `.portcode/` is PortCode's own folder; once it exists (a session, `portcode init`, or this greeting) we stay quiet.
+    let first_here = !gate_auto
+        && o.resume.is_none()
+        && notice.is_none()
+        && picker_rows.is_empty()
+        && std::env::var_os("PORTCODE_NO_WELCOME").is_none()
+        && !app.root_path().join(".portcode").exists();
+    if first_here {
+        let _ = std::fs::create_dir_all(app.root_path().join(".portcode"));
+        app.wiz = Some(wizard::Wizard {
+            welcome: true,
+            ..Default::default()
+        });
+    }
     if !picker_rows.is_empty() {
         app.picker = Some(app::Picker {
             rows: picker_rows,
@@ -242,6 +288,7 @@ async fn start(
     }
     if !gate_auto
         && o.resume.is_none()
+        && app.wiz.is_none()
         && portcode_agent::suggest::enabled(&sug_ctx.0)
         && app.items.is_empty()
     {
@@ -563,6 +610,7 @@ pub struct Snap {
     pub workbench: Option<String>,
     pub wb_tab: String,
     pub create: Option<String>,
+    pub connect: Option<String>,
     pub first_run: bool,
 }
 
@@ -635,11 +683,16 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
     if let Some(spec) = &s.create {
         use wizard::{Field, Kind, Wizard};
         let (head, src) = spec.split_once(':').unwrap_or((spec.as_str(), ""));
+        let (welcome, head) = match head.strip_prefix("welcome-") {
+            Some(h) => (true, h),
+            None => (false, head),
+        };
         let (look, kind) = match head.strip_prefix("look-") {
             Some(k) => (true, k),
             None => (false, head),
         };
         let mut w = Wizard {
+            welcome,
             look_only: look,
             deep: look,
             kind: match kind {
@@ -655,6 +708,27 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         };
         w.inspect(app.root_path(), &[]);
         app.wiz = Some(w);
+    }
+    if let Some(name) = &s.connect {
+        use connect::{Connect, Field, PRESETS};
+        let preset = PRESETS.iter().position(|p| p.0 == name).unwrap_or(0);
+        let mut c = Connect {
+            preset,
+            focus: Field::Model,
+            ..Connect::default()
+        };
+        c.paste_preset();
+        if c.needs_key() {
+            c.key = "sk-demo-not-a-real-key".into();
+        }
+        c.tested(Ok(vec![
+            "qwen3-coder:30b".into(),
+            "qwen3:14b".into(),
+            "deepseek-r1:14b".into(),
+            "llama3.1:8b".into(),
+        ]));
+        c.model = "qwen3:14b".into();
+        app.conn = Some(c);
     }
     if s.first_run {
         app.hint = Some(format!(

@@ -162,6 +162,8 @@ impl Config {
         let mut v = Value::Object(Default::default());
         let mut files: Vec<PathBuf> = Vec::new();
         if let Some(g) = global_dir() {
+            // providers added from the app (`/connect`); portcode.json files still win
+            files.push(g.join("providers.json"));
             files.push(g.join("portcode.json"));
         }
         files.push(project.join("portcode.json"));
@@ -277,6 +279,42 @@ pub struct Resolved {
     pub provider: ProviderConfig,
     pub model: String,
     pub profile: ModelProfile,
+}
+
+/// Provider names are used as `name/model` and as file keys.
+pub fn valid_provider_name(n: &str) -> bool {
+    !n.is_empty()
+        && n.len() <= 40
+        && n.chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
+/// Save an OpenAI-compatible endpoint added from the app to `providers.json` in the config folder.
+/// Only the address goes here; the key goes to `auth.json` (see [`store_key`]), so this file is safe to share.
+pub fn save_provider(name: &str, base_url: &str) -> Result<PathBuf, String> {
+    if !valid_provider_name(name) {
+        return Err("the name may use letters, digits, - and _ only".into());
+    }
+    let p = global_dir()
+        .ok_or("no config directory on this platform")?
+        .join("providers.json");
+    std::fs::create_dir_all(p.parent().ok_or("bad path")?).map_err(|e| e.to_string())?;
+    let mut v = read_json(&p)?.unwrap_or(Value::Object(Default::default()));
+    let entry = serde_json::json!({ "base_url": base_url });
+    if let Some(o) = v.as_object_mut() {
+        let prov = o
+            .entry("provider")
+            .or_insert(Value::Object(Default::default()));
+        if let Some(po) = prov.as_object_mut() {
+            po.insert(name.into(), entry);
+        }
+    }
+    std::fs::write(
+        &p,
+        serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(p)
 }
 
 fn auth_path() -> Option<PathBuf> {

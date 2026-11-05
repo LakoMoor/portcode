@@ -95,6 +95,9 @@ enum Cmd {
         /// Show the /create screen: website|app|game|format|fresh, optionally `kind:source`, `look-` prefix for "just look inside"
         #[arg(long)]
         create: Option<String>,
+        /// Show the /connect screen filled in with a preset name, e.g. `openrouter`
+        #[arg(long)]
+        connect: Option<String>,
         /// Show the first-run notice (no API key yet)
         #[arg(long)]
         first_run: bool,
@@ -358,6 +361,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             ref workbench,
             ref wb_tab,
             ref create,
+            ref connect,
             first_run,
         }) => {
             let (w, h) = size
@@ -379,6 +383,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     workbench: workbench.clone(),
                     wb_tab: wb_tab.clone(),
                     create: create.clone(),
+                    connect: connect.clone(),
                     first_run,
                 },
             )

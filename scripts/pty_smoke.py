@@ -20,6 +20,8 @@ def pump(t=0.8):
             except OSError: return
 def send(s, t=0.6): os.write(fd, s.encode()); pump(t)
 pump(1.5)
+welcome = "Welcome to" in buf.decode("utf8", "replace")
+send("\x1b")                                        # first run in an empty folder: esc opens the normal interface
 send("/prov"); send("\x1b[B"); send("\x1b[A")      # down, up in the menu
 send("\t")                                          # complete
 send("oll"); send("\t")                             # argument menu: ollama
@@ -37,6 +39,7 @@ try:
 except ChildProcessError:
     st = 0
 txt = re.sub(rb"\x1b\[[0-9;?]*[A-Za-z]", b" ", buf).decode("utf8", "replace")
+print("welcome shown on first run:", welcome)
 print("secret leaked:", "sk-secret-123" in txt)
 for w in ["No API key", "provider", "ollama", "needs a key", "Paste the API key", "cancelled"]:
     print(f"{w!r}:", w in txt)

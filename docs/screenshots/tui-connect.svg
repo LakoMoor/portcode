@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="933" height="908" viewBox="0 0 933 908" role="img" aria-label="portcode — home">
+<rect width="933" height="908" rx="10" fill="#0a0a0a"/>
+<rect width="933" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="933" height="10" fill="#1b1b1b"/>
+<circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
+<text x="466" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — home</text>
+<rect x="37.32" y="91.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="46.65" y="129.00" width="93.30" height="19" fill="#16264e"/>
+<rect x="149.28" y="129.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="251.91" y="129.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="354.54" y="129.00" width="55.98" height="19" fill="#1e1e1e"/>
+<rect x="419.85" y="129.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="503.82" y="129.00" width="111.96" height="19" fill="#1e1e1e"/>
+<rect x="625.11" y="129.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="727.74" y="129.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="811.71" y="129.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="186.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="224.00" width="849.03" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="262.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="300.00" width="849.03" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="376.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="414.00" width="849.03" height="19" fill="#1e1e1e"/>
+<rect x="65.31" y="433.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="233.25" y="433.00" width="102.63" height="19" fill="#16264e"/>
+<rect x="345.21" y="433.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="513.15" y="433.00" width="121.29" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="471.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="37.32" y="509.00" width="849.03" height="19" fill="#1e1e1e"/>
+<rect x="46.65" y="566.00" width="223.92" height="19" fill="#fab283"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="37.32" y="48.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs" font-weight="700">Connect a model server</text>
+<text x="242.58" y="48.00" fill="#808080" textLength="513.15" lengthAdjust="spacingAndGlyphs">   tab moves · ctrl+t tests · ctrl+s saves · esc closes</text>
+<text x="37.32" y="67.00" fill="#808080" textLength="783.72" lengthAdjust="spacingAndGlyphs">Any server that speaks the OpenAI API (/v1/chat/completions) works: local or hosted.</text>
+<text x="0.00" y="105.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs">     1 </text>
+<text x="65.31" y="105.00" fill="#eeeeee" textLength="186.60" lengthAdjust="spacingAndGlyphs" font-weight="700">  Where does it run?</text>
+<text x="251.91" y="105.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs">   ← → to choose</text>
+<text x="46.65" y="143.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs" font-weight="700"> ollama ✓ </text>
+<text x="149.28" y="143.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> lmstudio </text>
+<text x="251.91" y="143.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> llamacpp </text>
+<text x="354.54" y="143.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> vllm </text>
+<text x="419.85" y="143.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> sglang </text>
+<text x="503.82" y="143.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs"> openrouter </text>
+<text x="625.11" y="143.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> deepseek </text>
+<text x="727.74" y="143.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> openai </text>
+<text x="811.71" y="143.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> custom </text>
+<text x="37.32" y="162.00" fill="#808080" textLength="214.59" lengthAdjust="spacingAndGlyphs">   runs on this machine</text>
+<text x="0.00" y="200.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs">     2 </text>
+<text x="65.31" y="200.00" fill="#eeeeee" textLength="83.97" lengthAdjust="spacingAndGlyphs" font-weight="700">  Address</text>
+<text x="149.28" y="200.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">   the base URL, usually ending in /v1</text>
+<text x="0.00" y="238.00" fill="#eeeeee" textLength="933.00" lengthAdjust="spacingAndGlyphs">      http://localhost:11434/v1                                                                     </text>
+<text x="0.00" y="276.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs">     3 </text>
+<text x="65.31" y="276.00" fill="#eeeeee" textLength="83.97" lengthAdjust="spacingAndGlyphs" font-weight="700">  API key</text>
+<text x="149.28" y="276.00" fill="#808080" textLength="270.57" lengthAdjust="spacingAndGlyphs">   leave empty if it has none</text>
+<text x="46.65" y="314.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs"> paste it here (hidden, kept in your config folder, mode 600)</text>
+<text x="65.31" y="352.00" fill="#7fd88f" textLength="205.26" lengthAdjust="spacingAndGlyphs">● connected · 4 models</text>
+<text x="0.00" y="390.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs">     4 </text>
+<text x="65.31" y="390.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs" font-weight="700">  Model</text>
+<text x="130.62" y="390.00" fill="#808080" textLength="214.59" lengthAdjust="spacingAndGlyphs">   ↑ ↓ to pick, or type</text>
+<text x="37.32" y="428.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▎</text>
+<text x="46.65" y="428.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs"> qwen3:14b</text>
+<text x="139.95" y="428.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
+<text x="65.31" y="447.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> qwen3-coder:30b </text>
+<text x="233.25" y="447.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700"> qwen3:14b </text>
+<text x="345.21" y="447.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> deepseek-r1:14b </text>
+<text x="513.15" y="447.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> llama3.1:8b </text>
+<text x="0.00" y="485.00" fill="#eeeeee" textLength="65.31" lengthAdjust="spacingAndGlyphs">     5 </text>
+<text x="65.31" y="485.00" fill="#eeeeee" textLength="55.98" lengthAdjust="spacingAndGlyphs" font-weight="700">  Name</text>
+<text x="121.29" y="485.00" fill="#808080" textLength="298.56" lengthAdjust="spacingAndGlyphs">   what you type after /provider</text>
+<text x="0.00" y="523.00" fill="#eeeeee" textLength="933.00" lengthAdjust="spacingAndGlyphs">      ollama                                                                                        </text>
+<text x="37.32" y="542.00" fill="#808080" textLength="382.53" lengthAdjust="spacingAndGlyphs">   you will select it as ollama/qwen3:14b</text>
+<text x="46.65" y="580.00" fill="#0a0a0a" textLength="223.92" lengthAdjust="spacingAndGlyphs" font-weight="700">  Save and use  ctrl+s  </text>
+</g>
+</svg>

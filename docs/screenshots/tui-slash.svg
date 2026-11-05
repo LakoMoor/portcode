@@ -45,19 +45,19 @@
 <text x="317.22" y="257.00" fill="#808080" textLength="391.86" lengthAdjust="spacingAndGlyphs">enter an API key (hidden); /key &lt;provider&gt;</text>
 <text x="849.03" y="257.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/setup      </text>
-<text x="317.22" y="276.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">first-run guide: provider, key, model</text>
+<text x="205.26" y="276.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/connect    </text>
+<text x="317.22" y="276.00" fill="#808080" textLength="503.82" lengthAdjust="spacingAndGlyphs">add an OpenAI-compatible endpoint: address, key, model</text>
 <text x="849.03" y="276.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/team       </text>
-<text x="317.22" y="295.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">multi-agent team (PM, tech lead, workers): on or off</text>
+<text x="205.26" y="295.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/setup      </text>
+<text x="317.22" y="295.00" fill="#808080" textLength="345.21" lengthAdjust="spacingAndGlyphs">first-run guide: provider, key, model</text>
 <text x="849.03" y="295.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
-<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/venv       </text>
-<text x="317.22" y="314.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">Python virtual environments: on or off</text>
+<text x="205.26" y="314.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs">/team       </text>
+<text x="317.22" y="314.00" fill="#808080" textLength="485.16" lengthAdjust="spacingAndGlyphs">multi-agent team (PM, tech lead, workers): on or off</text>
 <text x="849.03" y="314.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">│</text>
 <text x="167.94" y="333.00" fill="#484848" textLength="9.33" lengthAdjust="spacingAndGlyphs">└</text>
-<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/31 </text>
+<text x="177.27" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs"> 1/32 </text>
 <text x="233.25" y="333.00" fill="#484848" textLength="625.11" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────────┘</text>
 <text x="167.94" y="352.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="371.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>

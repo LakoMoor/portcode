@@ -46,11 +46,13 @@
 <p>Five minutes from install to your first task.</p>
 <h2 id="1-open-a-folder">1. Open a folder<a class="anchor" href="#1-open-a-folder" aria-label="Link to this section">#</a></h2>
 <p>Run <code>portcode</code> in the folder you want to work in. For a port, that is the folder that holds the program to port: put the original in <code>original/</code>.</p>
+<p>The first time PortCode starts in a folder it opens the guided start (the same screen as <code>/create</code>) with a welcome. Press <code>esc</code> there to open the normal interface; it does not come back for that folder. Set <code>PORTCODE_NO_WELCOME=1</code> to turn it off everywhere.</p>
 <p>When the prompt is empty, PortCode looks at the folder and puts a guess at your first message in the prompt box as grey text. Press <code>tab</code> to use it, <code>esc</code> to dismiss it, or just type something else. See <a href="tour.html#the-first-message-suggestion">A tour of the app</a>.</p>
 <h2 id="2-pick-a-model-and-give-it-a-key">2. Pick a model and give it a key<a class="anchor" href="#2-pick-a-model-and-give-it-a-key" aria-label="Link to this section">#</a></h2>
 <p>PortCode speaks the OpenAI chat protocol, so almost any server works. Choose one way:</p>
-<ul><li><strong>A local model, no key.</strong> Start Ollama, LM Studio, llama.cpp or vLLM, then type <code>/provider ollama qwen3:14b</code>.</li><li><strong>Your Claude or ChatGPT subscription.</strong> Install Claude Code or Codex, sign in there once, then <code>/provider claude-code sonnet</code> or <code>/provider codex default</code>. No key and no API bill. See <a href="subscriptions.html">Claude Code and Codex</a>.</li><li><strong>A hosted API.</strong> Type <code>/key</code> and paste the key. It is hidden while you type and saved in your config folder with mode 600. From a shell: <code>portcode auth set &lt;provider&gt;</code>, or <code>portcode auth set &lt;provider&gt; --from-env NAME</code> to read it from an environment variable.</li></ul>
+<ul><li><strong>Any OpenAI-compatible server, step by step.</strong> Type <code>/connect</code>. Choose where it runs (Ollama, LM Studio, llama.cpp, vLLM, SGLang, OpenRouter, DeepSeek, OpenAI or your own), paste the address and key, press <code>enter</code> on the key to test it, pick a model from the list the server reports, and <code>ctrl+s</code> saves and switches to it. The address goes to <code>providers.json</code> in your config folder and the key to <code>auth.json</code> (mode 600), never into the project.</li><li><strong>A local model, no key.</strong> Start Ollama, LM Studio, llama.cpp or vLLM, then type <code>/provider ollama qwen3:14b</code>.</li><li><strong>Your Claude or ChatGPT subscription.</strong> Install Claude Code or Codex, sign in there once, then <code>/provider claude-code sonnet</code> or <code>/provider codex default</code>. No key and no API bill. See <a href="subscriptions.html">Claude Code and Codex</a>.</li><li><strong>A hosted API.</strong> Type <code>/key</code> and paste the key. It is hidden while you type and saved in your config folder with mode 600. From a shell: <code>portcode auth set &lt;provider&gt;</code>, or <code>portcode auth set &lt;provider&gt; --from-env NAME</code> to read it from an environment variable.</li></ul>
 <div class="tw"><table><thead><tr><th>Type</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>/connect [provider]</code></td><td>add or edit an OpenAI-compatible server in a form, with a connection test</td></tr>
 <tr><td><code>/provider</code></td><td>lists providers and shows which still need a key</td></tr>
 <tr><td><code>/provider &lt;name&gt; [model]</code></td><td>switches provider and model</td></tr>
 <tr><td><code>/key [provider]</code></td><td>asks for the API key, hidden</td></tr>
@@ -58,6 +60,7 @@
 <tr><td><code>/model &lt;provider&gt;/&lt;model&gt;</code></td><td>picks a model</td></tr>
 <tr><td><code>/setup</code></td><td>prints these steps again</td></tr>
 </tbody></table></div>
+<p><img src="../../screenshots/tui-connect.svg" alt="The /connect screen" loading="lazy"></p>
 <p>The model you choose is remembered for the next start. <code>-m</code> and <code>PORTCODE_MODEL</code> still win.</p>
 <h2 id="3-check-that-it-works">3. Check that it works<a class="anchor" href="#3-check-that-it-works" aria-label="Link to this section">#</a></h2>
 <pre><code class="lang-sh">portcode doctor</code></pre>
