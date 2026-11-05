@@ -288,6 +288,43 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
             }
             Item::Tool {
                 name,
+                state,
+                text: body,
+                ..
+            } if name == "blocked" && !matches!(state, ToolState::Running) => {
+                // The agent cannot go on without the user: show the whole question, not a tool line.
+                let why = body
+                    .strip_prefix("Stopped, waiting for the user:")
+                    .unwrap_or(body)
+                    .trim();
+                let bar = Style::new().fg(c_yellow());
+                out.push(Line::from(""));
+                out.push(Line::from(vec![
+                    Span::styled("  ▌ ", bar),
+                    Span::styled("Needs your decision", bold(c_yellow())),
+                ]));
+                out.push(Line::from(Span::styled("  ▌", bar)));
+                for raw in why.lines() {
+                    let rows = wrap(
+                        vec![Span::styled(raw.to_string(), Style::new().fg(c_text()))],
+                        width.saturating_sub(6),
+                        2,
+                    );
+                    for r in rows {
+                        let mut v = vec![Span::styled("  ▌ ", bar)];
+                        v.extend(r);
+                        out.push(chip_ids(Line::from(v), &app.unknowns));
+                    }
+                }
+                out.push(Line::from(Span::styled("  ▌", bar)));
+                out.push(Line::from(vec![
+                    Span::styled("  ▌ ", bar),
+                    Span::styled("Answer below and the agent continues from here.", muted()),
+                ]));
+                out.push(Line::from(""));
+            }
+            Item::Tool {
+                name,
                 args,
                 state,
                 title,

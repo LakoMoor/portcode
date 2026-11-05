@@ -475,3 +475,30 @@ fn resumed_history_is_redrawn_with_text_and_tool_calls() {
     assert!(matches!(&a.items[1], Item::Assistant(t) if t.contains("src/main.rs")));
     assert!(matches!(a.items.last(), Some(Item::Info(t)) if t.contains("s-9")));
 }
+
+#[test]
+fn blocked_shows_the_whole_question_as_a_decision_card() {
+    use super::app::{Item, ToolState};
+    let (mut a, _rx) = app();
+    a.items.push(Item::Tool {
+        name: "blocked".into(),
+        args: "{\"reason\":\"x\"}".into(),
+        state: ToolState::Ok,
+        title: "blocked".into(),
+        text: "Stopped, waiting for the user: Four decisions:\n1. Which OS to target?\n2. Keep the plugin ABI?\n3. Scope: UI only?\n4. Licence ok?".into(),
+    });
+    let s = screen(&mut a, 90, 24);
+    assert!(s.contains("Needs your decision"), "{s}");
+    for q in [
+        "1. Which OS",
+        "2. Keep the plugin ABI",
+        "3. Scope",
+        "4. Licence ok",
+    ] {
+        assert!(s.contains(q), "{q} missing:\n{s}");
+    }
+    assert!(
+        !s.contains("more lines") && !s.contains("Stopped, waiting"),
+        "{s}"
+    );
+}

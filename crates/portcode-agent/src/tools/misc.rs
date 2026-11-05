@@ -226,7 +226,7 @@ impl Tool for Blocked {
         "blocked".into()
     }
     fn description(&self) -> String {
-        "Stop because you need a decision or input only the user can give (licence, missing file, ambiguous requirement, permission refused). The port is NOT finished; say exactly what you need. Do not use this to avoid hard work.".into()
+        "Stop because you need a decision or input only the user can give (licence, missing file, ambiguous requirement, permission refused). The port is NOT finished. Write the reason for a person: one line of context, then numbered questions, each with the options and your recommendation. Do not use this to avoid hard work.".into()
     }
     fn example(&self) -> String {
         r#"{"reason": "inputs/ has no case for --min-len 0; the original crashes. Should the port crash too or return an error?"}"#.into()
