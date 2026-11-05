@@ -7,8 +7,9 @@ root = pathlib.Path(__file__).resolve().parent.parent
 src = (root / "docs/index.html").read_text()
 
 T = [
+ ('<small class="ik" style="margin-top:20px">Then open any folder</small>', '<small class="ik" style="margin-top:20px">Потом откройте любую папку</small>'),
  ('<small class="ik">Install in one line</small>', '<small class="ik">Установка одной строкой</small>'),
- ('<p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads.</p>', '<p class="ikn">macOS, Linux и WSL. Установщик проверяет sha256 загрузки.</p>'),
+ ('<p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads. Also runs on your <a href="wiki/subscriptions.html">Claude Code or Codex subscription</a>, no API key.</p>', '<p class="ikn">macOS, Linux и WSL. Установщик проверяет sha256 загрузки. Работает и на вашей <a href="wiki/subscriptions.html">подписке Claude Code или Codex</a>, без API-ключа.</p>'),
  ('Use your Claude or ChatGPT plan', 'Работай на своей подписке Claude или ChatGPT'),
  ('No API key needed. PortCode starts the official <code>claude</code> or <code>codex</code> program on your machine and lets it use the login you already have. It adds its own tools: the evidence ledger, pinning, parity checks and screenshots.', 'Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.'),
  ('PortCode on your plan', 'PortCode на твоей подписке'),

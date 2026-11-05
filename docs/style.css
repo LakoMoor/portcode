@@ -222,3 +222,14 @@ main.doc pre{max-width:100%;overflow-x:auto}
 @media(hover:none){.codebox .copybtn{opacity:1}}
 @media(max-width:900px){.hero .ik,.hero .ikn{margin-left:0}}
 .cmd{word-break:normal;overflow-wrap:normal}.cmd .cmdtext{min-width:0}
+.hero .top>div:last-child .lead{margin:0 0 24px;max-width:none}
+.hero .top>div:last-child{padding-bottom:0}
+
+/* hero v3: title and lead on the left, the install card level with them on the right */
+.hero .top{align-items:start}
+.hero .top>div:last-child{display:block;padding-bottom:0}
+.hero .top>div:last-child .lead{margin:0}
+.icard{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 22px 18px;margin-top:10px}
+.icard .ik{margin:0 0 10px 2px}.icard .cmd{margin:0 0 14px}.icard .btns{margin:0 0 4px}.icard .ikn{margin:12px 2px 0}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.6rem)}
+.icard{padding-bottom:28px}
