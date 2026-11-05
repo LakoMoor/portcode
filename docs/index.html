@@ -3,7 +3,7 @@
 <title>PortCode: port a program to Rust and check it behaves the same</title>
 <meta property="og:title" content="PortCode: port a program to Rust and check it behaves the same"><meta property="og:description" content="Open-source terminal agent that reverse-engineers programs and ports them to Rust. Works with local and self-hosted models."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode is an open-source terminal agent. It studies a program, rewrites it in Rust, and checks the result against the original with recorded evidence, golden tests and screenshots. It works with local and self-hosted models: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-<script src="theme.js"></script>
+<script src="theme.js"></script><script src="copy.js" defer></script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="toolkit.css"></head><body>
 <nav><div class="wrap"><a class="brand" href="#"><img src="assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Deep mode</a><a class="l" href="#first">First run</a><a class="l" href="#how">How it works</a><a class="l" href="#llm">Local LLMs</a><a class="l" href="#ports">Ports</a><a class="l" href="remote/">Remote</a><a class="l" href="wiki/">Docs</a><a class="l" href="ru/">RU</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
@@ -12,8 +12,8 @@
 <div class="top"><div>
 <h1>Port a program to Rust and check it behaves the same.</h1>
 <p class="lead">PortCode is a terminal agent. It studies the original, writes down what it finds out, rewrites the program in Rust piece by piece, and compares each piece with the original's real output. It works with models you run yourself: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
-<div><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</span></div>
-<div class="btns"><a class="btn" href="#install">Install</a><a class="btn light" href="ports/wordstat/">See an example port</a></div></div></div>
+<div><small class="ik">Install in one line</small><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.sh | sh</span></div>
+<div class="btns"><a class="btn" href="#install">Install</a><a class="btn light" href="ports/wordstat/">See an example port</a></div><p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads.</p></div></div>
 
 <div class="bento">
 <div class="t g-grid s7 h340"><div class="collage">

@@ -206,3 +206,19 @@ html[lang=ru] h1{font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-.035em}
 main.doc{min-width:0}
 main.doc p code,main.doc li code,main.doc td code{overflow-wrap:anywhere}
 main.doc pre{max-width:100%;overflow-x:auto}
+
+/* hero: the install column sits level with the heading's centre instead of hanging at the bottom, and the title is a notch smaller so it stays on three lines */
+.hero .top{align-items:center}
+.hero .top>div:last-child{display:flex;flex-direction:column;justify-content:center;gap:2px;padding-bottom:6px}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.4rem)}
+.hero .ik{display:block;font-size:.82rem;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:0 0 10px 4px}
+.hero .ikn{color:var(--mut);font-size:.9rem;line-height:1.45;margin:14px 4px 0}
+/* copy buttons */
+.codebox{position:relative}.codebox pre{margin:18px 0}
+.copybtn{font:600 12px/1 var(--sans);color:#d8dbe3;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:7px 11px;cursor:pointer;transition:background .15s,color .15s}
+.copybtn:hover{background:rgba(255,255,255,.2);color:#fff}.copybtn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.codebox .copybtn{position:absolute;top:28px;right:10px;opacity:.75}.codebox:hover .copybtn,.codebox .copybtn:focus-visible{opacity:1}
+.cmd .copybtn{margin-left:auto;flex:none}
+@media(hover:none){.codebox .copybtn{opacity:1}}
+@media(max-width:900px){.hero .ik,.hero .ikn{margin-left:0}}
+.cmd{word-break:normal;overflow-wrap:normal}.cmd .cmdtext{min-width:0}

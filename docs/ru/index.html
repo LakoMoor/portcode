@@ -3,7 +3,7 @@
 <title>PortCode: перенеси программу на Rust и проверь, что она ведёт себя так же</title>
 <meta property="og:title" content="PortCode: перенеси программу на Rust и проверь, что она ведёт себя так же"><meta property="og:description" content="Открытый терминальный агент: изучает программу и переписывает её на Rust. Работает с локальными и своими моделями."><meta property="og:image" content="https://lakomoor.github.io/portcode/screenshots/tui-session.svg"><meta name="description" content="PortCode — открытый терминальный агент. Он изучает программу, переписывает её на Rust и сверяет результат с оригиналом: записанные факты, эталонные тесты, скриншоты. Работает с локальными и своими моделями: lakomoor.com/v1, Ollama, LM Studio, llama.cpp, vLLM.">
 <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
-<script src="../theme.js"></script>
+<script src="../theme.js"></script><script src="../copy.js" defer></script>
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="../toolkit.css"></head><body>
 <nav><div class="wrap"><a class="brand" href="./"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="#deep">Режим deep</a><a class="l" href="#first">Первый запуск</a><a class="l" href="#how">Как это работает</a><a class="l" href="#llm">Модели</a><a class="l" href="#ports">Порты</a><a class="l" href="../remote/">Пульт</a><a class="l" href="../wiki/">Документация</a><a class="l" href="../">EN</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
@@ -12,8 +12,8 @@
 <div class="top"><div>
 <h1>Перенеси программу на Rust и проверь, что она ведёт себя так же.</h1>
 <p class="lead">PortCode — терминальный агент. Он изучает оригинал, записывает, что удалось выяснить, переписывает программу на Rust по кусочку и сверяет каждый кусок с настоящим выводом оригинала. Работает с моделями, которые ты запускаешь сам: <code>lakomoor.com/v1</code>, Ollama, LM Studio, llama.cpp, vLLM.</p></div>
-<div><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/LakoMoor/portcode/main/install.sh | sh</span></div>
-<div class="btns"><a class="btn" href="#install">Установить</a><a class="btn light" href="../ports/wordstat/">Пример порта</a></div></div></div>
+<div><small class="ik">Установка одной строкой</small><div class="cmd"><span><s>$</s> curl -fsSL https://raw.githubusercontent.com/<wbr>LakoMoor/<wbr>portcode/<wbr>main/<wbr>install.sh | sh</span></div>
+<div class="btns"><a class="btn" href="#install">Установить</a><a class="btn light" href="../ports/wordstat/">Пример порта</a></div><p class="ikn">macOS, Linux и WSL. Установщик проверяет sha256 загрузки.</p></div></div>
 
 <div class="bento">
 <div class="t g-grid s7 h340"><div class="collage">

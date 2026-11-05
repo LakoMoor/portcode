@@ -7,6 +7,8 @@ root = pathlib.Path(__file__).resolve().parent.parent
 src = (root / "docs/index.html").read_text()
 
 T = [
+ ('<small class="ik">Install in one line</small>', '<small class="ik">Установка одной строкой</small>'),
+ ('<p class="ikn">macOS, Linux and WSL. The installer checks the sha256 of what it downloads.</p>', '<p class="ikn">macOS, Linux и WSL. Установщик проверяет sha256 загрузки.</p>'),
  ('Use your Claude or ChatGPT plan', 'Работай на своей подписке Claude или ChatGPT'),
  ('No API key needed. PortCode starts the official <code>claude</code> or <code>codex</code> program on your machine and lets it use the login you already have. It adds its own tools: the evidence ledger, pinning, parity checks and screenshots.', 'Ключ API не нужен. PortCode запускает на твоём компьютере официальную программу <code>claude</code> или <code>codex</code>, и она использует твой вход. Свои инструменты PortCode добавляет сам: журнал доказательств, фиксацию оригинала, проверки parity и скриншоты.'),
  ('PortCode on your plan', 'PortCode на твоей подписке'),
@@ -149,7 +151,7 @@ for a, b in T:
     out = out.replace(a, b)
 # the language switch and local paths
 out = out.replace('href="ru/"', 'href="../"')
-for d in ("style.css", "toolkit.css", "theme.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "wiki/", "remote/"):
+for d in ("style.css", "toolkit.css", "theme.js", "copy.js", "demo.js", "demo/", "assets/", "screenshots/", "ports/", "guide/", "wiki/", "remote/"):
     out = out.replace(f'href="{d}', f'href="../{d}').replace(f'src="{d}', f'src="../{d}')
 out = out.replace('<a class="l" href="../wiki/">Документация</a>', '<a class="l" href="../wiki/">Документация</a>')
 out = out.replace('href="#"', 'href="./"')
