@@ -533,3 +533,28 @@ fn a_suggestion_shows_as_ghost_text_and_tab_inserts_it() {
     a.on_msg(Msg::Suggest("late".into()));
     assert!(a.suggestion.is_none());
 }
+
+#[test]
+fn compact_summarises_once_and_blocks_while_running() {
+    use super::app::{Cmd, Msg};
+    let (mut a, mut rx) = app();
+    type_str(&mut a, "/compact");
+    a.on_key(k(KeyCode::Enter));
+    assert!(
+        rx.try_recv().is_err(),
+        "an empty session has nothing to compact"
+    );
+    a.items.push(super::app::Item::User("hello".into()));
+    type_str(&mut a, "/compact");
+    a.on_key(k(KeyCode::Enter));
+    assert!(matches!(rx.try_recv(), Ok(Cmd::Compact)));
+    assert!(a.busy, "the prompt is busy until the summary is done");
+    type_str(&mut a, "/summarize");
+    a.on_key(k(KeyCode::Enter));
+    assert!(
+        rx.try_recv().is_err(),
+        "no second compaction while one runs"
+    );
+    a.on_msg(Msg::Idle);
+    assert!(!a.busy);
+}

@@ -496,3 +496,48 @@ async fn a_small_window_limits_how_much_output_is_requested() {
         .iter()
         .any(|e| matches!(e, UiEvent::Info(t) if t.contains("context window is small"))));
 }
+
+#[tokio::test]
+async fn compact_replaces_the_conversation_with_a_summary_and_keeps_going() {
+    let d = tempfile::tempdir().unwrap();
+    let m = start(
+        vec![
+            Turn {
+                text: "First answer.".into(),
+                ..Default::default()
+            },
+            Turn {
+                text: "GOAL: fix parser. Files: a.rs. Next: run tests.".into(),
+                ..Default::default()
+            },
+            Turn {
+                text: "Carrying on.".into(),
+                ..Default::default()
+            },
+        ],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, _) = runner(d.path(), &m.url, "build", Reply::Once).await;
+    assert!(
+        r.compact().await.is_err(),
+        "nothing to compact in a fresh session"
+    );
+    r.send("fix the parser").await.unwrap();
+    let msg = r.compact().await.unwrap();
+    assert!(msg.contains("compacted"), "{msg}");
+    assert_eq!(r.history().len(), 1);
+    assert!(r.history()[0]
+        .content
+        .as_deref()
+        .unwrap_or("")
+        .contains("GOAL: fix parser"));
+    r.send("continue").await.unwrap();
+    let reqs = m.requests.lock().unwrap().clone();
+    let last = reqs.last().unwrap()["messages"].as_array().unwrap().clone();
+    assert!(last.iter().any(|x| x["content"]
+        .as_str()
+        .unwrap_or("")
+        .contains("[Summary of the earlier conversation]")));
+}

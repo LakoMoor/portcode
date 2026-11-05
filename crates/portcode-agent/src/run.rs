@@ -447,6 +447,39 @@ impl Runner {
         else {
             return;
         };
+        if !self.summarize_upto(cut).await {
+            self.ui.event(UiEvent::Info(
+                "context is large and compaction failed; continuing".into(),
+            ));
+        }
+    }
+
+    /// `/compact`: summarise the whole conversation into one message to free context. Returns a short report.
+    pub async fn compact(&mut self) -> Result<String, String> {
+        if portcode_llm::is_cli(&self.resolved.provider) {
+            return Err(
+                "the Claude Code / Codex backend manages its own context; use its own /compact"
+                    .into(),
+            );
+        }
+        let n = self.messages.len();
+        if n < 2 {
+            return Err("nothing to compact yet".into());
+        }
+        let before = self.est_tokens(&self.system());
+        if !self.summarize_upto(n).await {
+            return Err("compaction failed: the model did not return a summary. Try again, or set small_model to a model that works.".into());
+        }
+        self.last_prompt_tokens = 0;
+        self.save();
+        let after = self.est_tokens(&self.system());
+        Ok(format!(
+            "compacted {n} messages into a summary (about {before} → {after} tokens). Keep going; the goal, decisions, files and evidence ids are kept."
+        ))
+    }
+
+    /// Replace the first `cut` messages with a model-written summary. False if no summary came back.
+    async fn summarize_upto(&mut self, cut: usize) -> bool {
         let transcript: String = self
             .messages
             .iter()
@@ -499,17 +532,16 @@ impl Runner {
         };
         match res {
             Ok(a) if !a.text.trim().is_empty() => {
-                let tail = self.messages.split_off(cut);
+                let tail = self.messages.split_off(cut.min(self.messages.len()));
                 self.messages = vec![Message::user(format!(
                     "[Summary of the earlier conversation]\n{}",
                     a.text.trim()
                 ))];
                 self.messages.extend(tail);
                 self.ui.event(UiEvent::Compacted);
+                true
             }
-            _ => self.ui.event(UiEvent::Info(
-                "context is large and compaction failed; continuing".into(),
-            )),
+            _ => false,
         }
     }
 

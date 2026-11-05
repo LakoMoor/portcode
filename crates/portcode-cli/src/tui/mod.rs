@@ -97,6 +97,13 @@ async fn runner_task(
                 });
             }
             Cmd::Clear => r.clear(),
+            Cmd::Compact => {
+                let m = match r.compact().await {
+                    Ok(m) | Err(m) => m,
+                };
+                let _ = tx.send(Msg::Info(m));
+                let _ = tx.send(Msg::Idle);
+            }
             Cmd::Resume(w) => {
                 let _ = tx.send(match r.resume(&w) {
                     Ok((id, _)) => Msg::Resumed(id, r.history().to_vec()),

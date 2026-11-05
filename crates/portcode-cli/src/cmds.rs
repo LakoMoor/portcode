@@ -194,7 +194,7 @@ pub async fn chat(
             let mut p = cmd.split_whitespace();
             match (p.next().unwrap_or(""), p.next()) {
                 ("exit" | "quit" | "q", _) => return Ok(0),
-                ("help" | "?", _) => println!("{}", dim("/agent <build|port|reverse|plan>  /model <provider/model>  /models  /tools  /todos  /ledger  /clear  /resume  /exit")),
+                ("help" | "?", _) => println!("{}", dim("/agent <build|port|reverse|plan>  /model <provider/model>  /models  /tools  /todos  /ledger  /compact  /clear  /resume  /exit")),
                 ("agent", Some(a)) => match r.set_agent(a) { Ok(()) => println!("{}", dim(&format!("agent → {a}"))), Err(e) => println!("{} {e}", red("!")) },
                 ("agent", None) => for a in portcode_agent::agents::visible(r.cfg.team_enabled()).iter() { println!("  {:<8} {}", bold(a.name), a.description); },
                 ("model", Some(m)) => match r.set_model(m) { Ok(()) => println!("{}", dim(&format!("model → {}/{}", r.resolved.provider.name, r.resolved.model))), Err(e) => println!("{} {e}", red("!")) },
@@ -204,6 +204,7 @@ pub async fn chat(
                 ("todos", _) => for t in r.todos() { println!("  [{}] {}", t.status, t.content); },
                 ("ledger", _) => { let _ = run_tool(r.cfg.clone(), "evidence_list", "{}").await; }
                 ("clear", _) => { r.clear(); println!("{}", dim("context cleared")); }
+                ("compact" | "summarize", _) => match r.compact().await { Ok(m) => println!("{}", dim(&m)), Err(e) => println!("{} {e}", red("!")) },
                 ("resume", w) => {
                     let w = match w { Some(w) => w.to_string(), None => match pick_session(&r) { Some(w) => w, None => continue } };
                     match r.resume(&w) { Ok((id, n)) => println!("{}", dim(&format!("resumed {id} ({n} messages)"))), Err(e) => println!("{} {e}", red("!")) }

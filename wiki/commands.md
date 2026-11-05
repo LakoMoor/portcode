@@ -26,7 +26,7 @@ This table is generated from the app's own command list, so it matches the versi
 
 ### Sessions
 
-`/new` or `/clear` start a fresh session. `/resume` and `/sessions` open the session list. See [Sessions](sessions.html).
+`/compact` (or `/summarize`) summarises the conversation to free context. `/new` or `/clear` start a fresh session. `/resume` and `/sessions` open the session list. See [Sessions](sessions.html).
 
 ### Work
 

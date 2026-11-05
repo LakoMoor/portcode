@@ -11,6 +11,8 @@ pub enum Msg {
     Perm(PermAsk),
     Done(Result<Outcome, String>),
     Info(String),
+    /// A background job (compaction) finished; the prompt is free again.
+    Idle,
     /// A session was loaded: id and its messages, to redraw.
     Resumed(String, Vec<portcode_llm::Message>),
     /// A guessed first message for the empty prompt (Tab inserts it).
@@ -42,6 +44,8 @@ pub enum Cmd {
     SetAgent(String),
     SetModel(String),
     Clear,
+    /// Summarise the conversation to free context (`/compact`).
+    Compact,
     /// Open a session (id, prefix, number or `last`).
     Resume(String),
     Sessions,
@@ -118,6 +122,7 @@ pub const SLASH: &[(&str, &str)] = &[
         "allow everything without asking (toggle, or on/off)",
     ),
     ("update", "check for a newer PortCode"),
+    ("compact", "summarise the conversation to free up context"),
     ("new", "new session (same as /clear)"),
     ("clear", "new session"),
     ("agents", "list agents"),
@@ -480,6 +485,10 @@ impl App {
                 if self.input.is_empty() && self.items.is_empty() {
                     self.suggestion = Some(s);
                 }
+            }
+            Msg::Idle => {
+                self.busy = false;
+                self.last_prompt = 0;
             }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
@@ -1248,6 +1257,17 @@ impl App {
             ("model", None) => self.items.push(Item::Info(format!("{}/{} (context {} tokens)", self.provider, self.model, self.ctx_window))),
             ("models", _) => { let _ = self.cmd_tx.send(Cmd::ListModels); }
             ("clear" | "new", _) => { self.items.clear(); self.todos.clear(); self.title = None; self.tokens_in = 0; self.tokens_out = 0; self.last_prompt = 0; let _ = self.cmd_tx.send(Cmd::Clear); }
+            ("compact" | "summarize", _) => {
+                if self.busy {
+                    self.items.push(Item::Error("wait for the running request (or press esc twice) before compacting".into()));
+                } else if self.items.is_empty() {
+                    self.items.push(Item::Info("nothing to compact yet".into()));
+                } else {
+                    self.busy = true;
+                    self.items.push(Item::Info("compacting the conversation…".into()));
+                    let _ = self.cmd_tx.send(Cmd::Compact);
+                }
+            }
             ("sessions", _) => { let _ = self.cmd_tx.send(Cmd::Sessions); }
             ("resume", a) => {
                 if self.busy {

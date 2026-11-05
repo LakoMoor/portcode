@@ -31,6 +31,14 @@ portcode sessions rm 2       # delete one (not the one in use)
 
 `/new` and `/clear` start a fresh session. The old one stays on disk.
 
+## Freeing context with `/compact`
+
+`/compact` (alias `/summarize`) asks the model to write a dense summary of the whole conversation and replaces the history with it. The summary keeps the goal, decisions, files changed, commands run and their results, evidence ids and the exact next step. Use it when a long session nears the model's context window, or before changing direction. The sidebar's context figure drops, and you carry on in the same session.
+
+- PortCode also compacts automatically when the window is nearly full; `/compact` just lets you do it earlier.
+- The summary uses `small_model` if you set one, otherwise the current model.
+- It is not available while a request is running, and the Claude Code and Codex backends manage their own context (use their own `/compact`).
+
 ## Good to know
 
 - Sessions belong to the folder you ran PortCode in. Another folder has its own list.
