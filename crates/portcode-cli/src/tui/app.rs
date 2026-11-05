@@ -983,9 +983,11 @@ impl App {
                 if self.busy {
                     if self.esc_armed() {
                         self.esc_at = None;
-                        self.cancel.store(true, Ordering::Relaxed);
-                        self.items
-                            .push(Item::Info("cancelling the request…".into()));
+                        // one note per cancel: repeated presses while it winds down add nothing
+                        if !self.cancel.swap(true, Ordering::Relaxed) {
+                            self.items
+                                .push(Item::Info("cancelling the request…".into()));
+                        }
                     } else {
                         self.esc_at = Some(std::time::Instant::now());
                     }
