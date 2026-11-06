@@ -753,6 +753,7 @@ impl Runner {
         lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut compacted_on_repeat = false;
+        let mut list_asked = false;
         let mut recent_results = Vec::<String>::new();
         let mut total = Usage::default();
         let mut last_text = String::new();
@@ -781,6 +782,17 @@ impl Runner {
                 });
             }
             self.fit_context().await;
+            if step == 3
+                && !list_asked
+                && self.agent.allows("todowrite", true)
+                && lock(&self.ctx.state).todos.is_empty()
+            {
+                // work is under way with no checklist (never written, or lost): ask for it, it drives progress and "continue"
+                list_asked = true;
+                self.ui
+                    .event(UiEvent::Info("asking the model for a todo list".into()));
+                self.messages.push(Message::user("You have no todo list yet. Call `todowrite` now with one item per behaviour, feature or file of the original that must exist in the result: mark what is already done as completed, the rest as pending, and the one you are on as in_progress. Then carry on with the work."));
+            }
             if step + 1 == limit && extensions < 2 && !self.gaps().is_empty() {
                 // out of steps but visibly unfinished: grant more instead of stopping short
                 extensions += 1;

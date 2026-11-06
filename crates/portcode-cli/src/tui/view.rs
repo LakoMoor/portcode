@@ -872,6 +872,25 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
     if !app.todos.is_empty() {
         l.push(Line::from(""));
         l.push(section("Todo", w));
+        // how much of the checklist is done: the checklist is the agent's list of what the original does, so this
+        // is progress through that list, not proof of parity (that stays under "Proof")
+        let done = app.todos.iter().filter(|t| t.status == "completed").count();
+        let all = app.todos.len();
+        let pct = done * 100 / all.max(1);
+        let cells = 14usize;
+        let on = (done * cells + all / 2) / all.max(1);
+        l.push(Line::from(vec![
+            Span::styled("█".repeat(on), Style::new().fg(c_green())),
+            Span::styled(
+                "█".repeat(cells.saturating_sub(on)),
+                Style::new().fg(c_rule()),
+            ),
+            Span::styled(format!(" {pct}%"), bold(c_text())),
+        ]));
+        l.push(Line::from(Span::styled(
+            format!("{done} of {all} done · checklist, not parity"),
+            muted(),
+        )));
         for t in &app.todos {
             let (m, c) = match t.status.as_str() {
                 "completed" => ("☑", c_green()),

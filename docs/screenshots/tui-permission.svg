@@ -11,8 +11,8 @@
 <rect x="391.86" y="262.00" width="93.30" height="19" fill="#1e1e1e"/>
 <rect x="494.49" y="262.00" width="158.61" height="19" fill="#1e1e1e"/>
 <rect x="662.43" y="262.00" width="223.92" height="19" fill="#1e1e1e"/>
-<rect x="130.62" y="319.00" width="737.07" height="19" fill="#1e1e1e"/>
-<rect x="242.58" y="338.00" width="195.93" height="19" fill="#16264e"/>
+<rect x="130.62" y="319.00" width="587.79" height="19" fill="#1e1e1e"/>
+<rect x="242.58" y="338.00" width="46.65" height="19" fill="#16264e"/>
 <rect x="139.95" y="433.00" width="466.50" height="19" fill="#16264e"/>
 <rect x="615.78" y="433.00" width="466.50" height="19" fill="#1e1e1e"/>
 <rect x="139.95" y="452.00" width="466.50" height="19" fill="#16264e"/>
@@ -46,11 +46,11 @@
 <text x="494.49" y="276.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
 <text x="662.43" y="276.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs"> ✦ Nothing, start fresh </text>
 <text x="130.62" y="314.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs"> Path to the program (an executable, .app or install folder):</text>
-<text x="0.00" y="333.00" fill="#eeeeee" textLength="1231.56" lengthAdjust="spacingAndGlyphs">                original/wordstat                                                                                                   </text>
+<text x="0.00" y="333.00" fill="#eeeeee" textLength="1231.56" lengthAdjust="spacingAndGlyphs">                .                                                                                                                   </text>
 <text x="130.62" y="352.00" fill="#70c8aa" textLength="111.96" lengthAdjust="spacingAndGlyphs"> found here </text>
-<text x="242.58" y="352.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> original/wordstat ✓ </text>
-<text x="130.62" y="371.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs">   program</text>
-<text x="130.62" y="390.00" fill="#70c8aa" textLength="177.27" lengthAdjust="spacingAndGlyphs">  Mach-O executable</text>
+<text x="242.58" y="352.00" fill="#eeeeee" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700"> . ✓ </text>
+<text x="130.62" y="371.00" fill="#808080" textLength="531.81" lengthAdjust="spacingAndGlyphs">   this folder: the install folder of the program or game</text>
+<text x="130.62" y="390.00" fill="#70c8aa" textLength="74.64" lengthAdjust="spacingAndGlyphs">  folder</text>
 <text x="130.62" y="428.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> How closely may we look at it?</text>
 <text x="0.00" y="447.00" fill="#eeeeee" textLength="615.78" lengthAdjust="spacingAndGlyphs">                ▣ Clean room ✓                                    </text>
 <text x="615.78" y="447.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs"> ◉ Deep                                           </text>

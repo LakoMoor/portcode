@@ -6,9 +6,9 @@
 <rect x="167.94" y="338.00" width="690.42" height="19" fill="#f0efec"/>
 <rect x="167.94" y="357.00" width="690.42" height="19" fill="#f0efec"/>
 <rect x="167.94" y="376.00" width="690.42" height="19" fill="#f0efec"/>
-<rect x="167.94" y="395.00" width="363.87" height="19" fill="#f0efec"/>
-<rect x="531.81" y="395.00" width="121.29" height="19" fill="#c8323c"/>
-<rect x="653.10" y="395.00" width="205.26" height="19" fill="#f0efec"/>
+<rect x="167.94" y="395.00" width="233.25" height="19" fill="#f0efec"/>
+<rect x="401.19" y="395.00" width="121.29" height="19" fill="#c8323c"/>
+<rect x="522.48" y="395.00" width="335.88" height="19" fill="#f0efec"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
 <text x="391.86" y="238.00" fill="#6e6e6a" textLength="111.96" lengthAdjust="spacingAndGlyphs">┌─┐┌─┐┬─┐┌┬┐</text>
 <text x="503.82" y="238.00" fill="#1e1e1e" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">┌─┐┌─┐┌┬┐┌─┐</text>
@@ -23,10 +23,10 @@
 <text x="167.94" y="390.00" fill="#c4621c" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="167.94" y="409.00" fill="#c4621c" textLength="9.33" lengthAdjust="spacingAndGlyphs">┃</text>
 <text x="186.60" y="409.00" fill="#c4621c" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">Build</text>
-<text x="233.25" y="409.00" fill="#1e1e1e" textLength="195.93" lengthAdjust="spacingAndGlyphs">  lakomoor/Q-Next-6.1</text>
-<text x="429.18" y="409.00" fill="#6e6e6a" textLength="74.64" lengthAdjust="spacingAndGlyphs">  ollama</text>
-<text x="531.81" y="409.00" fill="#fafaf8" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
-<text x="662.43" y="409.00" fill="#14806c" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
+<text x="233.25" y="409.00" fill="#1e1e1e" textLength="111.96" lengthAdjust="spacingAndGlyphs">  Q-Next-6.1</text>
+<text x="345.21" y="409.00" fill="#6e6e6a" textLength="27.99" lengthAdjust="spacingAndGlyphs">  Q</text>
+<text x="401.19" y="409.00" fill="#fafaf8" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ⚠ allow-all </text>
+<text x="531.81" y="409.00" fill="#14806c" textLength="111.96" lengthAdjust="spacingAndGlyphs">▣ clean-room</text>
 <text x="242.58" y="447.00" fill="#6e6e6a" textLength="541.14" lengthAdjust="spacingAndGlyphs">tab agents   /deep look inside   /  commands   ctrl+c quit</text>
 <text x="345.21" y="485.00" fill="#1c823c" textLength="93.30" lengthAdjust="spacingAndGlyphs">● observed</text>
 <text x="438.51" y="485.00" fill="#b06c00" textLength="121.29" lengthAdjust="spacingAndGlyphs">   ● inferred</text>
