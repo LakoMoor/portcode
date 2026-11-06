@@ -17,6 +17,8 @@ pub enum Msg {
     Resumed(String, Vec<portcode_llm::Message>),
     /// Result of a `/connect` test: the served models, or why it failed.
     Connected(Result<Vec<String>, String>),
+    /// The context window (tokens) the runner is using for the current model.
+    Window(u32),
     /// A new version was installed: leave and start it, resuming this session when there is one.
     Restart(Option<String>),
     /// Agent, provider, model, context window and deep flag restored with a resumed session.
@@ -517,6 +519,7 @@ impl App {
                 self.restart = Some(sid);
                 self.quit = true;
             }
+            Msg::Window(n) => self.ctx_window = n,
             Msg::Connected(r) => {
                 if let Some(c) = self.conn.as_mut() {
                     c.tested(r);

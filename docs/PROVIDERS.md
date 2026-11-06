@@ -41,6 +41,7 @@ Many local servers run with a 4k to 16k window and cut replies early. PortCode a
 - Tool results are capped at about an eighth of the window (`result_chars`), and old turns are compacted to stay under `window - output - 256` tokens.
 - A reply that stops at the output limit (`finish_reason: length`) is continued ("continue exactly where you stopped") and the pieces are joined. A **tool call** cut by the limit is never run, even if its JSON could be repaired: the model is told to make it smaller and gets a larger output budget (up to 3x).
 - `write` accepts `append: true`, so a long file is written in parts.
+- The window is read from the server when it reports one (`max_model_len`, `context_length`, llama.cpp `/props`, LM Studio, Ollama `/api/ps`); an explicit `context_window` in `portcode.json` always wins.
 - If the instructions alone take more than a third of the window, PortCode says so once. Set the real server window in `portcode.json`: `"models": {"<id>": {"context_window": 8192, "max_tokens": 1024}}`.
 
 ## Prompt design for open models

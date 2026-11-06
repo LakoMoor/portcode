@@ -80,6 +80,37 @@ pub struct Runner {
     last_prompt_tokens: u64,
     /// Session id of the subscription CLI (`claude-code` / `codex`), kept so the next turn resumes it.
     cli_session: Option<String>,
+    /// `provider/model` whose context window was already asked of the server.
+    probed: Option<String>,
+}
+
+const RECONNECT_TRIES: u32 = 12;
+
+/// Worth trying again: the server is unreachable, went silent, or answered "busy / bad gateway / timeout".
+fn is_transient(e: &portcode_llm::LlmError) -> bool {
+    use portcode_llm::LlmError;
+    match e {
+        LlmError::Connect { .. } | LlmError::Stalled { .. } => true,
+        LlmError::Http { status, .. } => matches!(status, 408 | 425 | 429 | 500 | 502 | 503 | 504),
+        _ => false,
+    }
+}
+
+/// 2, 4, 8, 15, then 30 seconds.
+fn reconnect_wait(attempt: u32) -> u64 {
+    [2, 4, 8, 15, 30]
+        .get(attempt.saturating_sub(1) as usize)
+        .copied()
+        .unwrap_or(30)
+}
+
+fn short(s: &str) -> String {
+    let one: String = s.split_whitespace().collect::<Vec<_>>().join(" ");
+    if one.chars().count() > 90 {
+        format!("{}…", one.chars().take(89).collect::<String>())
+    } else {
+        one
+    }
 }
 
 fn err_text(e: impl std::fmt::Display) -> String {
@@ -196,6 +227,7 @@ impl Runner {
             usage: Usage::default(),
             last_prompt_tokens: 0,
             cli_session: None,
+            probed: None,
         })
     }
 
@@ -317,13 +349,48 @@ impl Runner {
         Ok(())
     }
 
+    /// Ask the server how large the context window of the current model really is and use that instead of the
+    /// built-in guess. Once per model; `None` when it was asked before, the server says nothing, or portcode.json
+    /// sets `context_window` for this model (an explicit setting always wins).
+    pub async fn detect_context(&mut self) -> Option<u32> {
+        let key = format!("{}/{}", self.resolved.provider.name, self.resolved.model);
+        if self.probed.as_deref() == Some(key.as_str()) {
+            return None;
+        }
+        self.probed = Some(key);
+        if portcode_llm::is_cli(&self.resolved.provider)
+            || self
+                .cfg
+                .models
+                .get(&self.resolved.model)
+                .and_then(|o| o.get("context_window"))
+                .is_some()
+        {
+            return None;
+        }
+        let n = tokio::time::timeout(
+            std::time::Duration::from_secs(8),
+            self.client.context_window(&self.resolved.model),
+        )
+        .await
+        .ok()
+        .flatten()?;
+        if n == self.resolved.profile.context_window {
+            return None;
+        }
+        self.resolved.profile.context_window = n;
+        Some(n)
+    }
+
     /// Use a freshly loaded configuration (a provider was added from the app).
     pub fn reload_config(&mut self, cfg: Config) {
         self.cfg = cfg;
+        self.probed = None;
     }
 
     pub fn set_model(&mut self, reference: &str) -> Result<(), String> {
         let r = self.cfg.resolve(Some(reference))?;
+        self.probed = None;
         self.client = Client::new(r.provider.clone()).map_err(err_text)?;
         self.resolved = r;
         Ok(())
@@ -607,6 +674,11 @@ impl Runner {
         })?;
         self.messages.push(Message::user(text));
         self.ctx.cancel.store(false, Ordering::Relaxed);
+        if let Some(n) = self.detect_context().await {
+            self.ui.event(UiEvent::Info(format!(
+                "context window: {n} tokens, as the server reports"
+            )));
+        }
         let deep = self.ctx.is_deep();
         let brief = agents::cli_brief(&self.agent, &self.skills, deep);
         let permission = self
@@ -727,22 +799,54 @@ impl Runner {
                 StreamEvent::Reasoning(t) => ui.event(UiEvent::Reasoning(t)),
                 StreamEvent::ToolStart(n) => ui.event(UiEvent::ToolStart(n)),
             };
-            let res = tokio::select! {
-                r = self.client.chat(
-                    &self.resolved.model,
-                    &prof,
-                    &msgs,
-                    &tools,
-                    &mut on_event,
-                ) => r,
-                _ = wait_cancel(flag) => {
-                    self.save();
-                    return Ok(Outcome {
-                        text: last_text,
-                        steps: step,
-                        usage: total,
-                        status: Status::Cancelled,
-                    });
+            // a lost connection is retried with a growing pause instead of ending the turn; esc stops it
+            let mut tries = 0u32;
+            let res = loop {
+                let r = tokio::select! {
+                    r = self.client.chat(
+                        &self.resolved.model,
+                        &prof,
+                        &msgs,
+                        &tools,
+                        &mut on_event,
+                    ) => r,
+                    _ = wait_cancel(flag.clone()) => {
+                        self.save();
+                        return Ok(Outcome {
+                            text: last_text,
+                            steps: step,
+                            usage: total,
+                            status: Status::Cancelled,
+                        });
+                    }
+                };
+                match r {
+                    Err(e) if is_transient(&e) && tries < RECONNECT_TRIES => {
+                        tries += 1;
+                        let wait = reconnect_wait(tries);
+                        self.ui.event(UiEvent::Info(format!(
+                            "connection lost ({}). Reconnecting in {wait}s, attempt {tries} of {RECONNECT_TRIES}; esc stops",
+                            short(&e.to_string())
+                        )));
+                        tokio::select! {
+                            _ = tokio::time::sleep(std::time::Duration::from_secs(wait)) => {}
+                            _ = wait_cancel(flag.clone()) => {
+                                self.save();
+                                return Ok(Outcome {
+                                    text: last_text,
+                                    steps: step,
+                                    usage: total,
+                                    status: Status::Cancelled,
+                                });
+                            }
+                        }
+                    }
+                    other => {
+                        if tries > 0 && other.is_ok() {
+                            self.ui.event(UiEvent::Info("reconnected".into()));
+                        }
+                        break other;
+                    }
                 }
             };
             let a = match res {

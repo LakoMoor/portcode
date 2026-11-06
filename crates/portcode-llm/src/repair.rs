@@ -74,6 +74,45 @@ pub fn repair_json(raw: &str) -> Option<String> {
     serde_json::from_str::<Value>(&t).ok().map(|_| t)
 }
 
+/// Qwen3-Coder style call: `<function=NAME><parameter=KEY>VALUE</parameter>…</function>`.
+/// Array and object values are read as JSON; everything else stays a string (the tools accept numbers in quotes).
+fn parse_xml_call(body: &str) -> Option<Value> {
+    let start = body.find("<function=")? + "<function=".len();
+    let rest = body.get(start..)?;
+    let name_end = rest.find('>')?;
+    let name = rest.get(..name_end)?.trim();
+    if name.is_empty() {
+        return None;
+    }
+    let mut args = serde_json::Map::new();
+    let mut inner = rest.get(name_end + 1..).unwrap_or("");
+    while let Some(i) = inner.find("<parameter=") {
+        let after = inner.get(i + "<parameter=".len()..).unwrap_or("");
+        let key_end = after.find('>')?;
+        let key = after.get(..key_end)?.trim().to_string();
+        let val_all = after.get(key_end + 1..).unwrap_or("");
+        let (val, tail) = match val_all.find("</parameter>") {
+            Some(j) => (
+                val_all.get(..j).unwrap_or(""),
+                val_all.get(j + "</parameter>".len()..).unwrap_or(""),
+            ),
+            None => (val_all.split("</function>").next().unwrap_or(""), ""),
+        };
+        let val = val.trim_matches(|c| c == '\n' || c == '\r');
+        let t = val.trim();
+        let v = if t.starts_with(['[', '{']) {
+            repair_json(t)
+                .and_then(|j| serde_json::from_str::<Value>(&j).ok())
+                .unwrap_or_else(|| Value::String(val.to_string()))
+        } else {
+            Value::String(val.to_string())
+        };
+        args.insert(key, v);
+        inner = tail;
+    }
+    Some(serde_json::json!({ "name": name, "arguments": Value::Object(args) }))
+}
+
 /// Extract tool calls a model wrote as text: Hermes/Qwen `<tool_call>{"name":…,"arguments":{…}}</tool_call>`
 /// and fenced ```json blocks with `name` + `arguments`. Returns (calls, text with those blocks removed).
 pub fn parse_text_tool_calls(text: &str, known: &[&str]) -> (Vec<ToolCall>, String) {
@@ -119,7 +158,10 @@ pub fn parse_text_tool_calls(text: &str, known: &[&str]) -> (Vec<ToolCall>, Stri
                 ),
                 None => (after, ""),
             };
-            let parsed = repair_json(body).and_then(|j| serde_json::from_str::<Value>(&j).ok());
+            let parsed = repair_json(body)
+                .and_then(|j| serde_json::from_str::<Value>(&j).ok())
+                .filter(|v| v.get("name").is_some())
+                .or_else(|| parse_xml_call(body));
             let used = parsed
                 .as_ref()
                 .map(|v| push(v, &mut calls))
@@ -143,6 +185,23 @@ pub fn parse_text_tool_calls(text: &str, known: &[&str]) -> (Vec<ToolCall>, Stri
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn reads_the_xml_call_format_qwen_coder_writes() {
+        let t = "ok\n<tool_call>\n<function=todowrite>\n<parameter=todos>\n[{\"content\": \"a\", \"status\": \"pending\"}]\n</parameter>\n</function>\n</tool_call>";
+        let (calls, rest) = parse_text_tool_calls(t, &["todowrite"]);
+        assert_eq!(calls.len(), 1, "{calls:?}");
+        assert_eq!(calls[0].function.name, "todowrite");
+        let v: Value = serde_json::from_str(&calls[0].function.arguments).unwrap();
+        assert_eq!(v["todos"][0]["status"], "pending");
+        assert_eq!(rest, "ok");
+        let t2 =
+            "<tool_call><function=read><parameter=path>src/a.rs</parameter></function></tool_call>";
+        let (c2, _) = parse_text_tool_calls(t2, &["read"]);
+        let v2: Value = serde_json::from_str(&c2[0].function.arguments).unwrap();
+        assert_eq!(v2["path"], "src/a.rs");
+        // an unknown tool is left as text
+        assert!(parse_text_tool_calls(t2, &["bash"]).0.is_empty());
+    }
     #[test]
     fn strips_think_blocks() {
         assert_eq!(strip_think("<think>hmm</think>\nanswer"), "answer");

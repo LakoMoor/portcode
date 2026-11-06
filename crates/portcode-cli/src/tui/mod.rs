@@ -68,6 +68,13 @@ async fn runner_task(
     mut rx: mpsc::UnboundedReceiver<Cmd>,
     tx: mpsc::UnboundedSender<Msg>,
 ) {
+    // the real context window comes from the server, not from a guess by model name
+    let announce = |n: u32| format!("context window: {n} tokens, as the server reports");
+    if let Some(n) = r.detect_context().await {
+        let _ = tx.send(Msg::Info(announce(n)));
+    }
+    let mut shown = r.resolved.profile.context_window;
+    let _ = tx.send(Msg::Window(shown));
     while let Some(c) = rx.recv().await {
         match c {
             Cmd::Send(t) => {
@@ -185,6 +192,15 @@ async fn runner_task(
                 };
                 let _ = tx.send(Msg::Info(m));
             }
+        }
+        // a new model or a finished turn may have changed the window: ask once per model, tell the screen
+        if let Some(n) = r.detect_context().await {
+            let _ = tx.send(Msg::Info(announce(n)));
+        }
+        let now = r.resolved.profile.context_window;
+        if now != shown {
+            shown = now;
+            let _ = tx.send(Msg::Window(now));
         }
     }
 }

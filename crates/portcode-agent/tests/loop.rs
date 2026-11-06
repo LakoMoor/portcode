@@ -568,3 +568,38 @@ async fn cancel_stops_a_model_request_that_never_answers() {
     assert!(matches!(out.status, Status::Cancelled));
     assert!(t.elapsed() < std::time::Duration::from_secs(5));
 }
+
+#[tokio::test]
+async fn a_dropped_connection_is_retried_and_the_turn_finishes() {
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    // the first request is cut off, the second is answered
+    let l = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/v1", l.local_addr().unwrap());
+    tokio::spawn(async move {
+        let mut n = 0;
+        while let Ok((mut s, _)) = l.accept().await {
+            n += 1;
+            let mut buf = vec![0u8; 65536];
+            let _ = s.read(&mut buf).await;
+            if n == 1 {
+                continue; // drop: connection closed with no answer
+            }
+            let body = "data: {\"choices\":[{\"delta\":{\"content\":\"hi there\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
+            let head = format!("HTTP/1.1 200 OK\r\ncontent-type: text/event-stream\r\ncontent-length: {}\r\nconnection: close\r\n\r\n", body.len());
+            let _ = s.write_all(head.as_bytes()).await;
+            let _ = s.write_all(body.as_bytes()).await;
+        }
+    });
+    let d = tempfile::tempdir().unwrap();
+    let (mut r, ui) = runner(d.path(), &url, "build", Reply::Once).await;
+    let out = tokio::time::timeout(std::time::Duration::from_secs(30), r.send("hello"))
+        .await
+        .expect("must not hang")
+        .expect("the turn must survive one dropped connection");
+    assert!(matches!(out.status, Status::Done));
+    assert!(out.text.contains("hi there"), "{}", out.text);
+    let seen = ui.0.lock().unwrap();
+    assert!(seen
+        .iter()
+        .any(|e| matches!(e, UiEvent::Info(t) if t.contains("Reconnecting"))));
+}

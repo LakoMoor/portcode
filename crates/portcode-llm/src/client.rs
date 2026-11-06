@@ -209,6 +209,83 @@ impl Client {
         Ok(ids)
     }
 
+    /// The context window the server itself reports for `model`, in tokens. Tries, in order: the `/models` entry
+    /// (vLLM `max_model_len`, OpenRouter `context_length`, others), llama.cpp `/props`, LM Studio `/api/v0/models`
+    /// (the loaded size wins), Ollama `/api/ps` (the running size). `None` when the server says nothing.
+    pub async fn context_window(&self, model: &str) -> Option<u32> {
+        const KEYS: &[&str] = &[
+            "loaded_context_length",
+            "max_model_len",
+            "context_length",
+            "context_window",
+            "max_context_length",
+            "max_context_tokens",
+            "max_input_tokens",
+            "n_ctx",
+        ];
+        let sane = |n: u64| (1024..=4_000_000).contains(&n).then_some(n as u32);
+        let root = self.provider.base_url.trim_end_matches('/');
+        let root = root.strip_suffix("/v1").unwrap_or(root).to_string();
+        let get = |url: String| {
+            let mut r = self.http.get(url).timeout(Duration::from_secs(5));
+            if let Some(k) = self.key() {
+                r = r.bearer_auth(k);
+            }
+            async move {
+                let resp = r.send().await.ok()?;
+                if !resp.status().is_success() {
+                    return None;
+                }
+                resp.json::<Value>().await.ok()
+            }
+        };
+        let find = |entries: &[Value]| -> Option<u32> {
+            let e = entries.iter().find(|m| {
+                ["id", "name", "model"]
+                    .iter()
+                    .any(|k| m.get(*k).and_then(Value::as_str) == Some(model))
+            })?;
+            KEYS.iter()
+                .find_map(|k| e.get(*k).and_then(Value::as_u64).and_then(sane))
+        };
+        if let Some(v) = get(self.url("models")).await {
+            for key in ["data", "models"] {
+                if let Some(n) = v.get(key).and_then(Value::as_array).and_then(|a| find(a)) {
+                    return Some(n);
+                }
+            }
+        }
+        if let Some(v) = get(format!("{root}/props")).await {
+            let n = v
+                .pointer("/default_generation_settings/n_ctx")
+                .or_else(|| v.get("n_ctx"))
+                .and_then(Value::as_u64)
+                .and_then(sane);
+            if n.is_some() {
+                return n;
+            }
+        }
+        if let Some(v) = get(format!("{root}/api/v0/models")).await {
+            if let Some(n) = v
+                .get("data")
+                .and_then(Value::as_array)
+                .and_then(|a| find(a))
+            {
+                return Some(n);
+            }
+        }
+        if let Some(v) = get(format!("{root}/api/ps")).await {
+            if let Some(n) = v
+                .get("models")
+                .and_then(Value::as_array)
+                .and_then(|a| find(a))
+            {
+                return Some(n);
+            }
+        }
+        None
+    }
+
     fn body(
         &self,
         model: &str,

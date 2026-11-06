@@ -18,7 +18,9 @@ Start with `portcode doctor`: it tests providers, the Rust toolchain and the eng
 
 **Model not found.** `/models` shows the exact names the server offers.
 
-**Small context window.** Set `context_window` for the model under `"models"` in `portcode.json`. PortCode then shortens tool output and compacts old turns to fit. See [Providers and models](providers.html).
+**The connection drops.** A lost or stalled connection to the model server, or a 429/5xx answer, is retried by itself: pauses of 2, 4, 8, 15 and then 30 seconds, up to 12 attempts, shown in the chat. `esc` stops it. The phone page of `/remote` also reconnects on its own and right away when the phone wakes or the network returns.
+
+**Small context window.** PortCode asks the server for the real size (vLLM, OpenRouter, llama.cpp, LM Studio, Ollama report it) and says so when it differs from its built-in guess. If your server does not report it, set `context_window` for the model under `"models"` in `portcode.json`. PortCode then shortens tool output and compacts old turns to fit. See [Providers and models](providers.html).
 
 **The model writes tool calls as plain text, or breaks JSON.** PortCode repairs the common cases. If a model still struggles, run `portcode eval` against it and try `/style compact`. For Qwen3.8 models see the profile notes in [Providers and models](providers.html).
 

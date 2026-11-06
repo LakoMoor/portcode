@@ -109,7 +109,13 @@ async function connect(){
   store.pcUrl=url; store.pcKey=pair; wantOpen=true;
   open(url,m[1],m[2]);
 }
+let redo=0, last=null;
+// the phone slept or the network came back: reconnect now instead of waiting for the timer
+function wake(){ if(wantOpen&&snapshot&&last&&(!ws||ws.readyState>1)){clearTimeout(redo);retry=0;open(...last)} }
+addEventListener("online",wake);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)wake()});
 function open(url,id,secret){
+  last=[url,id,secret];
   if(ws){try{ws.close()}catch(e){}}
   ws=new WebSocket(url);
   ws.onmessage=async ev=>{
@@ -122,7 +128,7 @@ function open(url,id,secret){
     else live(v);
   };
   ws.onclose=()=>{ if(!wantOpen)return; $("busy").className="chip off";$("busy").textContent="disconnected";
-    if(snapshot&&retry<8){setTimeout(()=>wantOpen&&open(url,id,secret),Math.min(1000*2**retry++,15000))}
+    if(snapshot){clearTimeout(redo);redo=setTimeout(()=>wantOpen&&open(url,id,secret),Math.min(1000*2**retry++,15000))}
     else if(!snapshot){fail("Could not connect. Is `portcode serve` running and reachable at that address?")} };
   ws.onerror=()=>{};
 }
