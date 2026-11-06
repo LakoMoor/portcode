@@ -1364,7 +1364,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-agent"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "async-trait",
  "dirs",
@@ -1389,7 +1389,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-cli"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "async-trait",
  "clap",
@@ -1413,7 +1413,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-evidence"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "hex",
  "serde",
@@ -1425,7 +1425,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-llm"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "futures-util",
  "reqwest",
@@ -1437,7 +1437,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-port"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "hex",
  "ignore",
@@ -1453,7 +1453,7 @@ dependencies = [
 
 [[package]]
 name = "portcode-testkit"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "serde",
  "serde_json",

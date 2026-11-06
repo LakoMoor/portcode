@@ -988,6 +988,15 @@ impl Runner {
                         )));
                         continue;
                     }
+                    if step > 0 && announces_next_step(&reply) {
+                        // no todo list, but the reply itself says what comes next: do it instead of reporting it
+                        todo_nudges += 1;
+                        self.ui.event(UiEvent::Info(
+                            "continuing: the reply names a next step".into(),
+                        ));
+                        self.messages.push(Message::user("You wrote a \"next step\" instead of doing it. Do not summarise. Carry out that step now with a tool call. If the task is already complete, answer with one line saying so. If only the user can unblock you, call `blocked` with the reason."));
+                        continue;
+                    }
                 }
                 self.save();
                 return Ok(Outcome {
@@ -1298,5 +1307,28 @@ mod todo_tests {
         assert_eq!(t.len(), 2);
         assert_eq!(t[0].status, "completed");
         assert!(last_todos(&[]).is_empty());
+    }
+}
+
+/// A reply that ends by naming the work still to do ("Next step: ...") rather than doing it.
+fn announces_next_step(reply: &str) -> bool {
+    let l = reply.to_lowercase();
+    ["next step", "следующий шаг", "следующие шаги"]
+        .iter()
+        .any(|k| l.contains(k))
+}
+
+#[cfg(test)]
+mod next_step_tests {
+    use super::announces_next_step;
+    #[test]
+    fn detects_a_written_next_step() {
+        assert!(announces_next_step(
+            "Done\n- x
+
+Next step\nBrute-force names"
+        ));
+        assert!(announces_next_step("Следующий шаг: запустить тесты"));
+        assert!(!announces_next_step("All tests pass. Finished."));
     }
 }
