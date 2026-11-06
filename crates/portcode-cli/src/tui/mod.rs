@@ -310,6 +310,11 @@ async fn start(
             if let Some(m) = crate::update::passive().await {
                 let _ = tx.send(Msg::Info(m));
             }
+            // then once a minute for as long as the session runs
+            crate::update::watch(|v| {
+                let _ = tx.send(Msg::Info(crate::update::notice(v)));
+            })
+            .await;
         });
     }
     if !gate_auto

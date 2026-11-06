@@ -103,6 +103,81 @@ pub async fn passive() -> Option<String> {
     (!known.is_empty() && newer(&known, current())).then(|| notice(&known))
 }
 
+/// Conditional request: `Ok(None)` when GitHub answers 304 (nothing changed; such answers are cheap on the rate limit,
+/// so a check every minute stays well inside the 60 requests per hour of an anonymous client).
+async fn latest_if_changed(
+    client: &reqwest::Client,
+    etag: &mut String,
+) -> Result<Option<String>, String> {
+    let mut req = client
+        .get(API)
+        .header("User-Agent", format!("portcode/{}", current()))
+        .header("Accept", "application/vnd.github+json");
+    if !etag.is_empty() {
+        req = req.header("If-None-Match", etag.as_str());
+    }
+    let resp = req
+        .send()
+        .await
+        .map_err(|e| format!("could not reach GitHub: {e}"))?;
+    if resp.status() == reqwest::StatusCode::NOT_MODIFIED {
+        return Ok(None);
+    }
+    if !resp.status().is_success() {
+        return Err(format!("GitHub answered {}", resp.status()));
+    }
+    if let Some(t) = resp.headers().get("etag").and_then(|v| v.to_str().ok()) {
+        *etag = t.to_string();
+    }
+    let v: serde_json::Value = serde_json::from_str(&resp.text().await.map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
+    Ok(v.get("tag_name")
+        .and_then(|t| t.as_str())
+        .map(|t| t.trim_start_matches('v').to_string()))
+}
+
+/// How often a running session looks for a new release.
+pub const WATCH_EVERY: Duration = Duration::from_secs(60);
+
+/// Checks for a new release every minute while the session runs and calls `notify` once per new version.
+/// `PORTCODE_NO_UPDATE_CHECK=1` turns it off. Network errors are ignored until the next round.
+pub async fn watch(notify: impl Fn(&str)) {
+    if std::env::var_os("PORTCODE_NO_UPDATE_CHECK").is_some() {
+        return;
+    }
+    let Ok(client) = reqwest::Client::builder()
+        .timeout(Duration::from_secs(6))
+        .build()
+    else {
+        return;
+    };
+    let mut announced = read_cache().1;
+    let mut etag = String::new();
+    let mut tick = tokio::time::interval(WATCH_EVERY);
+    tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+    tick.tick().await; // the first tick is immediate; startup already looked
+    loop {
+        tick.tick().await;
+        let Ok(Some(l)) = latest_if_changed(&client, &mut etag).await else {
+            continue;
+        };
+        if let Some(f) = cache_file() {
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_secs())
+                .unwrap_or(0);
+            if let Some(dir) = f.parent() {
+                let _ = std::fs::create_dir_all(dir);
+            }
+            let _ = std::fs::write(f, format!("{now} {l}"));
+        }
+        if newer(&l, current()) && l != announced {
+            notify(&l);
+            announced = l;
+        }
+    }
+}
+
 fn target() -> Result<(&'static str, &'static str), String> {
     match (std::env::consts::OS, std::env::consts::ARCH) {
         ("macos", "aarch64") => Ok(("aarch64-apple-darwin", "tar.gz")),
