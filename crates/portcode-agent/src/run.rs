@@ -775,6 +775,8 @@ impl Runner {
             .max(2);
         let mut limit = base_steps;
         let (mut extensions, mut gate_nudges, mut todo_nudges) = (0u32, 0u32, 0u32);
+        // todo_nudges counts consecutive stalls (a tool call resets it); todo_total bounds the whole run
+        let mut todo_total = 0u32;
         lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut compacted_on_repeat = false;
@@ -1000,9 +1002,12 @@ impl Runner {
                         )));
                     }
                 }
-                if !self.agent.gate
+                // agents with the finish gate get here only when it has nothing open (or gave up): a reply that
+                // still names a next step is a model stopping early there too
+                if (!self.agent.gate || self.gaps().is_empty())
                     && !final_step
                     && todo_nudges < 2
+                    && todo_total < 30
                     && !reply.trim_end().ends_with('?')
                 {
                     // agents without the finish gate: a reply that stops while the todo list still has open items
@@ -1015,6 +1020,7 @@ impl Runner {
                         .collect();
                     if !open.is_empty() {
                         todo_nudges += 1;
+                        todo_total += 1;
                         self.ui.event(UiEvent::Info(format!(
                             "continuing: {} todo item(s) still open",
                             open.len()
@@ -1028,6 +1034,7 @@ impl Runner {
                     if step > 0 && announces_next_step(&reply) {
                         // no todo list, but the reply itself says what comes next: do it instead of reporting it
                         todo_nudges += 1;
+                        todo_total += 1;
                         self.ui.event(UiEvent::Info(
                             "continuing: the reply names a next step".into(),
                         ));
@@ -1105,6 +1112,8 @@ impl Runner {
                     });
                 }
             }
+            // the model acted: a later stall gets fresh nudges instead of ending a long build after two
+            todo_nudges = 0;
             let todos = self.todos();
             if !todos.is_empty() {
                 self.ui.event(UiEvent::Todos(todos));
@@ -1350,9 +1359,29 @@ mod todo_tests {
 /// A reply that ends by naming the work still to do ("Next step: ...") rather than doing it.
 fn announces_next_step(reply: &str) -> bool {
     let l = reply.to_lowercase();
-    ["next step", "следующий шаг", "следующие шаги"]
-        .iter()
-        .any(|k| l.contains(k))
+    // "next step: none" / "следующий шаг: нет" says the work is finished
+    const DONE: [&str; 6] = ["none", "n/a", "nothing", "нет", "ничего", "-"];
+    [
+        "next step",
+        "next up",
+        "следующий шаг",
+        "следующие шаги",
+        "дальше:",
+        "далее:",
+    ]
+    .iter()
+    .any(|k| {
+        l.match_indices(k).any(|(i, _)| {
+            let tail = l[i + k.len()..]
+                .trim_start_matches([':', ' ', '\t', '\r', '\n', '*', '—', '-'])
+                .lines()
+                .next()
+                .unwrap_or("")
+                .trim()
+                .trim_end_matches('.');
+            !tail.is_empty() && !DONE.contains(&tail)
+        })
+    })
 }
 
 #[cfg(test)]
@@ -1367,5 +1396,12 @@ Next step\nBrute-force names"
         ));
         assert!(announces_next_step("Следующий шаг: запустить тесты"));
         assert!(!announces_next_step("All tests pass. Finished."));
+    }
+    #[test]
+    fn next_step_none_means_finished() {
+        assert!(!announces_next_step("done: all\nnext step: none"));
+        assert!(!announces_next_step("Готово.\nСледующий шаг: нет."));
+        assert!(announces_next_step("Далее: собрать release"));
+        assert!(announces_next_step("**Next step** — run cargo build"));
     }
 }
