@@ -868,7 +868,7 @@ impl App {
     pub fn load_history(&mut self, id: &str, msgs: &[portcode_llm::Message]) {
         use portcode_llm::Role;
         self.items.clear();
-        self.todos.clear();
+        self.todos = portcode_agent::run::last_todos(msgs);
         self.title = None;
         // up/down in the prompt walks what was typed in this session, not only since this launch
         self.history = msgs
@@ -931,6 +931,7 @@ impl App {
                 (m.role == Role::User)
                     .then(|| m.content.clone())
                     .flatten()
+                    .filter(|t| !t.starts_with("[Summary of the earlier"))
                     .map(|t| {
                         t.split_whitespace()
                             .collect::<Vec<_>>()

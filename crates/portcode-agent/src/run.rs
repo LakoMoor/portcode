@@ -297,6 +297,7 @@ impl Runner {
         let st = self.store.as_ref().ok_or("sessions disabled")?;
         let id = st.resolve(reference)?;
         self.messages = st.load(&id)?;
+        lock(&self.ctx.state).todos = last_todos(&self.messages);
         let meta = st.load_meta(&id);
         self.session_id = id.clone();
         self.cli_session = None;
@@ -531,11 +532,21 @@ impl Runner {
             return;
         }
         // summarise everything before the last user message
+        // normally everything before the last user message; in a long autonomous run there is only the
+        // summary of an earlier compaction, so then keep the last few messages and summarise the rest
+        let tail_cut = {
+            let mut c = self.messages.len().saturating_sub(6);
+            while self.messages.get(c).is_some_and(|m| m.role == Role::Tool) {
+                c += 1;
+            }
+            c
+        };
         let Some(cut) = self
             .messages
             .iter()
             .rposition(|m| m.role == Role::User)
             .filter(|i| *i > 1)
+            .or(Some(tail_cut).filter(|c| *c > 1 && *c < self.messages.len()))
         else {
             return;
         };
@@ -742,6 +753,7 @@ impl Runner {
         lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
         let mut compacted_on_repeat = false;
+        let mut recent_results = Vec::<String>::new();
         let mut total = Usage::default();
         let mut last_text = String::new();
         // output-length handling for small windows and models that stop early
@@ -998,6 +1010,22 @@ impl Runner {
                     self.exec(&call.function.name, &call.function.arguments)
                         .await
                 };
+                // different arguments, same answer again and again: the model is going in circles too
+                let key = format!("{}\n{}", call.function.name, result);
+                let result = if recent_results
+                    .iter()
+                    .rev()
+                    .take(3)
+                    .filter(|k| **k == key)
+                    .count()
+                    == 3
+                {
+                    repeats += 1;
+                    format!("{result}\n[This is the same output as the last 3 calls. Stop; try a different approach or tell the user what blocks you.]")
+                } else {
+                    result
+                };
+                recent_results.push(key);
                 self.track(&call.function.name, &result);
                 self.messages.push(Message::tool(call.id.clone(), result));
                 if repeats >= 2
@@ -1015,6 +1043,7 @@ impl Runner {
                         }
                         self.last_prompt_tokens = 0;
                         recent.clear();
+                        recent_results.clear();
                         repeats = 0;
                         self.save();
                         break;
@@ -1227,5 +1256,47 @@ impl SubRunner for SubAgents {
         } else {
             out.text
         })
+    }
+}
+
+/// The todo list as the model last wrote it, so a resumed or restarted session keeps its checklist.
+pub fn last_todos(msgs: &[Message]) -> Vec<Todo> {
+    msgs.iter()
+        .rev()
+        .flat_map(|m| m.tool_calls.iter().rev())
+        .find(|c| c.function.name == "todowrite")
+        .and_then(|c| serde_json::from_str::<serde_json::Value>(&c.function.arguments).ok())
+        .and_then(|v| serde_json::from_value(v.get("todos")?.clone()).ok())
+        .unwrap_or_default()
+}
+
+#[cfg(test)]
+mod todo_tests {
+    use super::*;
+    #[test]
+    fn the_last_todowrite_is_restored() {
+        let call = |args: &str| {
+            let mut m = Message::assistant_text("");
+            m.tool_calls = vec![portcode_llm::ToolCall {
+                id: "1".into(),
+                kind: "function".into(),
+                function: portcode_llm::FunctionCall {
+                    name: "todowrite".into(),
+                    arguments: args.into(),
+                },
+            }];
+            m
+        };
+        let msgs = vec![
+            call(r#"{"todos":[{"content":"a","status":"pending"}]}"#),
+            call(
+                r#"{"todos":[{"content":"a","status":"completed"},{"content":"b","status":"pending"}]}"#,
+            ),
+            Message::assistant_text("done"),
+        ];
+        let t = last_todos(&msgs);
+        assert_eq!(t.len(), 2);
+        assert_eq!(t[0].status, "completed");
+        assert!(last_todos(&[]).is_empty());
     }
 }
