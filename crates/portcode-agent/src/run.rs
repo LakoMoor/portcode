@@ -741,6 +741,7 @@ impl Runner {
         let (mut extensions, mut gate_nudges, mut todo_nudges) = (0u32, 0u32, 0u32);
         lock(&self.ctx.state).blocked = None;
         let (mut recent, mut repeats, mut nudges) = (Vec::<String>::new(), 0u32, 0u32);
+        let mut compacted_on_repeat = false;
         let mut total = Usage::default();
         let mut last_text = String::new();
         // output-length handling for small windows and models that stop early
@@ -999,6 +1000,26 @@ impl Runner {
                 };
                 self.track(&call.function.name, &result);
                 self.messages.push(Message::tool(call.id.clone(), result));
+                if repeats >= 2
+                    && !compacted_on_repeat
+                    && !portcode_llm::is_cli(&self.resolved.provider)
+                {
+                    // a looping model usually has a cluttered context: summarise it once and start over from the summary
+                    compacted_on_repeat = true;
+                    let n = self.messages.len();
+                    if n > 2 && self.summarize_upto(n).await {
+                        if let Some(m) = self.messages.first_mut() {
+                            if let Some(c) = m.content.as_mut() {
+                                c.push_str("\n\n[You were repeating the same tool call, so the conversation was summarised. Do not repeat that call. Try a different approach and continue the task.]");
+                            }
+                        }
+                        self.last_prompt_tokens = 0;
+                        recent.clear();
+                        repeats = 0;
+                        self.save();
+                        break;
+                    }
+                }
                 if repeats >= 2 {
                     self.save();
                     return Ok(Outcome {

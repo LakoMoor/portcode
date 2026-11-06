@@ -508,6 +508,14 @@ impl App {
                 }
             }
             Msg::Idle => {
+                // the turn is over: a tool still shown as running (cancelled, or stopped) must not keep spinning
+                for i in self.items.iter_mut() {
+                    if let Item::Tool { state, .. } = i {
+                        if *state == ToolState::Running {
+                            *state = ToolState::Err;
+                        }
+                    }
+                }
                 self.busy = false;
                 self.last_prompt = 0;
             }
@@ -976,6 +984,16 @@ impl App {
 
     pub fn on_key(&mut self, k: KeyEvent) {
         if let Some(p) = self.perm.take() {
+            if k.code == KeyCode::Char('A') {
+                // allow-all: approve this one and everything after it (same as /yolo on)
+                let _ = p.reply.send(Reply::Once);
+                if self.remote_on {
+                    self.outbox.push(serde_json::json!({"type":"perm_done"}));
+                }
+                self.perm = None;
+                self.slash("yolo on");
+                return;
+            }
             let reply = match k.code {
                 KeyCode::Char('y') | KeyCode::Enter => Some(Reply::Once),
                 KeyCode::Char('a') => Some(Reply::Always),
@@ -1708,6 +1726,29 @@ mod tests {
         assert!(a.perm.is_some() && a.input.is_empty());
         a.on_key(key(KeyCode::Char('a')));
         assert_eq!(rx.try_recv().ok(), Some(Reply::Always));
+    }
+    #[test]
+    fn capital_a_allows_everything_from_now_on() {
+        let mut a = app();
+        let ask = |a: &mut App| {
+            let (tx, rx) = oneshot::channel();
+            a.on_msg(Msg::Perm(PermAsk {
+                req: Request {
+                    tool: "bash".into(),
+                    target: "ls".into(),
+                    reason: String::new(),
+                },
+                reply: tx,
+            }));
+            rx
+        };
+        let (mut first, mut second) = (ask(&mut a), ask(&mut a));
+        a.on_key(key(KeyCode::Char('A')));
+        assert_eq!(first.try_recv().ok(), Some(Reply::Once));
+        assert_eq!(second.try_recv().ok(), Some(Reply::Once));
+        assert!(a.auto_allow && a.perm.is_none());
+        let mut third = ask(&mut a);
+        assert_eq!(third.try_recv().ok(), Some(Reply::Once));
     }
     #[test]
     fn summarize_handles_truncated_json() {

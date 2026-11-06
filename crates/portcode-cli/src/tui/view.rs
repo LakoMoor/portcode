@@ -1021,7 +1021,9 @@ fn permission(f: &mut Frame, app: &App, full: Rect) {
         Span::styled(" a ", Style::new().fg(c_bg()).bg(c_accent())),
         Span::styled(" always   ", text()),
         Span::styled(" n ", Style::new().fg(c_bg()).bg(c_red())),
-        Span::styled(" reject", text()),
+        Span::styled(" reject   ", text()),
+        Span::styled(" A ", Style::new().fg(c_bg()).bg(c_yellow())),
+        Span::styled(" allow all", text()),
     ]));
     f.render_widget(
         Paragraph::new(l).block(
