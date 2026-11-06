@@ -96,6 +96,12 @@ async fn runner_task(
                     Ok(m) | Err(m) => m,
                 };
                 let _ = tx.send(Msg::Info(m));
+                if what == "context" {
+                    // "auto": ask the server now and show the real size
+                    if let Some(n) = r.detect_context().await {
+                        let _ = tx.send(Msg::Window(n));
+                    }
+                }
             }
             Cmd::SetDeep(d) => r.ctx.deep.store(d, std::sync::atomic::Ordering::Relaxed),
             Cmd::Reload(c) => r.reload_config(*c),

@@ -41,7 +41,7 @@ Commit `portcode.json`. Keep keys in environment variables or in `portcode auth 
 | `small_model` | string | the main model | cheaper model for context compaction |
 | `default_agent` | string | `build` | agent to start with |
 | `provider` | map | presets | endpoints: `base_url`, `api_key`, `api_key_env`, `headers`. See [Providers](providers.html) |
-| `models` | map | built-in profiles | per-model overrides keyed by model id (the part after `provider/`): sampling, `context_window`, `parallel_tool_calls`, `prompt_style`, `reasoning_effort`… |
+| `models` | map | built-in profiles | per-model overrides keyed by model id (the part after `provider/`): sampling, `context_window`, `parallel_tool_calls`, `prompt_style`, `reasoning_effort`… The context size is taken from the server when it reports one; `/context 32k` (or `128k`, `auto`) in the app sets it for the current model and is remembered. |
 | `prompt_style` | `auto` `compact` `full` `qwen38` | `auto` | prompt flavour for every model; a per-model entry wins |
 | `permission` | map | ask for edits and commands | rules per tool, see [Permissions](permissions.html) |
 | `agent` | map | | per-agent `model`, `steps`, `prompt_append` |

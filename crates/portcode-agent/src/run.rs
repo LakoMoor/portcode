@@ -360,6 +360,8 @@ impl Runner {
         }
         self.probed = Some(key);
         if portcode_llm::is_cli(&self.resolved.provider)
+            || crate::config::context_pref(&self.resolved.provider.name, &self.resolved.model)
+                .is_some()
             || self
                 .cfg
                 .models
@@ -449,6 +451,29 @@ impl Runner {
                         "off"
                     }
                 ))
+            }
+            "context" => {
+                let (p, m) = (
+                    self.resolved.provider.name.clone(),
+                    self.resolved.model.clone(),
+                );
+                if val == "auto" {
+                    crate::config::save_context(&p, &m, None)?;
+                    if let Ok(r) = self.cfg.resolve(Some(&format!("{p}/{m}"))) {
+                        self.resolved.profile.context_window = r.profile.context_window;
+                    }
+                    self.probed = None;
+                    return Ok("context window: automatic (asked from the server)".into());
+                }
+                let n = crate::config::parse_size(val)
+                    .ok_or("give a size like 32k, 128k, 1m or 65536 (at least 2048), or auto")?;
+                self.resolved.profile.context_window = n;
+                if let Err(e) = crate::config::save_context(&p, &m, Some(n)) {
+                    return Ok(format!(
+                        "context window {n} tokens for this session (not saved: {e})"
+                    ));
+                }
+                Ok(format!("context window {n} tokens for {p}/{m} (saved)"))
             }
             "venv" => {
                 let on = val == "on";

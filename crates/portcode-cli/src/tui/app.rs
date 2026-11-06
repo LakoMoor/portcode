@@ -134,6 +134,10 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("venv", "Python virtual environments: on or off"),
     (
+        "context",
+        "context window of this model: /context 32k, 128k, auto",
+    ),
+    (
         "yolo",
         "allow everything without asking (toggle, or on/off)",
     ),
@@ -1373,6 +1377,22 @@ impl App {
                     }
                 }
                 _ => self.items.push(Item::Info("/team on or /team off: the orchestrator agent with a PM, tech lead, researchers, developers, tester and reviewer (config \"team\")".into())),
+            },
+            ("context", a) => match a {
+                Some("auto") => {
+                    let _ = self.cmd_tx.send(Cmd::Tune("context".into(), "auto".into()));
+                }
+                Some(v) => match portcode_agent::config::parse_size(v) {
+                    Some(n) => {
+                        self.ctx_window = n;
+                        let _ = self.cmd_tx.send(Cmd::Tune("context".into(), n.to_string()));
+                    }
+                    None => self.items.push(Item::Info("give a size like 32k, 128k, 1m or 65536 (at least 2048), or auto".into())),
+                },
+                None => self.items.push(Item::Info(format!(
+                    "context window: {} tokens. Change it with /context 32k, /context 128k or /context auto (ask the server). Set the same size in the server too (Ollama num_ctx, LM Studio context length).",
+                    self.ctx_window
+                ))),
             },
             ("venv", a) => match a {
                 Some(v @ ("on" | "off")) => {

@@ -129,6 +129,29 @@ pub fn pref(key: &str) -> Option<String> {
     read_state(&state_path()?, key)
 }
 
+/// Context window the user set in the app (`/context`) for `provider/model`; it beats the guess, the server and portcode.json.
+pub fn context_pref(provider: &str, model: &str) -> Option<u32> {
+    pref(&format!("context:{provider}/{model}"))?.parse().ok()
+}
+/// Remember (or with `None` forget) the context window for `provider/model`.
+pub fn save_context(provider: &str, model: &str, n: Option<u32>) -> Result<(), String> {
+    save_pref(
+        &format!("context:{provider}/{model}"),
+        &n.map(|n| n.to_string()).unwrap_or_default(),
+    )
+}
+/// "32k", "128K", "1m", "65536" -> tokens. Rejects sizes below 2048 or above 10M.
+pub fn parse_size(s: &str) -> Option<u32> {
+    let t = s.trim().to_lowercase().replace([' ', '_', ','], "");
+    let (num, mult) = match t.chars().last()? {
+        'k' => (&t[..t.len() - 1], 1024.0),
+        'm' => (&t[..t.len() - 1], 1024.0 * 1024.0),
+        _ => (t.as_str(), 1.0),
+    };
+    let n = (num.parse::<f64>().ok()? * mult).round();
+    (2048.0..=10_485_760.0).contains(&n).then_some(n as u32)
+}
+
 fn merge(base: &mut Value, over: Value) {
     match (base, over) {
         (Value::Object(b), Value::Object(o)) => {
@@ -262,6 +285,10 @@ impl Config {
         }
         let profile: ModelProfile =
             serde_json::from_value(pv).map_err(|e| format!("bad profile for {model}: {e}"))?;
+        let mut profile = profile;
+        if let Some(n) = context_pref(&pname, &model) {
+            profile.context_window = n;
+        }
         Ok(Resolved {
             provider,
             model,
@@ -471,5 +498,20 @@ mod tests {
             c.provider["ollama"].base_url.as_deref(),
             Some("http://localhost:11434/v1")
         );
+    }
+}
+
+#[cfg(test)]
+mod size_tests {
+    use super::parse_size;
+    #[test]
+    fn sizes_are_parsed() {
+        assert_eq!(parse_size("32k"), Some(32768));
+        assert_eq!(parse_size(" 128K "), Some(131072));
+        assert_eq!(parse_size("1m"), Some(1048576));
+        assert_eq!(parse_size("65536"), Some(65536));
+        assert_eq!(parse_size("100"), None);
+        assert_eq!(parse_size("abc"), None);
+        assert_eq!(parse_size(""), None);
     }
 }
