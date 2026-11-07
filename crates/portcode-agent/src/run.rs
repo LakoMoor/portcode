@@ -297,8 +297,13 @@ impl Runner {
         let st = self.store.as_ref().ok_or("sessions disabled")?;
         let id = st.resolve(reference)?;
         self.messages = st.load(&id)?;
-        lock(&self.ctx.state).todos = last_todos(&self.messages);
         let meta = st.load_meta(&id);
+        let saved = meta.as_ref().map(|m| m.todos.clone()).unwrap_or_default();
+        lock(&self.ctx.state).todos = if saved.is_empty() {
+            last_todos(&self.messages)
+        } else {
+            saved
+        };
         self.session_id = id.clone();
         self.cli_session = None;
         if let Some(m) = meta {
@@ -692,7 +697,12 @@ impl Runner {
             let (agent, model, deep) = self.state();
             s.save_meta(
                 &self.session_id,
-                &crate::session::Meta { agent, model, deep },
+                &crate::session::Meta {
+                    agent,
+                    model,
+                    deep,
+                    todos: self.todos(),
+                },
             );
         }
     }
@@ -1118,7 +1128,9 @@ impl Runner {
             if !todos.is_empty() {
                 self.ui.event(UiEvent::Todos(todos));
             }
-            if let Some(why) = lock(&self.ctx.state).blocked.clone() {
+            // take the value first: the lock must not be held while save() reads the todo list
+            let blocked = lock(&self.ctx.state).blocked.clone();
+            if let Some(why) = blocked {
                 self.save();
                 return Ok(Outcome {
                     text: format!("Blocked, needs you: {why}"),

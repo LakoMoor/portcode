@@ -162,10 +162,15 @@ async fn runner_task(
                         r.ctx.is_deep(),
                     ));
                 }
+                let ok = res.is_ok();
                 let _ = tx.send(match res {
                     Ok((id, _)) => Msg::Resumed(id, r.history().to_vec()),
                     Err(e) => Msg::Info(e),
                 });
+                if ok {
+                    // the checklist as saved with the session (it can be gone from the messages after a compaction)
+                    let _ = tx.send(Msg::Ui(portcode_agent::run::UiEvent::Todos(r.todos())));
+                }
             }
             Cmd::Sessions => {
                 let rows = pick_rows(&r);

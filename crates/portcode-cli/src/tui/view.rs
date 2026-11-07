@@ -855,6 +855,12 @@ fn sidebar(f: &mut Frame, app: &App, area: Rect) {
                 w,
                 bg,
             ));
+            if let Some((ok_n, all)) = parity_counts(t) {
+                l.push(Line::from(Span::styled(
+                    format!("{ok_n} of {all} cases match · {}%", ok_n * 100 / all.max(1)),
+                    Style::new().fg(fg),
+                )));
+            }
             for r in wrap(
                 vec![Span::styled(format!(" {t}"), Style::new().fg(fg))],
                 w,
@@ -2497,4 +2503,31 @@ fn settings(f: &mut Frame, app: &mut App, area: Rect) {
             height: 1,
         },
     );
+}
+
+/// (matching, all) cases from a parity report's last line, `parity: ok=7 diff=1 missing=0 extra=0`.
+fn parity_counts(t: &str) -> Option<(u32, u32)> {
+    let line = t.lines().rev().find(|l| l.contains("parity: ok="))?;
+    let n = |k: &str| -> Option<u32> {
+        let rest = line.split(k).nth(1)?;
+        rest.split(|c: char| !c.is_ascii_digit())
+            .next()?
+            .parse()
+            .ok()
+    };
+    let (ok, diff, missing, extra) = (n("ok=")?, n("diff=")?, n("missing=")?, n("extra=")?);
+    let all = ok + diff + missing + extra;
+    (all > 0).then_some((ok, all))
+}
+
+#[cfg(test)]
+mod parity_pct_tests {
+    use super::parity_counts;
+    #[test]
+    fn reads_the_summary_line() {
+        let t = "DIFF a\nparity: ok=3 diff=1 missing=0 extra=0\n";
+        assert_eq!(parity_counts(t), Some((3, 4)));
+        assert_eq!(parity_counts("PASS"), None);
+        assert_eq!(parity_counts("parity: ok=0 diff=0 missing=0 extra=0"), None);
+    }
 }

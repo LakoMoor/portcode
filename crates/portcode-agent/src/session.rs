@@ -33,6 +33,8 @@ pub struct Meta {
     /// `provider/model`.
     pub model: String,
     pub deep: bool,
+    /// The agent's todo list, kept here so it survives compaction and restarts.
+    pub todos: Vec<crate::tool::Todo>,
 }
 
 pub struct Store {
@@ -211,10 +213,15 @@ mod tests {
                 agent: "team".into(),
                 model: "ollama/qwen3:14b".into(),
                 deep: true,
+                todos: vec![crate::tool::Todo {
+                    content: "a".into(),
+                    status: "pending".into(),
+                }],
             },
         );
         let m = s.load_meta("s-1").unwrap();
         assert_eq!((m.agent.as_str(), m.deep), ("team", true));
+        assert_eq!(m.todos.len(), 1);
         assert_eq!(s.list().len(), 1);
         assert_eq!(s.latest().as_deref(), Some("s-1"));
         s.delete("s-1").unwrap();

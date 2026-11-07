@@ -8,6 +8,36 @@
 #   $env:PORTCODE_INSTALL_DIR = "C:\tools" where to put portcode.exe (default: %LOCALAPPDATA%\Programs\portcode\bin)
 #   $env:PORTCODE_DOWNLOAD_URL = "..."     another base URL, or a folder, for the assets (mirrors, testing)
 #   $env:PORTCODE_UNINSTALL   = "1"        remove portcode.exe and its PATH entry (config and project .portcode folders stay)
+# The user PATH lives in the registry as REG_EXPAND_SZ and usually holds entries like %USERPROFILE%\bin.
+# Reading it through [Environment]::GetEnvironmentVariable expands them, and writing it back through
+# SetEnvironmentVariable stores the expanded text as plain REG_SZ: other tools' entries get frozen or mangled.
+# So read the raw value, change only our own entry, and write it back with the same type.
+function Open-EnvKey([bool]$write) {
+    [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $write)
+}
+function Get-UserPathEntries {
+    $k = Open-EnvKey $false
+    try { $raw = $k.GetValue('Path', '', [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames) }
+    finally { $k.Close() }
+    if ($raw -isnot [string]) { return @() }
+    return @($raw.Split(';') | Where-Object { $_.Trim() -ne '' })
+}
+function Set-UserPathEntries($entries) {
+    $entries = @($entries)
+    $k = Open-EnvKey $true
+    try {
+        if ($entries.Count -eq 0) { $k.DeleteValue('Path', $false) }
+        else { $k.SetValue('Path', ($entries -join ';'), [Microsoft.Win32.RegistryValueKind]::ExpandString) }
+    } finally { $k.Close() }
+    # tell running programs (Explorer, new terminals) that the environment changed
+    try {
+        Add-Type -Namespace PortCode -Name Native -MemberDefinition '[System.Runtime.InteropServices.DllImport("user32.dll", SetLastError=true, CharSet=System.Runtime.InteropServices.CharSet.Auto)] public static extern System.IntPtr SendMessageTimeout(System.IntPtr h, uint m, System.UIntPtr w, string l, uint f, uint t, out System.UIntPtr r);' -ErrorAction Stop
+        $r = [UIntPtr]::Zero
+        [void][PortCode.Native]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 2000, [ref]$r)
+    } catch {}
+}
+function Expand-Entry([string]$e) { [Environment]::ExpandEnvironmentVariables($e) }
+
 function Install-PortCode {
     $ErrorActionPreference = 'Stop'
     $ProgressPreference = 'SilentlyContinue'   # the progress bar makes downloads many times slower in Windows PowerShell
@@ -15,13 +45,12 @@ function Install-PortCode {
 
     $repo = 'LakoMoor/portcode'
     $dir = if ($env:PORTCODE_INSTALL_DIR) { $env:PORTCODE_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA 'Programs\portcode\bin' }
-    $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-    $parts = @(); if ($userPath) { $parts = $userPath.Split(';') | Where-Object { $_ -ne '' } }
+    $parts = @(Get-UserPathEntries)
 
     if ($env:PORTCODE_UNINSTALL -eq '1') {
         Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $dir 'portcode.exe')
-        $keep = $parts | Where-Object { $_.TrimEnd('\') -ne $dir.TrimEnd('\') }
-        [Environment]::SetEnvironmentVariable('Path', ($keep -join ';'), 'User')
+        $keep = @($parts | Where-Object { (Expand-Entry $_).TrimEnd('\') -ne $dir.TrimEnd('\') })
+        if ($keep.Count -ne $parts.Count) { Set-UserPathEntries $keep }
         Write-Host "removed $dir\portcode.exe (config in %APPDATA%\portcode and project .portcode folders were left alone)"
         return
     }
@@ -58,9 +87,9 @@ function Install-PortCode {
     }
     finally { Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $tmp }
 
-    $onPath = $parts | Where-Object { $_.TrimEnd('\') -eq $dir.TrimEnd('\') }
-    if (-not $onPath) {
-        [Environment]::SetEnvironmentVariable('Path', (($parts + $dir) -join ';'), 'User')
+    $onPath = @($parts | Where-Object { (Expand-Entry $_).TrimEnd('\') -eq $dir.TrimEnd('\') })
+    if ($onPath.Count -eq 0) {
+        Set-UserPathEntries (@($parts) + @($dir))
         $env:Path = "$env:Path;$dir"
         Write-Host "added $dir to your PATH (new terminals pick it up)"
     }

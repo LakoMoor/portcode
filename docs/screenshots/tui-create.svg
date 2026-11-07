@@ -3,98 +3,68 @@
 <rect width="1157" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1157" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="578" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — new project</text>
-<rect x="121.29" y="91.00" width="195.93" height="19" fill="#342822"/>
-<rect x="326.55" y="91.00" width="167.94" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="148.00" width="121.29" height="19" fill="#342822"/>
-<rect x="270.57" y="148.00" width="93.30" height="19" fill="#1e1e1e"/>
-<rect x="373.20" y="148.00" width="93.30" height="19" fill="#1e1e1e"/>
-<rect x="475.83" y="148.00" width="158.61" height="19" fill="#1e1e1e"/>
-<rect x="643.77" y="148.00" width="139.95" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="205.00" width="886.35" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="262.00" width="429.18" height="19" fill="#342822"/>
-<rect x="578.46" y="262.00" width="429.18" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="281.00" width="429.18" height="19" fill="#342822"/>
-<rect x="578.46" y="281.00" width="429.18" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="300.00" width="429.18" height="19" fill="#342822"/>
-<rect x="578.46" y="300.00" width="429.18" height="19" fill="#1e1e1e"/>
-<rect x="261.24" y="357.00" width="121.29" height="19" fill="#342822"/>
-<rect x="391.86" y="357.00" width="121.29" height="19" fill="#1e1e1e"/>
-<rect x="522.48" y="357.00" width="74.64" height="19" fill="#1e1e1e"/>
-<rect x="139.95" y="452.00" width="886.35" height="19" fill="#1e1e1e"/>
-<rect x="121.29" y="528.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="72.00" width="195.93" height="19" fill="#16264e"/>
+<rect x="307.89" y="72.00" width="167.94" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="167.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="205.00" width="139.95" height="19" fill="#16264e"/>
+<rect x="251.91" y="205.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="354.54" y="205.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="457.17" y="205.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="625.11" y="205.00" width="223.92" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="262.00" width="755.73" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="319.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="319.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="338.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="338.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="102.63" y="357.00" width="466.50" height="19" fill="#16264e"/>
+<rect x="578.46" y="357.00" width="466.50" height="19" fill="#1e1e1e"/>
+<rect x="223.92" y="395.00" width="121.29" height="19" fill="#16264e"/>
+<rect x="354.54" y="395.00" width="121.29" height="19" fill="#1e1e1e"/>
+<rect x="485.16" y="395.00" width="74.64" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="471.00" width="27.99" height="19" fill="#1e1e1e"/>
+<rect x="93.30" y="509.00" width="223.92" height="19" fill="#1e1e1e"/>
+<rect x="690.42" y="566.00" width="102.63" height="19" fill="#1e1e1e"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
-<text x="111.96" y="48.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▍</text>
-<text x="121.29" y="48.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> New project</text>
-<text x="111.96" y="67.00" fill="#808080" textLength="597.12" lengthAdjust="spacingAndGlyphs">  Four short steps, then Start. Everything can be changed later.</text>
-<text x="121.29" y="105.00" fill="#fab283" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> Make my own version </text>
-<text x="326.55" y="105.00" fill="#808080" textLength="643.77" lengthAdjust="spacingAndGlyphs"> Just look inside    a Rust port that is checked against the original</text>
-<text x="111.96" y="143.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
-<text x="130.62" y="143.00" fill="#eeeeee" textLength="317.22" lengthAdjust="spacingAndGlyphs" font-weight="700"> 1  What do you want to recreate? </text>
-<text x="447.84" y="143.00" fill="#484848" textLength="597.12" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────╮</text>
-<text x="111.96" y="162.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="162.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◍ A website </text>
-<text x="270.57" y="162.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ▭ An app </text>
-<text x="373.20" y="162.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
-<text x="475.83" y="162.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
-<text x="643.77" y="162.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs"> ✦ Start fresh </text>
-<text x="1026.30" y="162.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="181.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="1026.30" y="181.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="200.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="130.62" y="200.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs"> Type the website's address:</text>
-<text x="1026.30" y="200.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="219.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="130.62" y="219.00" fill="#eeeeee" textLength="895.68" lengthAdjust="spacingAndGlyphs">  https://example.com                                                                           </text>
-<text x="1026.30" y="219.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="238.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
-<text x="111.96" y="257.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
-<text x="130.62" y="257.00" fill="#eeeeee" textLength="326.55" lengthAdjust="spacingAndGlyphs" font-weight="700"> 2  How closely may we look at it? </text>
-<text x="457.17" y="257.00" fill="#484848" textLength="587.79" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────╮</text>
-<text x="111.96" y="276.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="276.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs"> ● Clean room                                 </text>
-<text x="578.46" y="276.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs"> ○ Deep                                       </text>
-<text x="1026.30" y="276.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="295.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="295.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs">   Nothing inside it is read: work from       </text>
-<text x="578.46" y="295.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   Read its code and files with every         </text>
-<text x="1026.30" y="295.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="314.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="314.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs">   what you see. Running it, its output.      </text>
-<text x="578.46" y="314.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   tool: Ghidra, Capstone. Private use.       </text>
-<text x="1026.30" y="314.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="333.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
-<text x="111.96" y="352.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
-<text x="130.62" y="352.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs" font-weight="700"> 3  Build </text>
-<text x="223.92" y="352.00" fill="#484848" textLength="821.04" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────────────────────────────╮</text>
-<text x="111.96" y="371.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="371.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
-<text x="261.24" y="371.00" fill="#fab283" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> Rust + axum </text>
-<text x="391.86" y="371.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Static site </text>
-<text x="522.48" y="371.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> Leptos </text>
-<text x="1026.30" y="371.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="390.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="139.95" y="390.00" fill="#808080" textLength="233.25" lengthAdjust="spacingAndGlyphs"> 1 ☐ Own design and art  </text>
-<text x="373.20" y="390.00" fill="#eeeeee" textLength="270.57" lengthAdjust="spacingAndGlyphs"> 2 ☑ Screenshots and a site  </text>
-<text x="643.77" y="390.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs"> 3 ☐ Work as a team  </text>
-<text x="1026.30" y="390.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="409.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="130.62" y="409.00" fill="#808080" textLength="671.76" lengthAdjust="spacingAndGlyphs">   1:1: goldens from the original, parity PASS before it counts as done.</text>
-<text x="1026.30" y="409.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="428.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
-<text x="111.96" y="447.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
-<text x="130.62" y="447.00" fill="#fab283" textLength="205.26" lengthAdjust="spacingAndGlyphs" font-weight="700"> 4  Say what you want </text>
-<text x="335.88" y="447.00" fill="#fab283" textLength="709.08" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────────────────╮</text>
-<text x="111.96" y="466.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs">│ ▎</text>
-<text x="139.95" y="466.00" fill="#808080" textLength="205.26" lengthAdjust="spacingAndGlyphs"> Recreate this website</text>
-<text x="345.21" y="466.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
-<text x="1026.30" y="466.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="485.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
-<text x="130.62" y="485.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">  enter starts · alt+enter adds a line</text>
-<text x="1026.30" y="485.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
-<text x="111.96" y="504.00" fill="#fab283" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
-<text x="0.00" y="542.00" fill="#eeeeee" textLength="447.84" lengthAdjust="spacingAndGlyphs">               ✦ Start    ollama/mock/mock-model</text>
-<text x="447.84" y="542.00" fill="#9d7cd8" textLength="149.28" lengthAdjust="spacingAndGlyphs">  · agent port  </text>
-<text x="597.12" y="542.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
-<text x="111.96" y="561.00" fill="#808080" textLength="494.49" lengthAdjust="spacingAndGlyphs">  tab moves · ←→ chooses · ctrl+s starts · esc closes</text>
+<text x="93.30" y="48.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700">New project</text>
+<text x="195.93" y="48.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   enter or ctrl+s starts · tab moves · esc closes</text>
+<text x="102.63" y="86.00" fill="#eeeeee" textLength="195.93" lengthAdjust="spacingAndGlyphs" font-weight="700"> Make my own version </text>
+<text x="307.89" y="86.00" fill="#808080" textLength="167.94" lengthAdjust="spacingAndGlyphs"> Just look inside </text>
+<text x="93.30" y="124.00" fill="#eeeeee" textLength="233.25" lengthAdjust="spacingAndGlyphs" font-weight="700">What do you want to make?</text>
+<text x="93.30" y="143.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs">Choose what to recreate, say what you want, then press Start.</text>
+<text x="0.00" y="181.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           1 </text>
+<text x="121.29" y="181.00" fill="#eeeeee" textLength="289.23" lengthAdjust="spacingAndGlyphs" font-weight="700">  What do you want to recreate?</text>
+<text x="102.63" y="219.00" fill="#eeeeee" textLength="139.95" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◍ A website ✓ </text>
+<text x="251.91" y="219.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ▭ An app </text>
+<text x="354.54" y="219.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
+<text x="457.17" y="219.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
+<text x="625.11" y="219.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs"> ✦ Nothing, start fresh </text>
+<text x="93.30" y="257.00" fill="#808080" textLength="261.24" lengthAdjust="spacingAndGlyphs"> Type the website's address:</text>
+<text x="0.00" y="276.00" fill="#eeeeee" textLength="1156.92" lengthAdjust="spacingAndGlyphs">            https://example.com                                                                                             </text>
+<text x="93.30" y="314.00" fill="#808080" textLength="289.23" lengthAdjust="spacingAndGlyphs"> How closely may we look at it?</text>
+<text x="0.00" y="333.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">            ▣ Clean room ✓                                    </text>
+<text x="578.46" y="333.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs"> ◉ Deep                                           </text>
+<text x="0.00" y="352.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">              Nothing inside it is read. We work from         </text>
+<text x="578.46" y="352.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   We read its code and files with every tool:    </text>
+<text x="0.00" y="371.00" fill="#eeeeee" textLength="578.46" lengthAdjust="spacingAndGlyphs">              what you can see: running it, its output.       </text>
+<text x="578.46" y="371.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   Ghidra, Capstone, dotnet. For private use.     </text>
+<text x="102.63" y="409.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
+<text x="223.92" y="409.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs" font-weight="700"> Rust + axum </text>
+<text x="354.54" y="409.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Static site </text>
+<text x="485.16" y="409.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs"> Leptos </text>
+<text x="102.63" y="428.00" fill="#808080" textLength="279.90" lengthAdjust="spacingAndGlyphs"> 1 [ ] Its own design and art </text>
+<text x="382.53" y="428.00" fill="#eeeeee" textLength="289.23" lengthAdjust="spacingAndGlyphs">  2 [x] Screenshots and a site </text>
+<text x="671.76" y="428.00" fill="#808080" textLength="214.59" lengthAdjust="spacingAndGlyphs">  3 [ ] Work as a team </text>
+<text x="93.30" y="447.00" fill="#808080" textLength="671.76" lengthAdjust="spacingAndGlyphs">   1:1: goldens from the original, parity PASS before it counts as done.</text>
+<text x="0.00" y="485.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           2 </text>
+<text x="121.29" y="485.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs" font-weight="700">  Say what you want</text>
+<text x="93.30" y="523.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▎</text>
+<text x="102.63" y="523.00" fill="#808080" textLength="205.26" lengthAdjust="spacingAndGlyphs"> Recreate this website</text>
+<text x="307.89" y="523.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
+<text x="93.30" y="542.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
+<text x="102.63" y="580.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
+<text x="195.93" y="580.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model</text>
+<text x="401.19" y="580.00" fill="#9d7cd8" textLength="130.62" lengthAdjust="spacingAndGlyphs">  agent port  </text>
+<text x="531.81" y="580.00" fill="#70c8aa" textLength="130.62" lengthAdjust="spacingAndGlyphs"> ▣ clean-room </text>
+<text x="662.43" y="580.00" fill="#eeeeee" textLength="494.49" lengthAdjust="spacingAndGlyphs">     ✦ Start                                         </text>
 </g>
 </svg>
