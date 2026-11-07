@@ -3,66 +3,95 @@
 <rect width="1157" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1157" height="10" fill="#1b1b1b"/>
 <circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
 <text x="578" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — new project</text>
-<rect x="102.63" y="72.00" width="195.93" height="19" fill="#1e1e1e"/>
-<rect x="307.89" y="72.00" width="167.94" height="19" fill="#16264e"/>
-<rect x="93.30" y="167.00" width="27.99" height="19" fill="#1e1e1e"/>
-<rect x="102.63" y="205.00" width="121.29" height="19" fill="#1e1e1e"/>
-<rect x="233.25" y="205.00" width="111.96" height="19" fill="#16264e"/>
-<rect x="354.54" y="205.00" width="93.30" height="19" fill="#1e1e1e"/>
-<rect x="457.17" y="205.00" width="158.61" height="19" fill="#1e1e1e"/>
-<rect x="625.11" y="205.00" width="223.92" height="19" fill="#1e1e1e"/>
-<rect x="93.30" y="262.00" width="737.07" height="19" fill="#1e1e1e"/>
-<rect x="102.63" y="338.00" width="466.50" height="19" fill="#1e1e1e"/>
-<rect x="578.46" y="338.00" width="466.50" height="19" fill="#16264e"/>
-<rect x="102.63" y="357.00" width="466.50" height="19" fill="#1e1e1e"/>
-<rect x="578.46" y="357.00" width="466.50" height="19" fill="#16264e"/>
-<rect x="102.63" y="376.00" width="466.50" height="19" fill="#1e1e1e"/>
-<rect x="578.46" y="376.00" width="466.50" height="19" fill="#16264e"/>
-<rect x="223.92" y="414.00" width="130.62" height="19" fill="#16264e"/>
-<rect x="363.87" y="414.00" width="139.95" height="19" fill="#1e1e1e"/>
-<rect x="513.15" y="414.00" width="149.28" height="19" fill="#1e1e1e"/>
-<rect x="93.30" y="452.00" width="27.99" height="19" fill="#1e1e1e"/>
-<rect x="93.30" y="490.00" width="373.20" height="19" fill="#1e1e1e"/>
-<rect x="559.80" y="547.00" width="74.64" height="19" fill="#f5a742"/>
-<rect x="662.43" y="547.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="121.29" y="91.00" width="195.93" height="19" fill="#1e1e1e"/>
+<rect x="326.55" y="91.00" width="167.94" height="19" fill="#342822"/>
+<rect x="139.95" y="148.00" width="121.29" height="19" fill="#1e1e1e"/>
+<rect x="270.57" y="148.00" width="93.30" height="19" fill="#342822"/>
+<rect x="373.20" y="148.00" width="93.30" height="19" fill="#1e1e1e"/>
+<rect x="475.83" y="148.00" width="158.61" height="19" fill="#1e1e1e"/>
+<rect x="643.77" y="148.00" width="139.95" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="205.00" width="886.35" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="281.00" width="429.18" height="19" fill="#1e1e1e"/>
+<rect x="578.46" y="281.00" width="429.18" height="19" fill="#342822"/>
+<rect x="139.95" y="300.00" width="429.18" height="19" fill="#1e1e1e"/>
+<rect x="578.46" y="300.00" width="429.18" height="19" fill="#342822"/>
+<rect x="139.95" y="319.00" width="429.18" height="19" fill="#1e1e1e"/>
+<rect x="578.46" y="319.00" width="429.18" height="19" fill="#342822"/>
+<rect x="261.24" y="376.00" width="130.62" height="19" fill="#342822"/>
+<rect x="401.19" y="376.00" width="139.95" height="19" fill="#1e1e1e"/>
+<rect x="550.47" y="376.00" width="149.28" height="19" fill="#1e1e1e"/>
+<rect x="139.95" y="433.00" width="886.35" height="19" fill="#1e1e1e"/>
+<rect x="121.29" y="509.00" width="102.63" height="19" fill="#1e1e1e"/>
+<rect x="625.11" y="509.00" width="74.64" height="19" fill="#f5a742"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
-<text x="93.30" y="48.00" fill="#eeeeee" textLength="102.63" lengthAdjust="spacingAndGlyphs" font-weight="700">New project</text>
-<text x="195.93" y="48.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   enter or ctrl+s starts · tab moves · esc closes</text>
-<text x="102.63" y="86.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs"> Make my own version </text>
-<text x="307.89" y="86.00" fill="#eeeeee" textLength="167.94" lengthAdjust="spacingAndGlyphs" font-weight="700"> Just look inside </text>
-<text x="93.30" y="124.00" fill="#eeeeee" textLength="279.90" lengthAdjust="spacingAndGlyphs" font-weight="700">What do you want to look into?</text>
-<text x="93.30" y="143.00" fill="#808080" textLength="802.38" lengthAdjust="spacingAndGlyphs">Pick it, then press Start. You get docs/SPEC.md and the evidence ledger, no port code.</text>
-<text x="0.00" y="181.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           1 </text>
-<text x="121.29" y="181.00" fill="#eeeeee" textLength="298.56" lengthAdjust="spacingAndGlyphs" font-weight="700">  What do you want to look into?</text>
-<text x="102.63" y="219.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> ◍ A website </text>
-<text x="233.25" y="219.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> ▭ An app ✓ </text>
-<text x="354.54" y="219.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
-<text x="457.17" y="219.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
-<text x="625.11" y="219.00" fill="#808080" textLength="223.92" lengthAdjust="spacingAndGlyphs"> ✦ Nothing, start fresh </text>
-<text x="93.30" y="257.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs"> Path to the program (an executable, .app or install folder):</text>
-<text x="0.00" y="276.00" fill="#eeeeee" textLength="1156.92" lengthAdjust="spacingAndGlyphs">            original/wordstat                                                                                               </text>
-<text x="93.30" y="295.00" fill="#70c8aa" textLength="177.27" lengthAdjust="spacingAndGlyphs">  Mach-O executable</text>
-<text x="93.30" y="333.00" fill="#808080" textLength="541.14" lengthAdjust="spacingAndGlyphs"> How closely may we look at it? Looking inside means deep.</text>
-<text x="102.63" y="352.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs"> ▣ Clean room                                     </text>
-<text x="569.13" y="352.00" fill="#eeeeee" textLength="587.79" lengthAdjust="spacingAndGlyphs">  ◉ Deep ✓                                                     </text>
-<text x="102.63" y="371.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   Nothing inside it is read. We work from        </text>
-<text x="569.13" y="371.00" fill="#eeeeee" textLength="587.79" lengthAdjust="spacingAndGlyphs">    We read its code and files with every tool:                </text>
-<text x="102.63" y="390.00" fill="#808080" textLength="466.50" lengthAdjust="spacingAndGlyphs">   what you can see: running it, its output.      </text>
-<text x="569.13" y="390.00" fill="#eeeeee" textLength="587.79" lengthAdjust="spacingAndGlyphs">    Ghidra, Capstone, dotnet. For private use.                 </text>
-<text x="102.63" y="428.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
-<text x="223.92" y="428.00" fill="#eeeeee" textLength="130.62" lengthAdjust="spacingAndGlyphs" font-weight="700"> Command line </text>
-<text x="363.87" y="428.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs"> Desktop, egui </text>
-<text x="513.15" y="428.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs"> Desktop, Tauri </text>
-<text x="0.00" y="466.00" fill="#eeeeee" textLength="121.29" lengthAdjust="spacingAndGlyphs">           2 </text>
-<text x="121.29" y="466.00" fill="#eeeeee" textLength="177.27" lengthAdjust="spacingAndGlyphs" font-weight="700">  Say what you want</text>
-<text x="93.30" y="504.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▎</text>
-<text x="102.63" y="504.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs"> Recreate this program, same behaviour</text>
-<text x="457.17" y="504.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
-<text x="93.30" y="523.00" fill="#808080" textLength="401.19" lengthAdjust="spacingAndGlyphs">  Enter to start · Alt+Enter for a new line</text>
-<text x="102.63" y="561.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> Built by </text>
-<text x="195.93" y="561.00" fill="#eeeeee" textLength="205.26" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model</text>
-<text x="401.19" y="561.00" fill="#56b6c2" textLength="158.61" lengthAdjust="spacingAndGlyphs">  agent reverse  </text>
-<text x="559.80" y="561.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
-<text x="634.44" y="561.00" fill="#eeeeee" textLength="522.48" lengthAdjust="spacingAndGlyphs">     ✦ Start                                            </text>
+<text x="111.96" y="48.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▍</text>
+<text x="121.29" y="48.00" fill="#eeeeee" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700"> New project</text>
+<text x="111.96" y="67.00" fill="#808080" textLength="597.12" lengthAdjust="spacingAndGlyphs">  Four short steps, then Start. Everything can be changed later.</text>
+<text x="121.29" y="105.00" fill="#808080" textLength="195.93" lengthAdjust="spacingAndGlyphs"> Make my own version </text>
+<text x="326.55" y="105.00" fill="#fab283" textLength="167.94" lengthAdjust="spacingAndGlyphs" font-weight="700"> Just look inside </text>
+<text x="494.49" y="105.00" fill="#808080" textLength="438.51" lengthAdjust="spacingAndGlyphs">   a spec and the evidence ledger, no port code</text>
+<text x="111.96" y="143.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
+<text x="130.62" y="143.00" fill="#eeeeee" textLength="326.55" lengthAdjust="spacingAndGlyphs" font-weight="700"> 1  What do you want to look into? </text>
+<text x="457.17" y="143.00" fill="#484848" textLength="587.79" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────────────╮</text>
+<text x="111.96" y="162.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="139.95" y="162.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> ◍ A website </text>
+<text x="270.57" y="162.00" fill="#fab283" textLength="93.30" lengthAdjust="spacingAndGlyphs" font-weight="700"> ▭ An app </text>
+<text x="373.20" y="162.00" fill="#808080" textLength="93.30" lengthAdjust="spacingAndGlyphs"> ✥ A game </text>
+<text x="475.83" y="162.00" fill="#808080" textLength="158.61" lengthAdjust="spacingAndGlyphs"> ▤ A file format </text>
+<text x="643.77" y="162.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs"> ✦ Start fresh </text>
+<text x="1026.30" y="162.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="181.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="1026.30" y="181.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="200.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="130.62" y="200.00" fill="#808080" textLength="569.13" lengthAdjust="spacingAndGlyphs"> Path to the program (an executable, .app or install folder):</text>
+<text x="1026.30" y="200.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="219.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="130.62" y="219.00" fill="#eeeeee" textLength="895.68" lengthAdjust="spacingAndGlyphs">  original/wordstat                                                                             </text>
+<text x="1026.30" y="219.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="238.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="130.62" y="238.00" fill="#70c8aa" textLength="139.95" lengthAdjust="spacingAndGlyphs"> ELF executable</text>
+<text x="1026.30" y="238.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="257.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="111.96" y="276.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
+<text x="130.62" y="276.00" fill="#eeeeee" textLength="401.19" lengthAdjust="spacingAndGlyphs" font-weight="700"> 2  How closely? Looking inside means deep </text>
+<text x="531.81" y="276.00" fill="#484848" textLength="513.15" lengthAdjust="spacingAndGlyphs">──────────────────────────────────────────────────────╮</text>
+<text x="111.96" y="295.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="139.95" y="295.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs"> ○ Clean room                                 </text>
+<text x="578.46" y="295.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs"> ● Deep                                       </text>
+<text x="1026.30" y="295.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="314.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="139.95" y="314.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   Nothing inside it is read: work from       </text>
+<text x="578.46" y="314.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs">   Read its code and files with every         </text>
+<text x="1026.30" y="314.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="333.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="139.95" y="333.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   what you see. Running it, its output.      </text>
+<text x="578.46" y="333.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs">   tool: Ghidra, Capstone. Private use.       </text>
+<text x="1026.30" y="333.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="352.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="111.96" y="371.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
+<text x="130.62" y="371.00" fill="#eeeeee" textLength="93.30" lengthAdjust="spacingAndGlyphs" font-weight="700"> 3  Build </text>
+<text x="223.92" y="371.00" fill="#484848" textLength="821.04" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="111.96" y="390.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="139.95" y="390.00" fill="#808080" textLength="121.29" lengthAdjust="spacingAndGlyphs"> Build with  </text>
+<text x="261.24" y="390.00" fill="#fab283" textLength="130.62" lengthAdjust="spacingAndGlyphs" font-weight="700"> Command line </text>
+<text x="401.19" y="390.00" fill="#808080" textLength="139.95" lengthAdjust="spacingAndGlyphs"> Desktop, egui </text>
+<text x="550.47" y="390.00" fill="#808080" textLength="149.28" lengthAdjust="spacingAndGlyphs"> Desktop, Tauri </text>
+<text x="1026.30" y="390.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="409.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="111.96" y="428.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>
+<text x="130.62" y="428.00" fill="#fab283" textLength="205.26" lengthAdjust="spacingAndGlyphs" font-weight="700"> 4  Say what you want </text>
+<text x="335.88" y="428.00" fill="#fab283" textLength="709.08" lengthAdjust="spacingAndGlyphs">───────────────────────────────────────────────────────────────────────────╮</text>
+<text x="111.96" y="447.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs">│ ▎</text>
+<text x="139.95" y="447.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs"> Recreate this program, same behaviour</text>
+<text x="494.49" y="447.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▏</text>
+<text x="1026.30" y="447.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="466.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
+<text x="130.62" y="466.00" fill="#808080" textLength="354.54" lengthAdjust="spacingAndGlyphs">  enter starts · alt+enter adds a line</text>
+<text x="1026.30" y="466.00" fill="#fab283" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
+<text x="111.96" y="485.00" fill="#fab283" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="0.00" y="523.00" fill="#eeeeee" textLength="447.84" lengthAdjust="spacingAndGlyphs">               ✦ Start    ollama/mock/mock-model</text>
+<text x="447.84" y="523.00" fill="#56b6c2" textLength="177.27" lengthAdjust="spacingAndGlyphs">  · agent reverse  </text>
+<text x="625.11" y="523.00" fill="#0a0a0a" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700"> ◉ deep </text>
+<text x="111.96" y="542.00" fill="#808080" textLength="494.49" lengthAdjust="spacingAndGlyphs">  tab moves · ←→ chooses · ctrl+s starts · esc closes</text>
 </g>
 </svg>

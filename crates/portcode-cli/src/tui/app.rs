@@ -129,6 +129,10 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("setup", "first-run guide: provider, key, model"),
     (
+        "settings",
+        "all switches on one screen: mode, team, theme, context…",
+    ),
+    (
         "team",
         "multi-agent team (PM, tech lead, workers): on or off",
     ),
@@ -216,6 +220,7 @@ pub struct App {
     pub restart: Option<Option<String>>,
     pub wb: Option<super::workbench::Wb>,
     pub wiz: Option<super::wizard::Wizard>,
+    pub settings: Option<super::settings::Settings>,
     pub conn: Option<super::connect::Connect>,
     pub auto_allow: bool,
     /// Highlighted row of the `/` menu (arrows move it).
@@ -242,7 +247,7 @@ pub struct App {
     pub parity: Option<(bool, String)>,
     pub cmd_tx: mpsc::UnboundedSender<Cmd>,
     pub cancel: Arc<AtomicBool>,
-    cfg: Config,
+    pub(super) cfg: Config,
     root: std::path::PathBuf,
 }
 
@@ -292,6 +297,7 @@ impl App {
             restart: None,
             wb: None,
             wiz: None,
+            settings: None,
             conn: None,
             auto_allow: false,
             perm_queue: Default::default(),
@@ -1017,6 +1023,10 @@ impl App {
             }
             return;
         }
+        if self.settings.is_some() {
+            self.settings_key(k);
+            return;
+        }
         if let Some(p) = self.picker.as_mut() {
             let n = p.rows.len().max(1);
             match k.code {
@@ -1312,6 +1322,10 @@ impl App {
         let _ = self.cmd_tx.send(Cmd::Send(text));
     }
 
+    pub(super) fn run_slash(&mut self, cmd: &str) {
+        self.slash(cmd);
+    }
+
     fn slash(&mut self, cmd: &str) {
         let mut p = cmd.split_whitespace();
         let (name, arg) = (p.next().unwrap_or(""), p.next());
@@ -1358,6 +1372,7 @@ impl App {
                 });
             }
             ("setup", _) => self.setup_guide(),
+            ("settings" | "config" | "preferences", _) => self.open_settings(),
             ("team", a) => match a {
                 Some(v @ ("on" | "off")) => {
                     let on = v == "on";

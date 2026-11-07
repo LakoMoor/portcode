@@ -43,6 +43,8 @@ ls "$OUT"
 # /create: the guided start (real UI; the source is inspected on disk)
 ( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create.svg" --size 124x42 --create "website:https://example.com" $L >/dev/null \
   && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-create-look.svg" --size 124x42 --create "look-app:original/wordstat" $L >/dev/null )
+# /settings: every switch on one screen
+( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-settings.svg" --size 110x40 --settings $L >/dev/null )
 # /connect: add an OpenAI-compatible endpoint (the key shown is a dummy)
 ( cd "$W" && PORTCODE_BASE_URL="http://127.0.0.1:1/v1" "$P" -a port -m mock/mock-model snapshot "$OUT/tui-connect.svg" --size 100x46 --connect ollama $L >/dev/null )
 # the greeting on the first start in a folder

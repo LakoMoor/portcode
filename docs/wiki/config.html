@@ -70,7 +70,7 @@
 <tr><td><code>small_model</code></td><td>string</td><td>the main model</td><td>cheaper model for context compaction</td></tr>
 <tr><td><code>default_agent</code></td><td>string</td><td><code>build</code></td><td>agent to start with</td></tr>
 <tr><td><code>provider</code></td><td>map</td><td>presets</td><td>endpoints: <code>base_url</code>, <code>api_key</code>, <code>api_key_env</code>, <code>headers</code>. See <a href="providers.html">Providers</a></td></tr>
-<tr><td><code>models</code></td><td>map</td><td>built-in profiles</td><td>per-model overrides keyed by model id (the part after <code>provider/</code>): sampling, <code>context_window</code>, <code>parallel_tool_calls</code>, <code>prompt_style</code>, <code>reasoning_effort</code>…</td></tr>
+<tr><td><code>models</code></td><td>map</td><td>built-in profiles</td><td>per-model overrides keyed by model id (the part after <code>provider/</code>): sampling, <code>context_window</code>, <code>parallel_tool_calls</code>, <code>prompt_style</code>, <code>reasoning_effort</code>… The context size is taken from the server when it reports one; <code>/context 32k</code> (or <code>128k</code>, <code>auto</code>) in the app sets it for the current model and is remembered.</td></tr>
 <tr><td><code>prompt_style</code></td><td><code>auto</code> <code>compact</code> <code>full</code> <code>qwen38</code></td><td><code>auto</code></td><td>prompt flavour for every model; a per-model entry wins</td></tr>
 <tr><td><code>permission</code></td><td>map</td><td>ask for edits and commands</td><td>rules per tool, see <a href="permissions.html">Permissions</a></td></tr>
 <tr><td><code>agent</code></td><td>map</td><td></td><td>per-agent <code>model</code>, <code>steps</code>, <code>prompt_append</code></td></tr>

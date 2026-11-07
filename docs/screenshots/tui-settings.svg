@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1026" height="794" viewBox="0 0 1026 794" role="img" aria-label="portcode — settings">
+<rect width="1026" height="794" rx="10" fill="#0a0a0a"/>
+<rect width="1026" height="34" rx="10" fill="#1b1b1b"/><rect y="24" width="1026" height="10" fill="#1b1b1b"/>
+<circle cx="18" cy="17" r="5" fill="#ff5f56"/><circle cx="36" cy="17" r="5" fill="#ffbd2e"/><circle cx="54" cy="17" r="5" fill="#27c93f"/>
+<text x="513" y="21" fill="#8b8b8b" font-family="ui-monospace,Menlo,monospace" font-size="12" text-anchor="middle">portcode — settings</text>
+<rect x="83.97" y="110.00" width="858.36" height="19" fill="#342822"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="15.5" xml:space="preserve">
+<text x="83.97" y="48.00" fill="#fab283" textLength="9.33" lengthAdjust="spacingAndGlyphs">▍</text>
+<text x="93.30" y="48.00" fill="#eeeeee" textLength="83.97" lengthAdjust="spacingAndGlyphs" font-weight="700"> Settings</text>
+<text x="177.27" y="48.00" fill="#808080" textLength="177.27" lengthAdjust="spacingAndGlyphs">   PortCode v0.1.21</text>
+<text x="83.97" y="67.00" fill="#808080" textLength="597.12" lengthAdjust="spacingAndGlyphs">  Changes apply at once, the same as the matching slash command.</text>
+<text x="102.63" y="105.00" fill="#808080" textLength="46.65" lengthAdjust="spacingAndGlyphs" font-weight="700">MODEL</text>
+<text x="83.97" y="124.00" fill="#fab283" textLength="27.99" lengthAdjust="spacingAndGlyphs"> ▸ </text>
+<text x="111.96" y="124.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs" font-weight="700">Model                     </text>
+<text x="354.54" y="124.00" fill="#eeeeee" textLength="671.76" lengthAdjust="spacingAndGlyphs">ollama/mock/mock-model                                                  </text>
+<text x="111.96" y="143.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Context window            </text>
+<text x="354.54" y="143.00" fill="#fab283" textLength="130.62" lengthAdjust="spacingAndGlyphs">‹ 32k tokens ›</text>
+<text x="102.63" y="181.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">WORK</text>
+<text x="111.96" y="200.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Look inside the original  </text>
+<text x="354.54" y="200.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">○  off</text>
+<text x="111.96" y="219.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Allow everything          </text>
+<text x="354.54" y="219.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs">●  on </text>
+<text x="111.96" y="238.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Agent team                </text>
+<text x="354.54" y="238.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">○  off</text>
+<text x="111.96" y="257.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Python virtual env        </text>
+<text x="354.54" y="257.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs">●  on </text>
+<text x="102.63" y="295.00" fill="#808080" textLength="37.32" lengthAdjust="spacingAndGlyphs" font-weight="700">LOOK</text>
+<text x="111.96" y="314.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Light theme               </text>
+<text x="354.54" y="314.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">○  off</text>
+<text x="111.96" y="333.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Show reasoning            </text>
+<text x="354.54" y="333.00" fill="#808080" textLength="55.98" lengthAdjust="spacingAndGlyphs">○  off</text>
+<text x="111.96" y="352.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Sidebar                   </text>
+<text x="354.54" y="352.00" fill="#7fd88f" textLength="55.98" lengthAdjust="spacingAndGlyphs">●  on </text>
+<text x="102.63" y="390.00" fill="#808080" textLength="111.96" lengthAdjust="spacingAndGlyphs" font-weight="700">MODEL TUNING</text>
+<text x="111.96" y="409.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Prompt style              </text>
+<text x="354.54" y="409.00" fill="#fab283" textLength="74.64" lengthAdjust="spacingAndGlyphs">‹ auto ›</text>
+<text x="111.96" y="428.00" fill="#eeeeee" textLength="242.58" lengthAdjust="spacingAndGlyphs">Thinking effort           </text>
+<text x="354.54" y="428.00" fill="#fab283" textLength="158.61" lengthAdjust="spacingAndGlyphs">‹ model default ›</text>
+<text x="102.63" y="466.00" fill="#808080" textLength="74.64" lengthAdjust="spacingAndGlyphs" font-weight="700">PORTCODE</text>
+<text x="111.96" y="485.00" fill="#eeeeee" textLength="914.34" lengthAdjust="spacingAndGlyphs">Updates                   v0.1.21 · checks every minute · enter checks now                        </text>
+<text x="83.97" y="523.00" fill="#808080" textLength="699.75" lengthAdjust="spacingAndGlyphs">  enter lists the models of this provider; /model &lt;provider/model&gt; switches</text>
+<text x="83.97" y="789.00" fill="#808080" textLength="522.48" lengthAdjust="spacingAndGlyphs">  ↑↓ move · ←→ change · enter / space toggle · esc close</text>
+</g>
+</svg>

@@ -558,3 +558,42 @@ fn compact_summarises_once_and_blocks_while_running() {
     a.on_msg(Msg::Idle);
     assert!(!a.busy);
 }
+
+#[test]
+fn settings_screen_changes_what_the_slash_command_would() {
+    let (mut a, mut rx) = app();
+    type_str(&mut a, "/settings");
+    a.on_key(k(KeyCode::Enter));
+    assert!(a.settings.is_some(), "/settings opens the screen");
+    let s = screen(&mut a, 100, 36);
+    assert!(s.contains("Python virtual env") && s.contains("Prompt style"));
+    // down to "Python virtual env" (6th row), enter flips it: venv starts on, so it goes off
+    for _ in 0..5 {
+        a.on_key(k(KeyCode::Down));
+    }
+    a.on_key(k(KeyCode::Enter));
+    assert!(matches!(rx.try_recv(), Ok(super::app::Cmd::Tune(w, v)) if w == "venv" && v == "off"));
+    // and the row shows it
+    assert!(screen(&mut a, 100, 36).contains("off"));
+    // team switch adds the agent
+    a.on_key(k(KeyCode::Up));
+    a.on_key(k(KeyCode::Enter));
+    assert!(a.agents.iter().any(|x| x == "team"));
+    // right on the prompt style (row 10) cycles auto -> compact
+    for _ in 0..5 {
+        a.on_key(k(KeyCode::Down));
+    }
+    a.on_key(k(KeyCode::Right));
+    let mut tuned = Vec::new();
+    while let Ok(c) = rx.try_recv() {
+        if let super::app::Cmd::Tune(w, v) = c {
+            tuned.push((w, v));
+        }
+    }
+    assert!(
+        tuned.contains(&("style".to_string(), "compact".to_string())),
+        "{tuned:?}"
+    );
+    a.on_key(k(KeyCode::Esc));
+    assert!(a.settings.is_none());
+}

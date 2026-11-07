@@ -101,6 +101,9 @@ enum Cmd {
         /// Show the /connect screen filled in with a preset name, e.g. `openrouter`
         #[arg(long)]
         connect: Option<String>,
+        /// Show the /settings screen
+        #[arg(long)]
+        settings: bool,
         /// Show the first-run notice (no API key yet)
         #[arg(long)]
         first_run: bool,
@@ -365,6 +368,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             ref wb_tab,
             ref create,
             ref connect,
+            settings,
             first_run,
         }) => {
             let (w, h) = size
@@ -387,6 +391,7 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
                     wb_tab: wb_tab.clone(),
                     create: create.clone(),
                     connect: connect.clone(),
+                    settings,
                     first_run,
                 },
             )

@@ -5,6 +5,7 @@ pub mod app;
 pub mod connect;
 #[cfg(test)]
 mod opencode;
+pub mod settings;
 pub mod svg;
 pub mod theme;
 pub mod view;
@@ -650,6 +651,7 @@ pub struct Snap {
     pub wb_tab: String,
     pub create: Option<String>,
     pub connect: Option<String>,
+    pub settings: bool,
     pub first_run: bool,
 }
 
@@ -751,6 +753,9 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         w.inspect(app.root_path(), &[]);
         app.wiz = Some(w);
     }
+    if s.settings {
+        app.open_settings();
+    }
     if let Some(name) = &s.connect {
         use connect::{Connect, Field, PRESETS};
         let preset = PRESETS.iter().position(|p| p.0 == name).unwrap_or(0);
@@ -791,13 +796,17 @@ pub async fn snapshot(cfg: Config, o: Opts, s: Snap) -> Result<i32, String> {
         term.backend().buffer(),
         &format!(
             "portcode — {}",
-            app.title.clone().unwrap_or_else(|| if app.wiz.is_some() {
-                "new project".into()
-            } else if app.wb.is_some() {
-                "workbench".into()
-            } else {
-                "home".into()
-            })
+            app.title
+                .clone()
+                .unwrap_or_else(|| if app.settings.is_some() {
+                    "settings".into()
+                } else if app.wiz.is_some() {
+                    "new project".into()
+                } else if app.wb.is_some() {
+                    "workbench".into()
+                } else {
+                    "home".into()
+                })
         ),
     );
     std::fs::write(&s.out, svg).map_err(|e| format!("{}: {e}", s.out))?;
