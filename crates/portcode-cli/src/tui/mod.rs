@@ -309,6 +309,7 @@ async fn start(
     }
     app.show_reasoning = o.show_reasoning;
     app.auto_allow = gate_auto;
+    app.notify_on = portcode_agent::config::pref("notify").as_deref() != Some("off");
     app.refresh_ledger();
     if !gate_auto {
         let tx = mtx.clone();
@@ -630,6 +631,13 @@ pub async fn run(cfg: Config, o: Opts) -> Result<i32, String> {
         pump(&mut app, &mtx);
         remote.publish(&mut app);
         app.tick();
+        if let Some(msg) = app.bell.take() {
+            // BEL for every terminal; OSC 9 is the desktop notification iTerm2, Ghostty, WezTerm and kitty understand
+            use std::io::Write;
+            let mut out = std::io::stdout();
+            let _ = write!(out, "\x1b]9;{msg}\x07\x07");
+            let _ = out.flush();
+        }
         if app.quit {
             break;
         }

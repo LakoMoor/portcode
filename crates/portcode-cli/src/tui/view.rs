@@ -223,7 +223,17 @@ fn pad_line(
 fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
     let mut out: Vec<Line<'static>> = Vec::new();
     let spin = SPIN[(app.spinner / 2) % SPIN.len()];
-    for it in &app.items {
+    // older tool output is folded to its header (ctrl+o shows it); the latest calls, failures and diffs stay open
+    let last_tools: Vec<usize> = app
+        .items
+        .iter()
+        .enumerate()
+        .filter(|(_, i)| matches!(i, Item::Tool { .. }))
+        .map(|(n, _)| n)
+        .rev()
+        .take(2)
+        .collect();
+    for (idx, it) in app.items.iter().enumerate() {
         match it {
             Item::User(t) => {
                 out.push(Line::from(""));
@@ -379,6 +389,20 @@ fn transcript(app: &App, width: usize) -> Vec<Line<'static>> {
                         width.saturating_sub(2),
                         bg,
                     ));
+                } else if !app.full_results
+                    && *state == ToolState::Ok
+                    && !last_tools.contains(&idx)
+                    && !matches!(name.as_str(), "edit" | "write" | "patch")
+                    && body.lines().count() > 1
+                {
+                    out.push(Line::from(vec![
+                        Span::raw("    "),
+                        Span::styled("╰ ", Style::new().fg(c_rule())),
+                        Span::styled(
+                            format!("{} lines · ctrl+o shows them", body.lines().count()),
+                            muted(),
+                        ),
+                    ]));
                 } else if !matches!(state, ToolState::Running) && !body.trim().is_empty() {
                     let max = if *state == ToolState::Err { 4 } else { 3 };
                     let lines: Vec<&str> = body.lines().collect();

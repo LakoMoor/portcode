@@ -138,6 +138,10 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("venv", "Python virtual environments: on or off"),
     (
+        "notify",
+        "bell and desktop notice when a long task ends: on or off",
+    ),
+    (
         "context",
         "context window of this model: /context 32k, 128k, auto",
     ),
@@ -147,6 +151,10 @@ pub const SLASH: &[(&str, &str)] = &[
     ),
     ("update", "install the newest PortCode release"),
     ("compact", "summarise the conversation to free up context"),
+    (
+        "export",
+        "save a report of this session to .portcode/export/",
+    ),
     ("new", "new session (same as /clear)"),
     ("clear", "new session"),
     ("agents", "list agents"),
@@ -209,6 +217,13 @@ pub struct App {
     pub perm_queue: std::collections::VecDeque<PermAsk>,
     pub scroll: usize,
     pub show_reasoning: bool,
+    /// Show every tool's output, not only the latest ones (ctrl+o).
+    pub full_results: bool,
+    /// Ring the terminal bell / send a desktop notification when a long turn ends or a permission is needed.
+    pub notify_on: bool,
+    /// Text for the event loop to announce (`App` does no terminal I/O).
+    pub bell: Option<String>,
+    turn_started: Option<std::time::Instant>,
     pub sidebar: bool,
     pub ledger: (usize, usize, usize),
     pub unknowns: Vec<String>,
@@ -287,6 +302,10 @@ impl App {
             perm: None,
             scroll: 0,
             show_reasoning: false,
+            full_results: false,
+            notify_on: false,
+            bell: None,
+            turn_started: None,
             sidebar: true,
             ledger: (0, 0, 0),
             unknowns: vec![],
@@ -507,6 +526,10 @@ impl App {
                     if self.perm.is_some() {
                         self.perm_queue.push_back(p);
                     } else {
+                        if self.notify_on {
+                            self.bell =
+                                Some(format!("PortCode: {} needs your permission", p.req.tool));
+                        }
                         self.perm = Some(p);
                     }
                 }
@@ -553,6 +576,14 @@ impl App {
             Msg::Models(m) => self.models = m,
             Msg::Done(r) => {
                 self.busy = false;
+                if self.notify_on
+                    && self
+                        .turn_started
+                        .take()
+                        .is_some_and(|t| t.elapsed().as_secs() >= 20)
+                {
+                    self.bell = Some("PortCode: the task is finished".into());
+                }
                 match r {
                     Ok(o) => self.items.push(Item::Footer(format!(
                         "{} · {} · {} step{} · {} in / {} out{}",
@@ -601,6 +632,74 @@ impl App {
             "perm": self.perm.as_ref().map(|p| serde_json::json!({"tool":p.req.tool,"target":p.req.target,"reason":p.req.reason})),
             "agents": self.agents,
         })
+    }
+
+    /// A readable report of the session: goal, what was said and run, todo progress, evidence counts and the parity verdict.
+    pub fn export_markdown(&self) -> String {
+        let mut o = format!(
+            "# {}\n\n`{}` · {}/{}\n\n",
+            self.title
+                .clone()
+                .unwrap_or_else(|| "PortCode session".into()),
+            self.agent,
+            self.provider,
+            self.model
+        );
+        if !self.todos.is_empty() {
+            let done = self
+                .todos
+                .iter()
+                .filter(|t| t.status == "completed")
+                .count();
+            o += &format!("## Checklist ({done} of {} done)\n\n", self.todos.len());
+            for t in &self.todos {
+                o += &format!(
+                    "- [{}] {}\n",
+                    if t.status == "completed" { "x" } else { " " },
+                    t.content
+                );
+            }
+            o += "\n";
+        }
+        let (seen, inferred, open) = self.ledger;
+        o += &format!("## Evidence\n\n{seen} observed, {inferred} inferred, {open} unknown.\n\n");
+        for u in &self.unknowns {
+            o += &format!("- unknown: {u}\n");
+        }
+        o += "\n## Proof\n\n";
+        match &self.parity {
+            Some((ok, t)) => {
+                o += &format!(
+                    "{}\n\n```\n{}\n```\n\n",
+                    if *ok { "PASS" } else { "FAIL" },
+                    t.trim()
+                )
+            }
+            None => {
+                o += "No parity run yet. Nothing here claims the port matches the original.\n\n"
+            }
+        }
+        o += "## Transcript\n\n";
+        for it in &self.items {
+            match it {
+                Item::User(t) => o += &format!("**You:** {t}\n\n"),
+                Item::Assistant(t) => o += &format!("{t}\n\n"),
+                Item::Tool {
+                    name, args, state, ..
+                } => {
+                    let mark = match state {
+                        ToolState::Ok => "ok",
+                        ToolState::Err => "failed",
+                        ToolState::Running => "stopped",
+                    };
+                    let a: String = args.chars().take(120).collect();
+                    o += &format!("- `{name}` {a} ({mark})\n");
+                }
+                Item::Error(t) => o += &format!("> error: {t}\n\n"),
+                _ => {}
+            }
+        }
+        o
     }
 
     pub fn state_json(&self) -> serde_json::Value {
@@ -1183,6 +1282,7 @@ impl App {
             }
             (KeyCode::BackTab, ..) => self.cycle_agent(-1),
             (KeyCode::Char('t'), true, _) => self.show_reasoning = !self.show_reasoning,
+            (KeyCode::Char('o'), true, _) => self.full_results = !self.full_results,
             (KeyCode::Char('b'), true, _) => self.sidebar = !self.sidebar,
             (KeyCode::Char('u'), true, _) => {
                 let b = self.byte_at(self.cursor);
@@ -1318,6 +1418,7 @@ impl App {
         });
         self.items.push(Item::User(text.clone()));
         self.busy = true;
+        self.turn_started = Some(std::time::Instant::now());
         self.cancel.store(false, Ordering::Relaxed);
         let _ = self.cmd_tx.send(Cmd::Send(text));
     }
@@ -1409,6 +1510,42 @@ impl App {
                     self.ctx_window
                 ))),
             },
+            ("export", _) => {
+                let dir = self.root.join(".portcode").join("export");
+                let name = format!(
+                    "session-{}.md",
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_secs())
+                        .unwrap_or(0)
+                );
+                let path = dir.join(&name);
+                match std::fs::create_dir_all(&dir)
+                    .and_then(|_| std::fs::write(&path, self.export_markdown()))
+                {
+                    Ok(()) => self.items.push(Item::Info(format!(
+                        "report saved: .portcode/export/{name}"
+                    ))),
+                    Err(e) => self.items.push(Item::Error(format!("could not write the report: {e}"))),
+                }
+            }
+            ("notify", a) => {
+                let on = match a {
+                    Some("on") => true,
+                    Some("off") => false,
+                    _ => !self.notify_on,
+                };
+                self.notify_on = on;
+                let _ = portcode_agent::config::save_pref("notify", if on { "on" } else { "off" });
+                self.items.push(Item::Info(
+                    if on {
+                        "notifications on: a bell and a desktop notice when a task longer than 20 s ends or PortCode needs a permission"
+                    } else {
+                        "notifications off"
+                    }
+                    .into(),
+                ));
+            }
             ("venv", a) => match a {
                 Some(v @ ("on" | "off")) => {
                     let _ = self.cmd_tx.send(Cmd::Tune("venv".into(), v.into()));
@@ -1533,6 +1670,7 @@ fn help_text() -> String {
         ("esc esc", "cancel the running request"),
         ("ctrl+c", "clear the prompt, then quit"),
         ("ctrl+t", "show or hide the model's reasoning"),
+        ("ctrl+o", "show or hide the output of older tool calls"),
         ("ctrl+b", "show or hide the sidebar"),
         ("pgup / pgdn", "scroll the transcript"),
     ] {
@@ -1762,6 +1900,18 @@ mod tests {
         assert!(a.perm.is_some() && a.input.is_empty());
         a.on_key(key(KeyCode::Char('a')));
         assert_eq!(rx.try_recv().ok(), Some(Reply::Always));
+    }
+    #[test]
+    fn export_has_checklist_and_honest_proof() {
+        let mut a = app();
+        a.items.push(Item::User("port it".into()));
+        a.todos = vec![portcode_agent::tool::Todo {
+            content: "parse".into(),
+            status: "completed".into(),
+        }];
+        let m = a.export_markdown();
+        assert!(m.contains("Checklist (1 of 1 done)") && m.contains("**You:** port it"));
+        assert!(m.contains("No parity run yet"));
     }
     #[test]
     fn capital_a_allows_everything_from_now_on() {

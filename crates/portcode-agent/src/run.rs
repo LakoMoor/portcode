@@ -830,14 +830,26 @@ impl Runner {
                     .event(UiEvent::Info("asking the model for a todo list".into()));
                 self.messages.push(Message::user("You have no todo list yet. Call `todowrite` now with one item per behaviour, feature or file of the original that must exist in the result: mark what is already done as completed, the rest as pending, and the one you are on as in_progress. Then carry on with the work."));
             }
-            if step + 1 == limit && extensions < 2 && !self.gaps().is_empty() {
-                // out of steps but visibly unfinished: grant more instead of stopping short
-                extensions += 1;
-                limit += (base_steps / 2).max(10);
-                self.ui.event(UiEvent::Info(format!(
-                    "not finished after {step} steps; continuing ({} open)",
-                    self.gaps().len()
-                )));
+            if step + 1 == limit && extensions < 3 {
+                // out of steps but visibly unfinished (a gated agent's gaps, or any agent's open todo items):
+                // grant more instead of stopping short and making the user type "continue"
+                let mut open = self.gaps();
+                if open.is_empty() {
+                    open = lock(&self.ctx.state)
+                        .todos
+                        .iter()
+                        .filter(|t| t.status != "completed")
+                        .map(|t| t.content.clone())
+                        .collect();
+                }
+                if !open.is_empty() {
+                    extensions += 1;
+                    limit += (base_steps / 2).max(10);
+                    self.ui.event(UiEvent::Info(format!(
+                        "not finished after {step} steps; continuing ({} open)",
+                        open.len()
+                    )));
+                }
             }
             let final_step = step + 1 == limit;
             let tools = if final_step { vec![] } else { self.defs() };
