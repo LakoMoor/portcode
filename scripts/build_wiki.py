@@ -38,6 +38,7 @@ NAV = [
     ("Project", "opencode", "OpenCode mapping", "docs/OPENCODE_MAPPING.md"),
     ("Project", "contributing", "Contributing", "wiki/contributing.md"),
     ("Project", "roadmap", "Roadmap", "docs/ROADMAP.md"),
+    ("Project", "changelog", "Changelog", "wiki/changelog.md"),
 ]
 GUIDE_REDIRECTS = {
     "GETTING_STARTED": "first-run", "SUBSCRIPTIONS": "subscriptions", "ARCHITECTURE": "architecture",

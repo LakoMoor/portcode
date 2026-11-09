@@ -38,7 +38,7 @@
  <div class="key"><small>агент</small><b>tab</b></div><div class="key"><small>стоп</small><b>esc</b></div><div class="key"><small>меню</small><b>/</b></div>
  <div class="key"><small>да</small><b>y</b></div><div class="key"><small>нет</small><b>n</b></div><div class="key"><small>ввод</small><b>⏎</b></div></div></div>
 <div class="t g-light s3 half"><div class="apps">
- <div class="app"><img src="../assets/engines/ghidra.png" alt="Ghidra"></div><div class="app"><img src="../assets/engines/imhex.svg" alt="ImHex"></div><div class="app"><img src="../assets/engines/unicorn.svg" alt="Unicorn"></div>
+ <div class="app"><img src="../assets/engines/imhex.svg" alt="ImHex"></div><div class="app"><img src="../assets/engines/unicorn.svg" alt="Unicorn"></div>
  <div class="app"><img src="../assets/engines/radare2.png" alt="radare2"></div><div class="app"><img src="../assets/engines/rizin.png" alt="Rizin"></div><div class="app"><img src="../assets/engines/capstone.png" alt="Capstone"></div></div></div>
 <div class="t g-dark s6"><div class="player"><div class="art"><b>6/6</b></div><div><h3>parity PASS</h3><p>wordstat · C → Rust</p><div class="prog"><i></i></div><div class="times"><span>fuzz 400/400</span><span>1 неизвестное</span></div><div class="pbtns"><a class="btn sm" href="../ports/wordstat/">Открыть порт</a><a class="btn sm" href="../screenshots/ledger.svg">Журнал</a></div></div></div></div>
 </div>
@@ -108,10 +108,10 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 </div></section>
 
 <section id="deep"><h2>Clean room или deep</h2>
-<p class="sub">В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».</p>
+<p class="sub">В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Kuna и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».</p>
 <div class="tk" role="list">
-  <article class="tile t-ghidra" role="listitem">
-    <div class="head"><span class="mark "><img src="../assets/engines/ghidra.png" alt=""></span><h3>Ghidra разбирает функцию целиком. <span>Значение по умолчанию записано как inference, пока вывод оригинала его не подтвердит.</span></h3></div>
+  <article class="tile t-kuna" role="listitem">
+    <div class="head"><h3>Kuna разбирает функцию целиком. <span>Значение по умолчанию записано как inference, пока вывод оригинала его не подтвердит.</span></h3></div>
     <div class="pane win" aria-label="Decompiler output of the original wordstat binary">
       <div class="bar"><i></i><i></i><i></i><b>Decompile: entry</b><span style="margin-left:auto">original/wordstat</span></div>
       <div class="code mono">
@@ -214,7 +214,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   </article>
 </div>
 <p class="cap">Числа на этих карточках получены запуском инструментов на бинарнике wordstat из репозитория.</p>
-<div class="bento" style="margin-top:14px"><div class="t g-violet s8 h340 shotile"><img src="../screenshots/tui-workbench.svg" alt="The workbench: functions, Ghidra pseudo-C, evidence ledger and the agent"></div>
+<div class="bento" style="margin-top:14px"><div class="t g-violet s8 h340 shotile"><img src="../screenshots/tui-workbench.svg" alt="The workbench: functions, Kuna pseudo-C, evidence ledger and the agent"></div>
 <div class="t g-dark s4 tc"><h3 style="color:#fff">Workbench</h3><p>Введите <code style="background:rgba(255,255,255,.12)">/workbench</code> в режиме deep. Слева функции, в центре псевдо-C, дизассемблер или hex, справа журнал фактов, внизу агент. <code style="background:rgba(255,255,255,.12)">a</code> заставляет агента объяснить функцию и записать, что он нашёл.</p></div></div>
 <div class="bento" style="margin-top:14px"><div class="t g-dark s8"><div class="framed mid"><img src="../screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></div></div>
 <div class="t g-peach s4 tc"><h3>Две сессии, разделённые стеной</h3><p>Первая сессия смотрит внутрь и пишет <code>docs/SPEC.md</code>, вторая строит порт только по этой спецификации, в режиме clean-room.</p>

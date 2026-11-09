@@ -31,6 +31,9 @@ fn main() {
     let root = project_root();
     let deep = std::env::args().any(|a| a == "--deep");
     application().run(move |cx: &mut App| {
+        if let Err(e) = cx.text_system().add_fonts(theme::font_bytes()) {
+            eprintln!("could not load bundled fonts: {e}");
+        }
         let bounds = Bounds::centered(None, size(px(1180.), px(780.)), cx);
         let opened = cx.open_window(
             WindowOptions {

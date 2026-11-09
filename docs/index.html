@@ -38,7 +38,7 @@
  <div class="key"><small>agent</small><b>tab</b></div><div class="key"><small>stop</small><b>esc</b></div><div class="key"><small>menu</small><b>/</b></div>
  <div class="key"><small>allow</small><b>y</b></div><div class="key"><small>deny</small><b>n</b></div><div class="key"><small>send</small><b>⏎</b></div></div></div>
 <div class="t g-light s3 half"><div class="apps">
- <div class="app"><img src="assets/engines/ghidra.png" alt="Ghidra"></div><div class="app"><img src="assets/engines/imhex.svg" alt="ImHex"></div><div class="app"><img src="assets/engines/unicorn.svg" alt="Unicorn"></div>
+ <div class="app"><img src="assets/engines/imhex.svg" alt="ImHex"></div><div class="app"><img src="assets/engines/unicorn.svg" alt="Unicorn"></div>
  <div class="app"><img src="assets/engines/radare2.png" alt="radare2"></div><div class="app"><img src="assets/engines/rizin.png" alt="Rizin"></div><div class="app"><img src="assets/engines/capstone.png" alt="Capstone"></div></div></div>
 <div class="t g-dark s6"><div class="player"><div class="art"><b>6/6</b></div><div><h3>parity PASS</h3><p>wordstat · C → Rust</p><div class="prog"><i></i></div><div class="times"><span>fuzz 400/400</span><span>1 unknown</span></div><div class="pbtns"><a class="btn sm" href="ports/wordstat/">Open the port</a><a class="btn sm" href="screenshots/ledger.svg">Ledger</a></div></div></div></div>
 </div>
@@ -108,10 +108,10 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
 </div></section>
 
 <section id="deep"><h2>Clean room or deep</h2>
-<p class="sub">In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Ghidra and ImHex, which are installed next to the binary, each one only after you say yes.</p>
+<p class="sub">In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Kuna and ImHex, which are installed next to the binary, each one only after you say yes.</p>
 <div class="tk" role="list">
-  <article class="tile t-ghidra" role="listitem">
-    <div class="head"><span class="mark "><img src="assets/engines/ghidra.png" alt=""></span><h3>Ghidra reads the whole function. <span>The default value is recorded as an inference until output from the original confirms it.</span></h3></div>
+  <article class="tile t-kuna" role="listitem">
+    <div class="head"><h3>Kuna reads the whole function. <span>The default value is recorded as an inference until output from the original confirms it.</span></h3></div>
     <div class="pane win" aria-label="Decompiler output of the original wordstat binary">
       <div class="bar"><i></i><i></i><i></i><b>Decompile: entry</b><span style="margin-left:auto">original/wordstat</span></div>
       <div class="code mono">
@@ -214,7 +214,7 @@ portcode init &amp;&amp; portcode doctor &amp;&amp; portcode</code></pre>
   </article>
 </div>
 <p class="cap">The numbers on these cards come from running the tools on the wordstat binary from the repo.</p>
-<div class="bento" style="margin-top:14px"><div class="t g-violet s8 h340 shotile"><img src="screenshots/tui-workbench.svg" alt="The workbench: functions, Ghidra pseudo-C, evidence ledger and the agent"></div>
+<div class="bento" style="margin-top:14px"><div class="t g-violet s8 h340 shotile"><img src="screenshots/tui-workbench.svg" alt="The workbench: functions, Kuna pseudo-C, evidence ledger and the agent"></div>
 <div class="t g-dark s4 tc"><h3 style="color:#fff">Workbench</h3><p>Type <code style="background:rgba(255,255,255,.12)">/workbench</code> in deep mode. Functions on the left; pseudo-C, disassembly or hex in the middle; the evidence ledger on the right; the agent at the bottom. <code style="background:rgba(255,255,255,.12)">a</code> makes the agent explain the function and record what it finds.</p></div></div>
 <div class="bento" style="margin-top:14px"><div class="t g-dark s8"><div class="framed mid"><img src="screenshots/tui-deep.svg" alt="Deep mode: strings, ARM64 disassembly and a Unicorn emulation of a function prologue"></div></div>
 <div class="t g-peach s4 tc"><h3>Two sessions, kept apart</h3><p>The first session looks inside and writes <code>docs/SPEC.md</code>, the second builds the port from that spec alone, in clean-room mode.</p>

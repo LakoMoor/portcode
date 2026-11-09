@@ -4,7 +4,7 @@ members = ["crates/*"]
 exclude = ["gui"]
 
 [workspace.package]
-version = "0.1.25"
+version = "0.1.26"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/LakoMoor/portcode"

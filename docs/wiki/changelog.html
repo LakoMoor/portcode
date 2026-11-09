@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Changelog — PortCode wiki</title><meta property="og:title" content="Changelog — PortCode wiki"><meta name="description" content="PortCode documentation: Changelog."><link rel="icon" type="image/svg+xml" href="../assets/logo.svg"><script src="../theme.js"></script><script src="../copy.js" defer></script><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="wiki.css"></head><body>
+<nav><div class="wrap"><a class="brand" href="../"><img src="../assets/logo.svg" alt="">PortCode</a><a class="l" href="./">Wiki</a><a class="l keep" href="../remote/">Remote</a><a class="gh" href="https://github.com/LakoMoor/portcode">GitHub</a></div></nav>
+<div class="wiki">
+<button class="menu" type="button" aria-expanded="false" aria-controls="side">Contents</button>
+<aside id="side" class="side"><div class="sbox"><input id="q" type="search" placeholder="Search the wiki" aria-label="Search the wiki" autocomplete="off"><ul id="hits" class="hits" hidden></ul></div>
+<div id="navs"><section><h4>Start</h4><ul>
+<li><a href="index.html">Overview</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="first-run.html">First run</a></li>
+<li><a href="tour.html">A tour of the app</a></li>
+</ul></section>
+<section><h4>Use</h4><ul>
+<li><a href="agents.html">Agents</a></li>
+<li><a href="commands.html">Slash commands</a></li>
+<li><a href="keys.html">Keyboard shortcuts</a></li>
+<li><a href="sessions.html">Sessions and history</a></li>
+<li><a href="permissions.html">Permissions and allow-all</a></li>
+<li><a href="team.html">Team mode</a></li>
+<li><a href="python.html">Python environments</a></li>
+<li><a href="tools.html">Tools</a></li>
+</ul></section>
+<section><h4>Port and reverse</h4><ul>
+<li><a href="port-workflow.html">The port workflow</a></li>
+<li><a href="modes.html">Clean-room and deep mode</a></li>
+<li><a href="engines.html">Engines</a></li>
+</ul></section>
+<section><h4>Models</h4><ul>
+<li><a href="providers.html">Providers and models</a></li>
+<li><a href="subscriptions.html">Claude Code and Codex</a></li>
+</ul></section>
+<section><h4>Reference</h4><ul>
+<li><a href="config.html">Configuration</a></li>
+<li><a href="cli.html">Command line</a></li>
+<li><a href="remote.html">Remote control</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul></section>
+<section><h4>Project</h4><ul>
+<li><a href="architecture.html">Architecture</a></li>
+<li><a href="opencode.html">OpenCode mapping</a></li>
+<li><a href="contributing.html">Contributing</a></li>
+<li><a href="roadmap.html">Roadmap</a></li>
+<li><a href="changelog.html" class="on" aria-current="page">Changelog</a></li>
+</ul></section></div></aside>
+<main class="doc wk"><p class="crumb"><a href="./">Wiki</a> / Project</p>
+<h1 id="changelog">Changelog<a class="anchor" href="#changelog" aria-label="Link to this section">#</a></h1>
+<p>What changed in each release. Newest first. Every release ships the same 13 files on <a href="https://github.com/LakoMoor/portcode/releases">GitHub Releases</a>.</p>
+<h2 id="v0-1-26-9-nov-2026">v0.1.26 — 9 Nov 2026<a class="anchor" href="#v0-1-26-9-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>The site has a changelog page.</li><li>The desktop app bundles IBM Plex Sans and IBM Plex Mono, so it looks the same on every system.</li></ul>
+<h2 id="v0-1-25-9-nov-2026">v0.1.25 — 9 Nov 2026<a class="anchor" href="#v0-1-25-9-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Kuna replaces Ghidra as the decompiler. It installs on first use, with a sha256 check, and the <code>decompile</code> tool lists functions, decompiles one, and searches strings and xrefs.</li><li>Steering: type while the agent works and your message joins the conversation before its next step.</li><li><code>portcode gui</code> opens the new desktop app (<code>portcode-gui</code>, built on GPUI Fast).</li></ul>
+<h2 id="v0-1-24-8-nov-2026">v0.1.24 — 8 Nov 2026<a class="anchor" href="#v0-1-24-8-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>At the step limit the agent keeps going while todos are open.</li><li><code>ctrl+o</code> folds old tool output.</li><li><code>/export</code> writes the session as a Markdown report.</li><li><code>/notify</code> rings the terminal when a task ends.</li></ul>
+<h2 id="v0-1-23-7-nov-2026">v0.1.23 — 7 Nov 2026<a class="anchor" href="#v0-1-23-7-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>The Windows installer no longer breaks <code>PATH</code>.</li><li>The todo list is saved with the session.</li><li>Parity shows as "N of M cases match" with a percentage.</li></ul>
+<h2 id="v0-1-22-7-nov-2026">v0.1.22 — 7 Nov 2026<a class="anchor" href="#v0-1-22-7-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li><code>/settings</code> screen and a redesigned <code>/create</code>.</li></ul>
+<h2 id="v0-1-21-6-nov-2026">v0.1.21 — 6 Nov 2026<a class="anchor" href="#v0-1-21-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Update check runs every minute while a session is open.</li></ul>
+<h2 id="v0-1-20-6-nov-2026">v0.1.20 — 6 Nov 2026<a class="anchor" href="#v0-1-20-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li><code>/context</code> sets the context window of the current model.</li></ul>
+<h2 id="v0-1-19-6-nov-2026">v0.1.19 — 6 Nov 2026<a class="anchor" href="#v0-1-19-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Checklist progress bar in the sidebar.</li><li>The agent is asked for a todo list when there is none.</li></ul>
+<h2 id="v0-1-18-6-nov-2026">v0.1.18 — 6 Nov 2026<a class="anchor" href="#v0-1-18-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>The agent keeps going when a reply names a next step but no todo list exists.</li></ul>
+<h2 id="v0-1-17-6-nov-2026">v0.1.17 — 6 Nov 2026<a class="anchor" href="#v0-1-17-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Loops are caught by identical output, not only identical calls.</li><li>Compaction works without a user message.</li><li>The todo list survives restarts.</li></ul>
+<h2 id="v0-1-16-6-nov-2026">v0.1.16 — 6 Nov 2026<a class="anchor" href="#v0-1-16-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Auto-compact when the model loops.</li><li><code>A</code> in the permission dialog means allow-all.</li><li>No spinning tool after you stop a turn.</li></ul>
+<h2 id="v0-1-15-6-nov-2026">v0.1.15 — 6 Nov 2026<a class="anchor" href="#v0-1-15-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>Context window is read from the server.</li><li>Automatic reconnect.</li><li>Qwen XML tool calls are understood.</li></ul>
+<h2 id="v0-1-14-and-earlier-5-6-nov-2026">v0.1.14 and earlier — 5–6 Nov 2026<a class="anchor" href="#v0-1-14-and-earlier-5-6-nov-2026" aria-label="Link to this section">#</a></h2>
+<ul><li>v0.1.14: programs are detected three levels deep; <code>/create</code> offers the current folder.</li><li>v0.1.13: restart after <code>/update</code>; program detection and a team option in <code>/create</code>.</li><li>v0.1.12: <code>/connect</code> for OpenAI-compatible servers; welcome screen on first start in a folder.</li><li>v0.1.11: prompt history is restored with a resumed session.</li><li>v0.1.10: Ollama is the default provider; sessions remember agent, model and deep mode.</li><li>v0.1.9: non-gated agents keep going while todos are open.</li></ul>
+<div class="pn"><a class="prev" href="roadmap.html"><small>Previous</small>Roadmap</a><span></span></div>
+<p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/wiki/changelog.md">Edit this page on GitHub</a></p></main>
+<aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#v0-1-26-9-nov-2026">v0.1.26 — 9 Nov 2026</a><a class="t2" href="#v0-1-25-9-nov-2026">v0.1.25 — 9 Nov 2026</a><a class="t2" href="#v0-1-24-8-nov-2026">v0.1.24 — 8 Nov 2026</a><a class="t2" href="#v0-1-23-7-nov-2026">v0.1.23 — 7 Nov 2026</a><a class="t2" href="#v0-1-22-7-nov-2026">v0.1.22 — 7 Nov 2026</a><a class="t2" href="#v0-1-21-6-nov-2026">v0.1.21 — 6 Nov 2026</a><a class="t2" href="#v0-1-20-6-nov-2026">v0.1.20 — 6 Nov 2026</a><a class="t2" href="#v0-1-19-6-nov-2026">v0.1.19 — 6 Nov 2026</a><a class="t2" href="#v0-1-18-6-nov-2026">v0.1.18 — 6 Nov 2026</a><a class="t2" href="#v0-1-17-6-nov-2026">v0.1.17 — 6 Nov 2026</a><a class="t2" href="#v0-1-16-6-nov-2026">v0.1.16 — 6 Nov 2026</a><a class="t2" href="#v0-1-15-6-nov-2026">v0.1.15 — 6 Nov 2026</a><a class="t2" href="#v0-1-14-and-earlier-5-6-nov-2026">v0.1.14 and earlier — 5–6 Nov 2026</a></aside>
+</div>
+<footer><div class="wrap">MIT licensed · <a href="https://github.com/LakoMoor/portcode">github.com/LakoMoor/portcode</a></div></footer>
+<script src="wiki.js"></script></body></html>

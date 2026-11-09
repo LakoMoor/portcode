@@ -82,16 +82,18 @@ pub fn tool_color(t: &Theme, name: &str) -> Rgba {
     }
 }
 
-#[cfg(target_os = "macos")]
-pub const UI_FONT: &str = "Helvetica Neue";
-#[cfg(target_os = "windows")]
-pub const UI_FONT: &str = "Segoe UI";
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
-pub const UI_FONT: &str = "Noto Sans";
+pub const UI_FONT: &str = "IBM Plex Sans";
+pub const MONO_FONT: &str = "IBM Plex Mono";
 
-#[cfg(target_os = "macos")]
-pub const MONO_FONT: &str = "Menlo";
-#[cfg(target_os = "windows")]
-pub const MONO_FONT: &str = "Consolas";
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
-pub const MONO_FONT: &str = "DejaVu Sans Mono";
+/// Fonts bundled into the binary (SIL OFL, see assets/fonts/OFL.txt).
+pub fn font_bytes() -> Vec<std::borrow::Cow<'static, [u8]>> {
+    use std::borrow::Cow;
+    vec![
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexSans-Regular.ttf").as_slice()),
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexSans-Medium.ttf").as_slice()),
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexSans-SemiBold.ttf").as_slice()),
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexMono-Regular.ttf").as_slice()),
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexMono-Medium.ttf").as_slice()),
+        Cow::Borrowed(include_bytes!("../assets/fonts/IBMPlexMono-SemiBold.ttf").as_slice()),
+    ]
+}
