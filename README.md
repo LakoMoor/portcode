@@ -68,10 +68,10 @@ The `port` agent cannot stop early. When it tries to, PortCode checks three thin
 | looks at | the original from outside: run it, inputs, outputs, screenshots | also inside: disassembly, decompilation, emulation, raw bytes |
 | switch | `--clean-room` | `--deep`, `/deep`, `"mode":"deep"` |
 
-Deep mode drives real engines — **Capstone**, **Unicorn**, **Ghidra** (headless), **ImHex**, plus Keystone, LIEF, YARA, angr, Frida, and system tools (rizin, radare2, binwalk, Detect It Easy, capa, jadx, wabt, upx). They install into an `engines/` folder next to the `portcode` binary, after asking, with sha256-verified downloads:
+Deep mode drives real engines — **Capstone**, **Unicorn**, **Kuna** (decompiler), **ImHex**, plus Keystone, LIEF, YARA, angr, Frida, and system tools (rizin, radare2, binwalk, Detect It Easy, capa, jadx, wabt, upx). They install into an `engines/` folder next to the `portcode` binary, after asking, with sha256-verified downloads:
 ```sh
 portcode engines install core          # capstone + unicorn + lief
-portcode engines install ghidra imhex  # Ghidra needs a JDK
+portcode engines install kuna imhex
 portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump · unity · dotnet · unity_assets
 # in the UI: /workbench — functions, Pseudo-C, disassembly, hex and the evidence ledger side by side
 ```
@@ -82,7 +82,11 @@ For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and l
 
 ![deep mode](docs/screenshots/tui-deep.svg)
 
-**Workbench** (`/workbench`, deep only): a function list, Pseudo-C from Ghidra, Capstone disassembly and a hex view, the evidence ledger on the right and the agent underneath. `j/k` move, `1 2 3` switch view, `/` filters, `a` asks the agent to explain the function and record it, `q` closes. Everything on screen is real tool output.
+**Desktop app** (`gui/`, experimental): the same agent in a window built on GPUI Fast: a transcript with foldable tool calls, agent / deep / allow-all chips, and a ledger sidebar with context use, evidence, the parity verdict and the checklist. Built separately from source (`cd gui && cargo run --release`, see [gui/README.md](gui/README.md)); `portcode gui` opens it. No release download yet.
+
+![PortCode desktop app](docs/screenshots/gui.png)
+
+**Workbench** (`/workbench`, deep only): a function list, Pseudo-C from Kuna, Capstone disassembly and a hex view, the evidence ledger on the right and the agent underneath. `j/k` move, `1 2 3` switch view, `/` filters, `a` asks the agent to explain the function and record it, `q` closes. Everything on screen is real tool output.
 
 ![workbench](docs/screenshots/tui-workbench.svg)
 <sub>Deep mode on the bundled example: strings, ARM64 disassembly and a Unicorn run of the prologue (real tools; scripted model).</sub>

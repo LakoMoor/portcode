@@ -82,6 +82,8 @@ pub struct Runner {
     cli_session: Option<String>,
     /// `provider/model` whose context window was already asked of the server.
     probed: Option<String>,
+    /// Messages typed while a turn runs; read between steps (see [`Runner::steer_handle`]).
+    steer: Arc<std::sync::Mutex<Vec<String>>>,
 }
 
 const RECONNECT_TRIES: u32 = 12;
@@ -228,6 +230,7 @@ impl Runner {
             last_prompt_tokens: 0,
             cli_session: None,
             probed: None,
+            steer: Default::default(),
         })
     }
 
@@ -283,6 +286,12 @@ impl Runner {
     }
     pub fn cancel_flag(&self) -> Arc<std::sync::atomic::AtomicBool> {
         self.ctx.cancel.clone()
+    }
+    /// Inbox for steering: text pushed here while a turn runs is added to the conversation before the next step,
+    /// so the user can redirect the agent without interrupting it. Whatever is left when the turn ends is for the
+    /// caller to send as the next message.
+    pub fn steer_handle(&self) -> Arc<std::sync::Mutex<Vec<String>>> {
+        self.steer.clone()
     }
     pub fn tool_names(&self) -> Vec<String> {
         self.registry.names()
@@ -817,6 +826,13 @@ impl Runner {
                     usage: total,
                     status: Status::Cancelled,
                 });
+            }
+            let steered: Vec<String> = lock(&self.steer).drain(..).collect();
+            for t in steered {
+                self.ui.event(UiEvent::Info(
+                    "steering: your message joins the next step".into(),
+                ));
+                self.messages.push(Message::user(t));
             }
             self.fit_context().await;
             if step == 3

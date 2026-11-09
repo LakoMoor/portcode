@@ -257,6 +257,7 @@ async fn start(
         }
     }
     let cancel = runner.cancel_flag();
+    let steer = runner.steer_handle();
     let label = o.cwd_label.clone().unwrap_or_else(|| {
         let p = root.display().to_string();
         match std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
@@ -276,6 +277,7 @@ async fn start(
         ctx_tx,
         cancel,
     );
+    app.steer = Some(steer);
     if let Some((id, h)) = &resumed {
         app.agent = runner.agent.name.to_string();
         app.deep = runner.ctx.is_deep();

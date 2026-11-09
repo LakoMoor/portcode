@@ -62,19 +62,19 @@
 <tr><td>yara</td><td>file pattern rules</td><td>bash/python</td><td>pip</td></tr>
 <tr><td>angr</td><td>symbolic execution</td><td>python</td><td>pip (large)</td></tr>
 <tr><td>frida</td><td>dynamic instrumentation</td><td>bash</td><td>pip</td></tr>
-<tr><td>ghidra</td><td>decompiler, run headless</td><td><code>decompile</code></td><td>official release zip, sha256 from GitHub; needs a JDK</td></tr>
+<tr><td>kuna</td><td>Rust decompiler (a port of Ghidra's), one binary</td><td><code>decompile</code></td><td>official release archive, sha256 from GitHub; no JDK</td></tr>
 <tr><td>imhex</td><td>hex editor + pattern language</td><td>you (agent writes <code>.hexpat</code>)</td><td>cask / AppImage</td></tr>
 <tr><td>rizin, radare2, binwalk, die, capa, jadx, wabt, upx</td><td>system tools</td><td><code>bash</code> (deep)</td><td>your package manager</td></tr>
 </tbody></table></div>
 <pre><code class="lang-sh">portcode engines install core        # capstone + unicorn + lief
-portcode engines install ghidra imhex
+portcode engines install kuna imhex
 portcode --deep -a reverse</code></pre>
 <p>Emulation never touches the host: no syscalls, a hard instruction budget, a 60 s deadline. Use only on software you own or may examine. PortCode never bypasses DRM, logins or anti-cheat.</p>
 <h2 id="workbench">Workbench<a class="anchor" href="#workbench" aria-label="Link to this section">#</a></h2>
 <p><code>/workbench [file]</code> (deep mode only; with no file it takes the first executable in <code>original/</code>) opens one screen for reading a binary:</p>
 <div class="tw"><table><thead><tr><th>area</th><th>shows</th><th>from</th></tr></thead><tbody>
 <tr><td>left</td><td>functions: address, size, name; <code>/</code> filters</td><td><code>functions</code> (LIEF)</td></tr>
-<tr><td>middle</td><td><strong>1</strong> Pseudo-C · <strong>2</strong> Disassembly · <strong>3</strong> Hex of the selected function</td><td><code>decompile</code> (Ghidra), <code>disasm</code> (Capstone), <code>hexdump</code></td></tr>
+<tr><td>middle</td><td><strong>1</strong> Pseudo-C · <strong>2</strong> Disassembly · <strong>3</strong> Hex of the selected function</td><td><code>decompile</code> (Kuna), <code>disasm</code> (Capstone), <code>hexdump</code></td></tr>
 <tr><td>right</td><td>the evidence ledger, newest first; records that mention the selected function are highlighted</td><td><code>.portcode/evidence</code></td></tr>
 <tr><td>bottom</td><td>the agent's last answer and the prompt</td><td>the current session</td></tr>
 </tbody></table></div>

@@ -221,6 +221,8 @@ pub struct App {
     pub full_results: bool,
     /// Ring the terminal bell / send a desktop notification when a long turn ends or a permission is needed.
     pub notify_on: bool,
+    /// Steering inbox of the running agent (set by the event loop).
+    pub steer: Option<std::sync::Arc<std::sync::Mutex<Vec<String>>>>,
     /// Text for the event loop to announce (`App` does no terminal I/O).
     pub bell: Option<String>,
     turn_started: Option<std::time::Instant>,
@@ -304,6 +306,7 @@ impl App {
             show_reasoning: false,
             full_results: false,
             notify_on: false,
+            steer: None,
             bell: None,
             turn_started: None,
             sidebar: true,
@@ -419,6 +422,44 @@ impl App {
         };
         self.wb = Some(super::workbench::Wb::new(&file));
         self.refresh_ledger();
+    }
+
+    /// The user interrupted: queued messages go back into the prompt instead of being sent.
+    fn unqueue_steer(&mut self) {
+        let left: Vec<String> = match &self.steer {
+            Some(q) => q
+                .lock()
+                .map(|mut q| q.drain(..).collect())
+                .unwrap_or_default(),
+            None => return,
+        };
+        if !left.is_empty() && self.input.is_empty() {
+            self.input = left.join("\n\n");
+            self.cursor = self.input.chars().count();
+            self.items.push(Item::Info(
+                "interrupted: your queued message is back in the prompt".into(),
+            ));
+        }
+    }
+
+    /// Messages queued for steering that the agent never got to (the turn ended first) go out as a new turn.
+    fn flush_steer(&mut self) {
+        let left: Vec<String> = match &self.steer {
+            Some(q) => q
+                .lock()
+                .map(|mut q| q.drain(..).collect())
+                .unwrap_or_default(),
+            None => return,
+        };
+        if left.is_empty() {
+            return;
+        }
+        // they are already on screen as user messages: send without echoing them again
+        let text = left.join("\n\n");
+        self.busy = true;
+        self.turn_started = Some(std::time::Instant::now());
+        self.cancel.store(false, Ordering::Relaxed);
+        let _ = self.cmd_tx.send(Cmd::Send(text));
     }
 
     pub fn context_pct(&self) -> u64 {
@@ -551,6 +592,7 @@ impl App {
                 }
                 self.busy = false;
                 self.last_prompt = 0;
+                self.flush_steer();
             }
             Msg::Pick(rows) => self.picker = Some(Picker { rows, sel: 0 }),
             Msg::Resumed(id, m) => self.load_history(&id, &m),
@@ -576,6 +618,7 @@ impl App {
             Msg::Models(m) => self.models = m,
             Msg::Done(r) => {
                 self.busy = false;
+                let cancelled = matches!(&r, Ok(o) if o.status == Status::Cancelled);
                 if self.notify_on
                     && self
                         .turn_started
@@ -609,6 +652,11 @@ impl App {
                     };
                     self.outbox
                         .push(serde_json::json!({"type":"done","text":line}));
+                }
+                if cancelled {
+                    self.unqueue_steer();
+                } else {
+                    self.flush_steer();
                 }
             }
         }
@@ -1398,9 +1446,25 @@ impl App {
             return;
         }
         if self.busy {
-            self.items.push(Item::Info(
-                "still working — press esc to interrupt first".into(),
-            ));
+            // steering: the agent reads this before its next step, no interruption needed
+            if let Some(q) = &self.steer {
+                if let Ok(mut q) = q.lock() {
+                    q.push(text.clone());
+                }
+                self.history.push(text.clone());
+                self.hist_pos = None;
+                self.input.clear();
+                self.cursor = 0;
+                self.items.push(Item::User(text));
+                self.items.push(Item::Info(
+                    "queued: the agent reads it before its next step (esc interrupts instead)"
+                        .into(),
+                ));
+            } else {
+                self.items.push(Item::Info(
+                    "still working — press esc to interrupt first".into(),
+                ));
+            }
             return;
         }
         self.history.push(text.clone());
@@ -1883,6 +1947,20 @@ mod tests {
         assert!(
             matches!(&a.items[0], Item::Tool { state: ToolState::Ok, args, .. } if args.contains("a.rs"))
         );
+    }
+    #[test]
+    fn typing_while_busy_queues_a_steering_message() {
+        let mut a = app();
+        let q: std::sync::Arc<std::sync::Mutex<Vec<String>>> = Default::default();
+        a.steer = Some(q.clone());
+        a.busy = true;
+        a.input = "use the other file".into();
+        a.submit();
+        assert_eq!(q.lock().unwrap().as_slice(), ["use the other file"]);
+        assert!(a.input.is_empty());
+        // the turn ends before the agent read it: it goes out as the next turn
+        a.on_msg(Msg::Idle);
+        assert!(a.busy && q.lock().unwrap().is_empty());
     }
     #[test]
     fn permission_dialog_captures_keys() {

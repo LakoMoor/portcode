@@ -1,5 +1,5 @@
 //! Minimal MCP client over stdio (JSON-RPC 2.0, newline-delimited): `initialize`, `tools/list`, `tools/call`.
-//! Lets PortCode drive external engines such as REA, Ghidra bridges, browsers — configured under `"mcp"`.
+//! Lets PortCode drive external engines such as REA, decompiler bridges, browsers — configured under `"mcp"`.
 use crate::config::McpEntry;
 use crate::permission::Decision;
 use crate::tool::*;

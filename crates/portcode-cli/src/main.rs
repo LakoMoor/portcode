@@ -62,7 +62,7 @@ enum RemoteCmd {
 enum EnginesCmd {
     /// Show what is installed
     List,
-    /// Install engines: an id (unicorn, capstone, ghidra, imhex…), `core` (capstone+unicorn+lief) or `all`
+    /// Install engines: an id (unicorn, capstone, kuna, imhex…), `core` (capstone+unicorn+lief+kuna) or `all`
     Install { ids: Vec<String> },
     /// Print the engines folder
     Path,
@@ -184,7 +184,13 @@ enum Cmd {
         #[command(subcommand)]
         sub: RemoteCmd,
     },
-    /// Reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex…): list, install, path
+    /// Open the desktop app (`portcode-gui`, installed next to this program) in this folder
+    Gui {
+        /// Start in deep mode
+        #[arg(long)]
+        deep: bool,
+    },
+    /// Reverse-engineering engines (Capstone, Unicorn, Kuna, ImHex…): list, install, path
     Engines {
         #[command(subcommand)]
         sub: EnginesCmd,
@@ -508,6 +514,28 @@ async fn real_main(cli: Cli) -> Result<i32, String> {
             RemoteCmd::Revoke { id } => ("revoke".into(), id),
             RemoteCmd::TunnelInstall => return Ok(0),
         }),
+        Some(Cmd::Gui { deep }) => {
+            let name = if cfg!(windows) {
+                "portcode-gui.exe"
+            } else {
+                "portcode-gui"
+            };
+            let beside = std::env::current_exe()
+                .ok()
+                .and_then(|e| e.parent().map(|d| d.join(name)))
+                .filter(|p| p.is_file());
+            let Some(bin) = beside.or_else(|| portcode_agent::engines::which(name)) else {
+                return Err("the desktop app is not installed. It is a separate download (portcode-gui): see https://github.com/LakoMoor/portcode/blob/main/gui/README.md".into());
+            };
+            let mut c = std::process::Command::new(bin);
+            c.arg(root()?);
+            if deep {
+                c.arg("--deep");
+            }
+            c.spawn()
+                .map_err(|e| format!("could not start portcode-gui: {e}"))?;
+            Ok(0)
+        }
         Some(Cmd::Engines { sub }) => match sub {
             EnginesCmd::List => cmds::engines_list(),
             EnginesCmd::Path => {

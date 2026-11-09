@@ -603,3 +603,42 @@ async fn a_dropped_connection_is_retried_and_the_turn_finishes() {
         .iter()
         .any(|e| matches!(e, UiEvent::Info(t) if t.contains("Reconnecting"))));
 }
+
+#[tokio::test]
+async fn a_steering_message_joins_the_conversation_before_the_next_step() {
+    let d = tempfile::tempdir().unwrap();
+    std::fs::write(d.path().join("a.txt"), "x\n").unwrap();
+    let m = start(
+        vec![
+            Turn {
+                tool_calls: vec![call("read", json!({"path":"a.txt"}))],
+                ..Default::default()
+            },
+            Turn {
+                text: "ok".into(),
+                ..Default::default()
+            },
+        ],
+        0,
+    )
+    .await
+    .unwrap();
+    let (mut r, ui) = runner(d.path(), &m.url, "build", Reply::Once).await;
+    r.steer_handle()
+        .lock()
+        .unwrap()
+        .push("use the other file instead".into());
+    let out = r.send("start").await.unwrap();
+    assert_eq!(out.status, Status::Done);
+    assert!(r.steer_handle().lock().unwrap().is_empty());
+    assert!(r
+        .history()
+        .iter()
+        .any(|m| m.content.as_deref() == Some("use the other file instead")));
+    assert!(ui
+        .0
+        .lock()
+        .unwrap()
+        .iter()
+        .any(|e| matches!(e, UiEvent::Info(s) if s.starts_with("steering"))));
+}

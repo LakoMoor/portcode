@@ -745,7 +745,7 @@ pub fn engines_install(ids: &[String]) -> Result<i32, String> {
     }
     if list.is_empty() {
         return Err(
-            "name an engine: portcode engines install core | unicorn | ghidra | imhex | all".into(),
+            "name an engine: portcode engines install core | unicorn | kuna | imhex | all".into(),
         );
     }
     let mut failed = 0;

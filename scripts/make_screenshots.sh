@@ -34,7 +34,7 @@ mockrun 18082 "$OUT/tui-permission.svg" --size 132x56 --until-permission --promp
 ls "$OUT"
 "$MOCK" examples/wordstat/demo-deep.json 18083 >/dev/null & mp=$!; sleep 1
 ( cd "$W" && rm -rf .portcode && PORTCODE_BASE_URL="http://127.0.0.1:18083/v1" "$P" --deep -a reverse -m mock/mock-model snapshot "$OUT/tui-deep.svg" --size 132x44 --prompt "What does the original accept on the command line?" $L >/dev/null ); kill $mp 2>/dev/null || true
-# workbench: real functions/Ghidra/Capstone output for the wordstat binary, with two inference records in the ledger
+# workbench: real functions/Kuna/Capstone output for the wordstat binary, with two inference records in the ledger
 ( cd "$W" && rm -rf .portcode \
   && "$P" tool evidence_add '{"kind":"inference","subject":"cli.options","confidence":"medium","tool":"decompile","args":"main","statement":"main reads --top and --min-len; --top defaults to 10 (iVar = 10 before the argument loop)"}' >/dev/null \
   && "$P" tool evidence_add '{"kind":"unknown","subject":"cli.locale","confidence":"low","tool":"decompile","args":"main","statement":"does main call setlocale? not seen in the first 40 lines"}' >/dev/null \

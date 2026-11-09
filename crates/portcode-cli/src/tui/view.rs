@@ -606,7 +606,7 @@ fn prompt(f: &mut Frame, app: &App, area: Rect, focus: bool) -> (u16, u16) {
         let hint = if let Some(h) = &key_hint {
             h.as_str()
         } else if app.busy {
-            "working… esc to interrupt"
+            "working… type to steer · esc to interrupt"
         } else {
             match app.agent.as_str() {
                 "reverse" => {
@@ -1648,7 +1648,7 @@ fn workbench(f: &mut Frame, app: &mut App, area: Rect) {
             let sp = SPIN[app.spinner / 2 % SPIN.len()];
             code.push(Line::from(Span::styled(
                 if wb.tab == Tab::Pseudo {
-                    format!(" {sp} Ghidra is decompiling. The first function of a binary also analyses it, which can take a while.")
+                    format!(" {sp} Kuna is decompiling. Big functions can take a while.")
                 } else {
                     format!(" {sp} reading…")
                 },
@@ -1998,7 +1998,7 @@ fn wizard(f: &mut Frame, app: &mut App, area: Rect) {
         "Deep",
         [
             "Read its code and files with every",
-            "tool: Ghidra, Capstone. Private use.",
+            "tool: Kuna, Capstone. Private use.",
         ],
     );
     let mut rows = Vec::new();

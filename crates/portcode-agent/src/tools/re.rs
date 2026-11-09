@@ -16,7 +16,7 @@ impl Tool for ReStatus {
         "re_status".into()
     }
     fn description(&self) -> String {
-        "List the reverse-engineering engines (Capstone, Unicorn, Ghidra, ImHex, rizin…), whether each is installed, and the current mode (clean-room or deep).".into()
+        "List the reverse-engineering engines (Capstone, Unicorn, Kuna, ImHex, rizin…), whether each is installed, and the current mode (clean-room or deep).".into()
     }
     fn example(&self) -> String {
         "{}".into()
@@ -44,14 +44,14 @@ impl Tool for ReInstall {
         "re_install".into()
     }
     fn description(&self) -> String {
-        "Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Ghidra and ImHex from their official releases, sha256-verified). Always asks the user first. Engine ids: see re_status.".into()
+        "Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Kuna and ImHex from their official releases, sha256-verified). Always asks the user first. Engine ids: see re_status.".into()
     }
     fn example(&self) -> String {
         r#"{"engine": "unicorn"}"#.into()
     }
     fn schema(&self) -> Value {
         obj(
-            json!({"engine": {"type":"string","description":"capstone, unicorn, keystone, lief, yara, angr, frida, ghidra, imhex; or 'core' for capstone+unicorn+lief"}}),
+            json!({"engine": {"type":"string","description":"capstone, unicorn, keystone, lief, yara, angr, frida, kuna, imhex; or 'core' for capstone+unicorn+lief"}}),
             &["engine"],
         )
     }
@@ -272,14 +272,14 @@ impl Tool for Decompile {
         "decompile".into()
     }
     fn description(&self) -> String {
-        "Deep mode. Ghidra headless: mode=list names functions, mode=func decompiles one (query = name or address), mode=strings lists defined strings. First call analyses the binary (can take minutes; later calls reuse the project). Decompiler output is evidence to read, never code to paste into the port.".into()
+        "Deep mode. Kuna decompiler: mode=list names functions (largest first), mode=func decompiles one (query = name or 0x address), mode=strings lists strings with where they are used, mode=xrefs lists who calls or reads query. Fast, no project to build. Decompiler output is evidence to read, never code to paste into the port.".into()
     }
     fn example(&self) -> String {
         r#"{"file": "original/app", "mode": "func", "query": "main"}"#.into()
     }
     fn schema(&self) -> Value {
         obj(
-            json!({"file":{"type":"string"},"mode":{"type":"string","description":"list | func | strings"},"query":{"type":"string","description":"function name or address for mode=func; max count for list/strings"}}),
+            json!({"file":{"type":"string"},"mode":{"type":"string","description":"list | func | strings | xrefs"},"query":{"type":"string","description":"function name or 0x address for func and xrefs; for list a name filter (regex); for strings a text filter (regex)"}}),
             &["file", "mode"],
         )
     }
@@ -291,62 +291,66 @@ impl Tool for Decompile {
             example: &self.example(),
         };
         let mode = a.str("mode")?;
-        if !["list", "func", "strings"].contains(&mode.as_str()) {
-            return err("mode must be list, func or strings");
+        if !["list", "func", "strings", "xrefs"].contains(&mode.as_str()) {
+            return err("mode must be list, func, strings or xrefs");
         }
         let query = a.opt_str("query").unwrap_or_default();
-        if mode == "func" && query.is_empty() {
-            return err("mode=func needs query (function name or address). Call mode=list first.");
+        if (mode == "func" || mode == "xrefs") && query.is_empty() {
+            return err(
+                "this mode needs query (function name or 0x address). Call mode=list first.",
+            );
+        }
+        if query.starts_with('-') {
+            return err("query must be a name, an 0x address or a regex, not an option");
         }
         let file = ctx.path(&a.str("file")?, false).await?;
-        let Some(gh) = engines::ghidra_headless() else {
-            return err("Ghidra is not installed. Call re_install {\"engine\":\"ghidra\"} (needs a JDK; asks the user), or use disasm for a quick look.");
+        let Some(kuna) = engines::kuna_bin() else {
+            return err("Kuna is not installed. Call re_install {\"engine\":\"kuna\"} (downloads one binary, sha256-verified; asks the user), or use disasm for a quick look.");
         };
-        let scripts = engines::write_helpers().map_err(ToolError)?;
-        // Ghidra rejects project paths with a "." element, so projects live in the engines folder, not in .portcode
-        let proj = engines::dir().join("projects");
-        std::fs::create_dir_all(&proj)?;
-        let out = proj.join("out.txt");
-        let _ = std::fs::remove_file(&out);
-        let name = format!(
-            "p{}",
-            &portcode_evidence::sha256_hex(file.display().to_string().as_bytes())[..12]
-        );
-        let have = proj.join(format!("{name}.gpr")).exists();
-        let q = |p: &std::path::Path| sh_quote(&p.display().to_string());
-        let step = if have {
-            format!(
-                "-process {} -noanalysis",
-                sh_quote(
-                    &file
-                        .file_name()
-                        .map(|n| n.to_string_lossy().into_owned())
-                        .unwrap_or_default()
-                )
-            )
-        } else {
-            format!("-import {}", q(&file))
-        };
-        let cmd = format!(
-            "{} {} {} {step} -scriptPath {} -postScript PcDecompile.java {} {} {} 2>&1 | tail -n 25",
-            q(&gh), q(&proj), name, q(&scripts), q(&out), mode, sh_quote(&query)
-        );
-        let r = run_posix(ctx, &cmd, Duration::from_secs(580)).await?;
-        match std::fs::read_to_string(&out) {
-            Ok(t) => Ok(Out::new(
-                format!("decompile {mode}"),
-                format!("{}{NOTE}", clip(t.trim_end(), ctx.output_limit)),
-            )),
-            Err(_) => err(format!(
-                "Ghidra produced no output{}. Last log lines:\n{}",
-                if r.timed_out {
-                    " (timed out after ~10 min; the project is kept, call again to continue)"
+        let is_addr = query.starts_with("0x") || query.starts_with("0X");
+        let q = |s: &str| sh_quote(s);
+        let f = q(&file.display().to_string());
+        let k = q(&kuna.display().to_string());
+        let cmd = match mode.as_str() {
+            "list" => format!(
+                "{k} functions {f} --sort size{} --limit 400 2>&1",
+                if query.is_empty() {
+                    String::new()
                 } else {
-                    ""
-                },
-                clip(r.out.trim(), 1500)
-            )),
+                    format!(" --filter {}", q(&query))
+                }
+            ),
+            "func" => format!(
+                "{k} decompile {f} {}{} 2>&1",
+                q(&query),
+                if is_addr { " --addr" } else { "" }
+            ),
+            "strings" => format!(
+                "{k} strings {f}{} 2>&1",
+                if query.is_empty() {
+                    String::new()
+                } else {
+                    format!(" --filter {}", q(&query))
+                }
+            ),
+            _ => format!("{k} xrefs {f} --to {} 2>&1", q(&query)),
+        };
+        let r = run_posix(ctx, &cmd, Duration::from_secs(580)).await?;
+        let text = r.out.trim();
+        if r.timed_out {
+            return err("Kuna timed out after ~10 minutes. Decompile a smaller function, or list first and pick by address.");
         }
+        if text.is_empty() || r.code != Some(0) {
+            return err(format!(
+                "Kuna failed{}:\n{}",
+                r.code.map(|c| format!(" (exit {c})")).unwrap_or_default(),
+                clip(text, 1500)
+            ));
+        }
+        Ok(Out::new(
+            format!("decompile {mode}"),
+            format!("{}{NOTE}", clip(text, ctx.output_limit)),
+        ))
     }
 }
 

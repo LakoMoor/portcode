@@ -1,0 +1,40 @@
+# The PortCode desktop app. Its own workspace on purpose: GPUI needs the platform's graphics toolchain
+# (Xcode's Metal compiler on macOS, Wayland/X11 headers on Linux), which the terminal build must never require.
+[workspace]
+resolver = "2"
+members = ["."]
+
+[package]
+name = "portcode-gui"
+version = "0.1.25"
+edition = "2021"
+license = "MIT"
+description = "PortCode desktop app (GPUI)"
+rust-version = "1.85"
+publish = false
+
+[[bin]]
+name = "portcode-gui"
+path = "src/main.rs"
+
+[dependencies]
+gpui = { package = "gpui-fast", version = "0.1.0" }
+gpui_platform = { package = "gpui-fast-platform", version = "0.1.0", features = ["runtime_shaders", "font-kit"] }
+portcode-agent = { path = "../crates/portcode-agent" }
+portcode-llm = { path = "../crates/portcode-llm" }
+portcode-evidence = { path = "../crates/portcode-evidence" }
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros"] }
+async-trait = "0.1"
+futures = "0.3"
+serde_json = "1"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+strip = true
+
+[dev-dependencies]
+env_logger = "0.11"

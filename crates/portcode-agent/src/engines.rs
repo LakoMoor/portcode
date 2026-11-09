@@ -10,13 +10,13 @@ pub const FUNCTIONS_PY: &str = include_str!("../re/functions.py");
 pub const DOTNET_PY: &str = include_str!("../re/dotnet.py");
 pub const UNITY_PY: &str = include_str!("../re/unityassets.py");
 pub const EMULATE_PY: &str = include_str!("../re/emulate.py");
-pub const DECOMPILE_JAVA: &str = include_str!("../re/PcDecompile.java");
 
 #[derive(Debug, Clone, Copy)]
 pub enum How {
     /// pip package into PortCode's private venv; `import` name used to detect it.
     Pip(&'static str, &'static str),
-    Ghidra,
+    /// Kuna decompiler: one self-contained binary from the project's GitHub releases.
+    Kuna,
     ImHex,
     /// Found on PATH; installed by the user's package manager (`hint`).
     System(&'static str, &'static str),
@@ -41,7 +41,7 @@ pub const ENGINES: &[Engine] = &[
     Engine { id: "yara", what: "pattern rules for files (crypto constants, packers, formats)", license: "BSD-3", url: "https://virustotal.github.io/yara", how: How::Pip("yara-python", "yara"), core: false },
     Engine { id: "angr", what: "symbolic execution and CFG recovery (large install)", license: "BSD-2", url: "https://angr.io", how: How::Pip("angr", "angr"), core: false },
     Engine { id: "frida", what: "dynamic instrumentation of a running process (frida-tools)", license: "wxWindows", url: "https://frida.re", how: How::Pip("frida-tools", "frida"), core: false },
-    Engine { id: "ghidra", what: "NSA's decompiler and analyser, run headless — tool `decompile` (needs a JDK)", license: "Apache-2.0", url: "https://ghidra-sre.org", how: How::Ghidra, core: false },
+    Engine { id: "kuna", what: "fast Rust decompiler (ported from Ghidra), one binary, no JDK — tool `decompile`", license: "Apache-2.0", url: "https://github.com/Noelo-Lab/kuna", how: How::Kuna, core: true },
     Engine { id: "imhex", what: "hex editor with a pattern language for binary formats (for you; the agent writes .hexpat files)", license: "GPL-2.0", url: "https://imhex.werwolv.net", how: How::ImHex, core: false },
     Engine { id: "rizin", what: "reverse-engineering framework (radare2 fork), scriptable from `bash`", license: "LGPL-3.0", url: "https://rizin.re", how: How::System("rizin", "brew install rizin  |  apt install rizin"), core: false },
     Engine { id: "radare2", what: "reverse-engineering framework, 60+ architectures", license: "LGPL-3.0", url: "https://rada.re", how: How::System("r2", "brew install radare2  |  apt install radare2"), core: false },
@@ -115,20 +115,15 @@ fn first_dir_with(base: &Path, rel: &str) -> Option<PathBuf> {
     None
 }
 
-pub fn ghidra_headless() -> Option<PathBuf> {
-    first_dir_with(&dir().join("ghidra"), "support/analyzeHeadless")
-        .or_else(|| which("analyzeHeadless"))
+/// The `kuna` binary: PortCode's own install under the engines folder, else one on PATH.
+pub fn kuna_bin() -> Option<PathBuf> {
+    let name = if cfg!(windows) { "kuna.exe" } else { "kuna" };
+    first_dir_with(&dir().join("kuna"), name)
         .or_else(|| {
-            [
-                "/opt/homebrew/opt/ghidra/libexec/support/analyzeHeadless",
-                "/usr/local/opt/ghidra/libexec/support/analyzeHeadless",
-                "/opt/ghidra/support/analyzeHeadless",
-                "/usr/share/ghidra/support/analyzeHeadless",
-            ]
-            .iter()
-            .map(PathBuf::from)
-            .find(|p| p.is_file())
+            let p = dir().join("kuna").join(name);
+            p.is_file().then_some(p)
         })
+        .or_else(|| which("kuna"))
 }
 
 pub fn imhex_path() -> Option<PathBuf> {
@@ -165,7 +160,7 @@ fn py_has(import: &str) -> bool {
 pub fn detect(e: &Engine) -> Option<String> {
     match e.how {
         How::Pip(_, imp) => py_has(imp).then(|| "portcode venv".into()),
-        How::Ghidra => ghidra_headless().map(|p| p.display().to_string()),
+        How::Kuna => kuna_bin().map(|p| p.display().to_string()),
         How::ImHex => imhex_path().map(|p| p.display().to_string()),
         How::System(bin, _) => which(bin).map(|p| p.display().to_string()),
     }
@@ -184,23 +179,36 @@ pub fn install_script(e: &Engine) -> Result<String, String> {
             "set -e\nmkdir -p {q}\nif [ ! -x {q}/py/bin/python ] && [ ! -f {q}/py/Scripts/python.exe ]; then python3 -m venv {q}/py || python -m venv {q}/py; fi\nPY={q}/py/bin/python; [ -x \"$PY\" ] || PY={q}/py/Scripts/python.exe\n\"$PY\" -m pip install --disable-pip-version-check -q {}\necho installed {pkg}",
             sh_quote(pkg)
         )),
-        How::Ghidra => Ok(format!(
+        How::Kuna => Ok(format!(
             r#"set -e
-command -v java >/dev/null || {{ echo "Ghidra needs a JDK (21 or newer): brew install --cask temurin  |  apt install default-jdk"; exit 1; }}
-mkdir -p {q}/ghidra && cd {q}/ghidra
-python3 - <<'PY' > .asset
-import json, urllib.request
-r = json.load(urllib.request.urlopen("https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest", timeout=30))
-for a in r["assets"]:
-    if a["name"].endswith(".zip") and "PUBLIC" in a["name"]:
-        print(a["browser_download_url"], (a.get("digest") or "").replace("sha256:", "")); break
-PY
-read URL SHA < .asset
-[ -n "$SHA" ] || {{ echo "release has no published sha256; refusing to install an unverified download"; exit 1; }}
-curl -fL --retry 3 -C - -o ghidra.zip "$URL"
-python3 -c "import hashlib,sys; h=hashlib.sha256(open('ghidra.zip','rb').read()).hexdigest(); sys.exit(0 if h==sys.argv[1] else 'sha256 mismatch - download discarded')" "$SHA" || {{ rm -f ghidra.zip; exit 1; }}
-unzip -q -o ghidra.zip && rm -f ghidra.zip .asset
-echo "sha256 verified; installed under {q}/ghidra""#
+mkdir -p {q}/kuna && cd {q}/kuna
+python3 - <<'PY'
+import hashlib, io, json, os, platform, sys, tarfile, urllib.request, zipfile
+sysname, mach = platform.system(), platform.machine().lower()
+arm = mach in ("arm64", "aarch64")
+key = {{"Darwin": "macos-arm64" if arm else "macos-x86_64",
+        "Linux": "linux-arm64" if arm else "linux-x86_64-musl",
+        "Windows": "windows-x86_64"}}.get(sysname)
+if not key:
+    sys.exit("no Kuna build for " + sysname + " " + mach + ": see https://github.com/Noelo-Lab/kuna/releases")
+r = json.load(urllib.request.urlopen("https://api.github.com/repos/Noelo-Lab/kuna/releases/latest", timeout=30))
+asset = next((a for a in r["assets"] if key in a["name"] and a["name"].endswith((".tar.gz", ".zip")) and "ghidra" not in a["name"] and "specs" not in a["name"]), None)
+if not asset:
+    sys.exit("the latest Kuna release has no build for " + key)
+want = (asset.get("digest") or "").replace("sha256:", "")
+if not want:
+    sys.exit("release has no published sha256; refusing to install an unverified download")
+data = urllib.request.urlopen(asset["browser_download_url"], timeout=300).read()
+if hashlib.sha256(data).hexdigest() != want:
+    sys.exit("sha256 mismatch - download discarded")
+exe = "kuna.exe" if sysname == "Windows" else "kuna"
+if asset["name"].endswith(".zip"):
+    z = zipfile.ZipFile(io.BytesIO(data)); member = next(n for n in z.namelist() if n.endswith(exe)); body = z.read(member)
+else:
+    t = tarfile.open(fileobj=io.BytesIO(data), mode="r:gz"); member = next(m for m in t.getmembers() if m.isfile() and m.name.endswith("/" + exe)); body = t.extractfile(member).read()
+open(exe, "wb").write(body); os.chmod(exe, 0o755)
+print("sha256 verified; installed Kuna " + r.get("tag_name", "") + " under " + os.getcwd())
+PY"#
         )),
         How::ImHex => {
             if cfg!(target_os = "macos") {
@@ -244,7 +252,6 @@ pub fn write_helpers() -> Result<PathBuf, String> {
         ("dotnet.py", DOTNET_PY),
         ("unityassets.py", UNITY_PY),
         ("emulate.py", EMULATE_PY),
-        ("PcDecompile.java", DECOMPILE_JAVA),
     ] {
         let p = d.join(n);
         if std::fs::read_to_string(&p).ok().as_deref() != Some(body) {

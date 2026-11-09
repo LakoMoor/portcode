@@ -80,7 +80,7 @@ T = [
  # deep
  ('<h2>Clean room or deep</h2>', '<h2>Clean room или deep</h2>'),
  ('In clean-room mode PortCode only watches the original from outside: it runs it and compares the output. It will not use disassemblers, decompilers or hex viewers. In deep mode it uses Capstone, Unicorn, Ghidra and ImHex, which are installed next to the binary, each one only after you say yes.', 'В режиме clean-room PortCode смотрит на оригинал только снаружи: запускает и сравнивает вывод. Дизассемблеры, декомпиляторы и hex-просмотрщики не используются. В режиме deep он работает с Capstone, Unicorn, Ghidra и ImHex. Они ставятся рядом с бинарником, каждый — только после твоего «да».'),
- ('Ghidra reads the whole function.', 'Ghidra разбирает функцию целиком.'),
+ ('Kuna reads the whole function.', 'Kuna разбирает функцию целиком.'),
  ('The default value is recorded as an inference until output from the original confirms it.', 'Значение по умолчанию записано как inference, пока вывод оригинала его не подтвердит.'),
  ('shows the first instructions: the function reserves 416 bytes of stack.', 'показывает первые инструкции: функция резервирует 416 байт стека.'),
  ('runs it.', 'запускает.'), ('sp before', 'sp до'), ('sp after', 'sp после'), ('8 instructions · frame 0x1a0 bytes', '8 инструкций · кадр 0x1a0 байт'),

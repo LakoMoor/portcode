@@ -381,6 +381,7 @@ const INSPECTORS: &[&str] = &[
     "radare2",
     "rizin",
     "rz-bin",
+    "kuna",
     "ghidra",
     "analyzeHeadless",
     "ghidraRun",

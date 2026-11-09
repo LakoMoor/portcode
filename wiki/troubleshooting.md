@@ -44,7 +44,7 @@ Start with `portcode doctor`: it tests providers, the Rust toolchain and the eng
 
 **A deep tool says it needs deep mode.** Start with `--deep` or type `/deep`.
 
-**An engine is missing.** `portcode engines list` shows what is installed. `portcode engines install core` installs Capstone, Unicorn and LIEF. Engines that are not Python packages (Ghidra, rizin and others) are installed with your package manager; the list shows the command.
+**An engine is missing.** `portcode engines list` shows what is installed. `portcode engines install core` installs Capstone, Unicorn, LIEF and Kuna. Engines that are not Python packages (rizin and others) are installed with your package manager; the list shows the command.
 
 ## Subscriptions
 

@@ -32,7 +32,7 @@ The deep tools (`disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity
 |---|---|
 | `disasm` | disassembly with Capstone (x86, ARM, ARM64, MIPS, RISC-V, PPC…) |
 | `emulate` | run a function or decoder in isolation with Unicorn |
-| `decompile` | Pseudo-C from Ghidra, run headless (needs a JDK) |
+| `decompile` | Pseudo-C from Kuna (one downloaded binary, no JDK); also function lists, strings and cross-references |
 | `functions` | list the functions of a binary |
 | `hexdump` | bytes at an address |
 | `unity` | a Unity project, Mono or IL2CPP |

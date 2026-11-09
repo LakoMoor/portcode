@@ -5,3 +5,4 @@ reference.lock.json
 .env
 .DS_Store
 /dist/
+/gui/target
