@@ -47,8 +47,8 @@
 <p>PortCode has two modes.</p>
 <div class="tw"><table><thead><tr><th></th><th>clean-room (default)</th><th>deep</th></tr></thead><tbody>
 <tr><td>Looks at</td><td>what a user sees: run it, inputs, outputs, screenshots, public docs</td><td>also inside: disassembly, decompilation, emulation, raw bytes</td></tr>
-<tr><td>Tools</td><td><code>bash</code>, <code>parity</code>, <code>screenshot</code>, <code>survey</code>, ledger</td><td>+ <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>hexdump</code>, <code>re_install</code></td></tr>
-<tr><td>Refused</td><td><code>disasm</code> <code>emulate</code> <code>decompile</code> <code>hexdump</code>; objdump/strings/otool/gdb/r2… in <code>bash</code></td><td>nothing extra</td></tr>
+<tr><td>Tools</td><td><code>bash</code>, <code>project_check</code>, <code>parity</code>, <code>screenshot</code>, <code>survey</code>, ledger</td><td>+ <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>hexdump</code>, <code>unity</code>, <code>cpp2il</code>, <code>dotnet</code>, <code>unity_assets</code>, <code>re_install</code></td></tr>
+<tr><td>Refused</td><td><code>disasm</code> <code>emulate</code> <code>decompile</code> <code>hexdump</code> <code>cpp2il</code>; objdump/strings/otool/gdb/r2… in <code>bash</code></td><td>nothing extra</td></tr>
 <tr><td>Evidence</td><td>mostly <code>observation</code></td><td>mostly <code>inference</code> (cite tool + address)</td></tr>
 <tr><td>Switch</td><td><code>--clean-room</code></td><td><code>--deep</code>, <code>/deep</code>, <code>&quot;mode&quot;:&quot;deep&quot;</code>, <code>PORTCODE_MODE=deep</code></td></tr>
 </tbody></table></div>
@@ -64,11 +64,12 @@
 <tr><td>angr</td><td>symbolic execution</td><td>python</td><td>pip (large)</td></tr>
 <tr><td>frida</td><td>dynamic instrumentation</td><td>bash</td><td>pip</td></tr>
 <tr><td>kuna</td><td>Rust decompiler (a port of Ghidra's), one binary</td><td><code>decompile</code></td><td>official release archive, sha256 from GitHub; no JDK</td></tr>
+<tr><td>cpp2il</td><td>Unity IL2CPP managed assembly and method-body recovery</td><td><code>cpp2il</code></td><td>official self-contained binary, sha256 from GitHub</td></tr>
 <tr><td>imhex</td><td>hex editor + pattern language</td><td>you (agent writes <code>.hexpat</code>)</td><td>cask / AppImage</td></tr>
 <tr><td>rizin, radare2, binwalk, die, capa, jadx, wabt, upx</td><td>system tools</td><td><code>bash</code> (deep)</td><td>your package manager</td></tr>
 </tbody></table></div>
 <pre><code class="lang-sh">portcode engines install core        # capstone + unicorn + lief
-portcode engines install kuna imhex
+portcode engines install cpp2il kuna imhex
 portcode --deep -a reverse</code></pre>
 <p>Emulation never touches the host: no syscalls, a hard instruction budget, a 60 s deadline. Use only on software you own or may examine. PortCode never bypasses DRM, logins or anti-cheat.</p>
 <h2 id="workbench">Workbench<a class="anchor" href="#workbench" aria-label="Link to this section">#</a></h2>
@@ -83,11 +84,17 @@ portcode --deep -a reverse</code></pre>
 <h2 id="unity-and-c-net">Unity and C# / .NET<a class="anchor" href="#unity-and-c-net" aria-label="Link to this section">#</a></h2>
 <div class="tw"><table><thead><tr><th>tool</th><th>does</th><th>needs</th></tr></thead><tbody>
 <tr><td><code>unity</code></td><td>surveys a game folder or <code>.app</code>: Unity version, <strong>Mono or IL2CPP</strong>, managed DLLs, native library, asset and bundle counts, next steps</td><td>nothing</td></tr>
+<tr><td><code>cpp2il</code></td><td>recovers managed DLLs from an IL2CPP game folder or APK; <code>types</code> restores signatures, <code>methods</code> also attempts IL body recovery</td><td><code>cpp2il</code> official binary</td></tr>
 <tr><td><code>dotnet</code></td><td><code>info</code>, <code>types</code>, <code>type</code>, <code>strings</code>, <code>refs</code> (assembly refs and P/Invoke) of any .NET assembly, including Unity's <code>Assembly-CSharp.dll</code></td><td><code>dnfile</code> (pip)</td></tr>
 <tr><td><code>dotnet</code> mode=<code>decompile</code></td><td>C# source of one type</td><td><code>ilspy</code> (<code>dotnet tool install -g ilspycmd</code>, needs the .NET SDK)</td></tr>
 <tr><td><code>unity_assets</code></td><td><code>info</code>, <code>list</code>, <code>text</code>, <code>tree</code> of <code>.assets</code>, <code>levelN</code>, <code>globalgamemanagers</code>, bundles: scenes, TextAssets, MonoBehaviour values</td><td><code>unitypy</code> (pip)</td></tr>
 </tbody></table></div>
-<p>Install: <code>portcode engines install dnfile unitypy</code>. Mono games keep their C# in <code>Managed/*.dll</code>, so <code>dotnet</code> reads it directly. IL2CPP games compile C# to native code: run <strong>Il2CppDumper</strong> (engine <code>il2cppdumper</code>, installed by you) on <code>GameAssembly</code> and <code>global-metadata.dat</code>, then point <code>dotnet</code> at the DummyDll files it writes, and use <code>functions</code>, <code>decompile</code> and <code>disasm</code> on the native library. Obfuscated names (<code>a</code>, <code>b</code>) are normal; <code>strings</code> and <code>refs</code> orient you. As everywhere, this is deep mode: record what you see as <code>inference</code>, and port from the ledger, not from decompiled code.</p>
+<p>Install: <code>portcode engines install cpp2il dnfile unitypy</code>. Mono games keep their C# in <code>Managed/*.dll</code>, so <code>dotnet</code> reads it directly. IL2CPP games compile C# to native code, so run Cpp2IL first:</p>
+<pre><code class="lang-sh">portcode --deep tool cpp2il &#x27;{&quot;path&quot;:&quot;original/MyGame&quot;,&quot;mode&quot;:&quot;types&quot;}&#x27;
+portcode --deep tool cpp2il &#x27;{&quot;path&quot;:&quot;original/MyGame&quot;,&quot;mode&quot;:&quot;methods&quot;,&quot;output&quot;:&quot;recovered-methods&quot;}&#x27;
+portcode --deep tool dotnet &#x27;{&quot;file&quot;:&quot;.portcode/analysis/cpp2il-types/Assembly-CSharp.dll&quot;,&quot;mode&quot;:&quot;info&quot;}&#x27;</code></pre>
+<p><code>types</code> is the faster first pass. <code>methods</code> uses Cpp2IL's IL recovery and can be substantially slower. <code>path</code> is the game install folder (not <code>GameAssembly.dll</code>) or an APK; set <code>exe_name</code> only when executable auto-detection is ambiguous. Output goes to a new or empty folder, by default <code>.portcode/analysis/cpp2il-&lt;mode&gt;</code>, with the complete <code>portcode-cpp2il.log</code>; PortCode refuses to overwrite recovered evidence. The installer chooses a recent official release asset with a GitHub-published SHA-256 rather than installing an unverified latest stable binary. On macOS it ad-hoc signs the already verified binary so Gatekeeper can execute the unsigned upstream release.</p>
+<p>The recovered DLLs are analysis artifacts, <strong>not the original C# and not a runnable Unity project</strong>. IL recovery is imperfect and unsupported metadata or obfuscation can leave gaps. Continue with <code>dotnet</code>, <code>unity_assets</code>, and native <code>functions</code>/<code>decompile</code>/<code>disasm</code>, then build a separate port and prove its behaviour with <code>project_check</code> and golden-based <code>parity</code>. Record recovered facts as <code>inference</code>, not observation or proof of parity.</p>
 <div class="pn"><a class="prev" href="modes.html"><small>Previous</small>Clean-room and deep mode</a><a class="next" href="providers.html"><small>Next</small>Providers and models</a></div>
 <p class="edit"><a href="https://github.com/LakoMoor/portcode/edit/main/docs/ENGINES.md">Edit this page on GitHub</a></p></main>
 <aside class="toc" aria-label="On this page"><b>On this page</b><a class="t2" href="#engines">Engines</a><a class="t2" href="#workbench">Workbench</a><a class="t2" href="#unity-and-c-net">Unity and C# / .NET</a></aside>

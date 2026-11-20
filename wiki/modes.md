@@ -21,7 +21,7 @@ In the app: `/deep` and `/clean`. You can also set `"mode": "deep"` in `portcode
 
 ## What is enforced
 
-The deep tools (`disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `dotnet`, `unity_assets`) refuse to run in clean-room mode and say how to switch. `bash` also refuses commands that look inside programs (disassemblers, decompilers, debuggers, and the like) in clean-room mode.
+The deep tools (`disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `cpp2il`, `dotnet`, `unity_assets`) refuse to run in clean-room mode and say how to switch. `bash` also refuses commands that look inside programs (disassemblers, decompilers, debuggers, and the like) in clean-room mode.
 
 > [!NOTE]
 > The guard is a seatbelt, not a sandbox. Use deep mode only on software you own or may examine.
@@ -36,6 +36,7 @@ The deep tools (`disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity
 | `functions` | list the functions of a binary |
 | `hexdump` | bytes at an address |
 | `unity` | a Unity project, Mono or IL2CPP |
+| `cpp2il` | managed assemblies and optional IL method-body recovery from Unity IL2CPP games |
 | `dotnet` | types, methods, strings and decompilation of C# and .NET (ILSpy) |
 | `unity_assets` | scenes, TextAssets and MonoBehaviour data |
 

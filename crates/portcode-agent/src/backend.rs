@@ -2,8 +2,9 @@
 //!
 //! PortCode never touches their login or tokens. It starts the official CLI as a child process in
 //! non-interactive mode, hands it PortCode's tools over MCP (`portcode mcp`) and turns its JSON event
-//! stream into the same [`UiEvent`]s the built-in loop emits. The CLI runs its own agent loop, so PortCode's
-//! finish gate, step limits and permission prompts do not apply to it.
+//! stream into the same [`UiEvent`]s the built-in loop emits. The CLI runs its own agent loop, but reports
+//! completed PortCode tool calls back to the runner so its finish gate still applies. Native CLI permission
+//! prompts and context compaction remain under the CLI's control.
 use crate::run::{Ui, UiEvent};
 use portcode_llm::Usage;
 use serde_json::{json, Value};
@@ -51,6 +52,13 @@ pub fn cli_for(provider: &str) -> Option<Cli> {
 
 /// Find the CLI on PATH (and the usual user-level install folders).
 pub fn find_binary(cli: Cli) -> Option<PathBuf> {
+    let override_var = match cli {
+        Cli::Claude => "PORTCODE_CLAUDE_BIN",
+        Cli::Codex => "PORTCODE_CODEX_BIN",
+    };
+    if let Some(path) = std::env::var_os(override_var) {
+        return Some(PathBuf::from(path)).filter(|p| p.is_file());
+    }
     let name = cli.binary_name();
     let mut dirs: Vec<PathBuf> = std::env::var_os("PATH")
         .map(|p| std::env::split_paths(&p).collect())
@@ -109,6 +117,14 @@ pub fn status(cli: Cli) -> (bool, String) {
     }
 }
 
+#[derive(Debug, Default, Clone)]
+pub struct ToolRecord {
+    pub name: String,
+    pub args: String,
+    pub ok: bool,
+    pub text: String,
+}
+
 /// What a finished turn left behind.
 #[derive(Debug, Default, Clone)]
 pub struct Turn {
@@ -117,12 +133,19 @@ pub struct Turn {
     pub usage: Usage,
     pub steps: u32,
     pub error: Option<String>,
+    pub tools: Vec<ToolRecord>,
+}
+
+#[derive(Debug, Default, Clone)]
+struct PendingCall {
+    name: String,
+    args: String,
 }
 
 /// Turns one CLI's JSON lines into UI events. Pure, so it is testable without the CLI.
 pub struct Parser {
     cli: Cli,
-    names: HashMap<String, String>,
+    calls: HashMap<String, PendingCall>,
     pub turn: Turn,
 }
 
@@ -143,7 +166,7 @@ impl Parser {
     pub fn new(cli: Cli) -> Self {
         Self {
             cli,
-            names: HashMap::new(),
+            calls: HashMap::new(),
             turn: Turn::default(),
         }
     }
@@ -159,7 +182,13 @@ impl Parser {
     }
 
     fn call(&mut self, id: &str, name: &str, args: String, ui: &dyn Ui) {
-        self.names.insert(id.to_string(), name.to_string());
+        self.calls.insert(
+            id.to_string(),
+            PendingCall {
+                name: name.to_string(),
+                args: args.clone(),
+            },
+        );
         self.turn.steps += 1;
         ui.event(UiEvent::ToolStart(name.to_string()));
         ui.event(UiEvent::ToolCall {
@@ -168,10 +197,19 @@ impl Parser {
         });
     }
     fn result(&mut self, id: &str, ok: bool, text: String, ui: &dyn Ui) {
-        let name = self.names.remove(id).unwrap_or_else(|| "tool".into());
+        let call = self.calls.remove(id).unwrap_or_else(|| PendingCall {
+            name: "tool".into(),
+            args: String::new(),
+        });
+        self.turn.tools.push(ToolRecord {
+            name: call.name.clone(),
+            args: call.args,
+            ok,
+            text: text.clone(),
+        });
         ui.event(UiEvent::ToolResult {
-            title: name.clone(),
-            name,
+            title: call.name.clone(),
+            name: call.name,
             ok,
             text,
         });
@@ -276,7 +314,7 @@ impl Parser {
                     Some("command_execution") => {
                         if done {
                             let ok = it.get("exit_code").and_then(Value::as_i64) == Some(0);
-                            if !self.names.contains_key(id) {
+                            if !self.calls.contains_key(id) {
                                 self.call(
                                     id,
                                     "shell",
@@ -308,7 +346,7 @@ impl Parser {
                     Some("mcp_tool_call") => {
                         let name = s("tool");
                         if done {
-                            if !self.names.contains_key(id) {
+                            if !self.calls.contains_key(id) {
                                 let a = it
                                     .get("arguments")
                                     .cloned()
@@ -445,6 +483,9 @@ pub fn args(r: &Request, mcp_config: &Path) -> Vec<String> {
                 "-c".into(),
                 format!("mcp_servers.portcode.args={}", Value::Array(mcp)),
             ]);
+            if let Some(s) = r.session {
+                a.extend(["resume".into(), s.into()]);
+            }
             // Codex has no system-prompt flag: the brief goes in front of the task.
             a.push(format!("{}\n\n# Task\n{}", r.brief, r.prompt));
         }
@@ -593,6 +634,11 @@ mod tests {
             (1004, 136)
         );
         assert_eq!(p.turn.steps, 2);
+        assert_eq!(p.turn.tools.len(), 2);
+        assert_eq!(p.turn.tools[1].name, "evidence_add");
+        assert_eq!(p.turn.tools[1].args, r#"{"kind":"observation"}"#);
+        assert!(!p.turn.tools[1].ok);
+        assert_eq!(p.turn.tools[1].text, "missing subject");
         assert!(p.turn.error.is_none());
     }
 
@@ -627,6 +673,10 @@ mod tests {
         assert_eq!(ev[6], "text:Done.");
         assert_eq!(p.turn.session.as_deref(), Some("th-9"));
         assert_eq!(p.turn.usage.prompt_tokens, 50);
+        let proof = p.turn.tools.iter().find(|t| t.name == "parity").unwrap();
+        assert!(proof.ok);
+        assert_eq!(proof.text, "RESULT: PASS");
+        assert_eq!(proof.args, r#"{"golden":"g"}"#);
     }
 
     #[test]
@@ -665,6 +715,7 @@ mod tests {
             has(&a, "--sandbox", "read-only")
                 && a.iter().any(|x| x.contains("[\"mcp\",\"--deep\"]"))
         );
+        assert!(has(&a, "resume", "abc"));
         assert!(a.last().unwrap().starts_with("B\n\n# Task\nport it"));
     }
 

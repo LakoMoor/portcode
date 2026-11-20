@@ -276,7 +276,7 @@ impl Tool for Parity {
     }
     fn schema(&self) -> Value {
         obj(
-            json!({"golden": {"type":"string"}, "port": {"type":"string"}, "abs_tol": {"type":"number"}, "rel_tol": {"type":"number"}}),
+            json!({"golden": {"type":"string"}, "port": {"type":"string"}, "project": {"type":"string","description":"source folder to fingerprint, default .; use the port folder for large trees"}, "abs_tol": {"type":"number"}, "rel_tol": {"type":"number"}}),
             &["golden", "port"],
         )
     }

@@ -728,7 +728,7 @@ impl Wizard {
             p += WHERE;
         }
         if self.deep {
-            p += "Mode: deep. You may look inside the original (functions, disasm, decompile, emulate, hexdump, and for Unity or C#: unity, dotnet, unity_assets). Record what you read as inference.\n";
+            p += "Mode: deep. You may look inside the original (functions, disasm, decompile, emulate, hexdump, and for Unity or C#: unity, cpp2il, dotnet, unity_assets). Record what you read as inference.\n";
         } else {
             p += "Mode: clean-room. Observe the original from outside only (run it, feed inputs, compare outputs, screenshots, public docs). Do not read its private code or files.\n";
         }

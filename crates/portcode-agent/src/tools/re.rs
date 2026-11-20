@@ -44,7 +44,7 @@ impl Tool for ReInstall {
         "re_install".into()
     }
     fn description(&self) -> String {
-        "Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Kuna and ImHex from their official releases, sha256-verified). Always asks the user first. Engine ids: see re_status.".into()
+        "Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Kuna, Cpp2IL and ImHex from their official releases, sha256-verified). Always asks the user first. Engine ids: see re_status.".into()
     }
     fn example(&self) -> String {
         r#"{"engine": "unicorn"}"#.into()
@@ -673,11 +673,163 @@ impl Tool for Unity {
         }
         s.push_str(&format!("asset files: {assets}, bundles: {bundles}\n"));
         s.push_str(match (mono, meta.is_some()) {
-            (_, true) => "next: run Il2CppDumper on the native library + global-metadata.dat (engine il2cppdumper), then `dotnet` on the DummyDll output; `functions`/`decompile` work on the native library.\n",
+            (_, true) => "next: `cpp2il` mode=types recovers managed assemblies from the native library + global-metadata.dat; then use `dotnet` on Assembly-CSharp.dll. Use mode=methods for slower method-body recovery. `functions`/`decompile` work on the native library.\n",
             (true, false) => "next: `dotnet` mode=types on Managed/Assembly-CSharp.dll, then mode=type for the classes you care about, and mode=decompile (engine ilspy) for the C#. Use `unity_assets` for scenes, TextAssets and MonoBehaviour data.\n",
             _ => "next: look for the game's data folder with `ls`, then call `unity` again.\n",
         });
         Ok(Out::new("unity", format!("{s}{NOTE}")))
+    }
+}
+
+fn recovered_dlls(root: &std::path::Path) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut stack = vec![(root.to_path_buf(), 0usize)];
+    while let Some((dir, depth)) = stack.pop() {
+        let Ok(rd) = std::fs::read_dir(dir) else {
+            continue;
+        };
+        for entry in rd.flatten() {
+            let path = entry.path();
+            if path.is_dir() && depth < 6 {
+                stack.push((path, depth + 1));
+            } else if path.extension().is_some_and(|e| e == "dll") {
+                out.push(
+                    path.strip_prefix(root)
+                        .unwrap_or(&path)
+                        .display()
+                        .to_string(),
+                );
+            }
+        }
+        if out.len() >= 500 {
+            break;
+        }
+    }
+    out.sort();
+    out
+}
+
+pub struct Cpp2Il;
+#[async_trait]
+impl Tool for Cpp2Il {
+    fn name(&self) -> String {
+        "cpp2il".into()
+    }
+    fn description(&self) -> String {
+        "Deep mode. Recover managed assemblies from a Unity IL2CPP game with Cpp2IL. mode=types restores type/method signatures quickly; mode=methods also attempts native method-body recovery (slower, recovered IL is imperfect). path is the game install folder or APK. Results and the full engine log stay in output (default .portcode/analysis/cpp2il-<mode>); then use dotnet on Assembly-CSharp.dll. Never treat recovered C#/IL as original source or proof of behaviour.".into()
+    }
+    fn example(&self) -> String {
+        r#"{"path":"original/MyGame","mode":"types"}"#.into()
+    }
+    fn schema(&self) -> Value {
+        obj(
+            json!({"path":{"type":"string","description":"Unity IL2CPP game folder or APK"},"mode":{"type":"string","enum":["types","methods"],"description":"types (default) or methods (IL recovery)"},"output":{"type":"string","description":"new or empty output folder inside the project"},"exe_name":{"type":"string","description":"game executable name when auto-detection is ambiguous"}}),
+            &["path"],
+        )
+    }
+    async fn run(&self, ctx: &Ctx, args: Value) -> ToolResult {
+        ctx.need_deep("cpp2il")?;
+        let a = Args {
+            v: &args,
+            tool: "cpp2il",
+            example: &self.example(),
+        };
+        let mode = a.opt_str("mode").unwrap_or_else(|| "types".into());
+        if !matches!(mode.as_str(), "types" | "methods") {
+            return err("mode must be types or methods");
+        }
+        let game = ctx.path(&a.str("path")?, false).await?;
+        if game.is_dir() {
+            let data = unity_data_dir(&game).ok_or_else(|| {
+                ToolError("no Unity data folder found. Point path at the game install folder, not GameAssembly.dll.".into())
+            })?;
+            let metadata = data.join("il2cpp_data/Metadata/global-metadata.dat");
+            let managed_metadata = data.join("Managed/Metadata/global-metadata.dat");
+            if !metadata.is_file() && !managed_metadata.is_file() {
+                return err("global-metadata.dat was not found. For a Mono Unity game use dotnet on Managed/Assembly-CSharp.dll instead.");
+            }
+        } else if game.extension().is_none_or(|e| e != "apk") {
+            return err("path must be a Unity game folder or an .apk file");
+        }
+        let Some(bin) = engines::cpp2il_bin() else {
+            return err("Cpp2IL is not installed. Call re_install {\"engine\":\"cpp2il\"}; it downloads the official self-contained binary only when GitHub publishes a sha256.");
+        };
+        let raw_out = a
+            .opt_str("output")
+            .unwrap_or_else(|| format!(".portcode/analysis/cpp2il-{mode}"));
+        let out = ctx.path(&raw_out, true).await?;
+        if std::fs::read_dir(&out)
+            .ok()
+            .and_then(|mut d| d.next())
+            .is_some()
+        {
+            return err(format!("output folder is not empty: {raw_out}. Choose another output folder; PortCode will not overwrite recovered evidence."));
+        }
+        std::fs::create_dir_all(&out)?;
+        ctx.permit(
+            "cpp2il",
+            &raw_out,
+            Decision::Allow,
+            "write recovered assemblies and the Cpp2IL log",
+        )
+        .await?;
+        let q = |p: &std::path::Path| sh_quote(&p.display().to_string());
+        let format = if mode == "methods" {
+            "dll_il_recovery"
+        } else {
+            "dll_default"
+        };
+        let mut cmd = format!(
+            "NO_COLOR=1 {} --game-path={} --output-to={} --output-as={format}",
+            q(&bin),
+            q(&game),
+            q(&out)
+        );
+        if let Some(name) = a.opt_str("exe_name").filter(|n| !n.is_empty()) {
+            if name.starts_with('-') {
+                return err("exe_name must be a file name, not an option");
+            }
+            cmd.push_str(&format!(" --exe-name={}", sh_quote(&name)));
+        }
+        let r = run_posix(ctx, &cmd, Duration::from_secs(580)).await?;
+        let log = out.join("portcode-cpp2il.log");
+        std::fs::write(&log, &r.out)?;
+        if r.timed_out {
+            return err(format!("Cpp2IL timed out after 580s. Try mode=types or analyse a smaller target. Full log: {raw_out}/portcode-cpp2il.log"));
+        }
+        if r.code != Some(0) {
+            return err(format!(
+                "Cpp2IL failed (exit {}). This can mean an unsupported Unity/metadata version or a damaged input. Full log: {raw_out}/portcode-cpp2il.log\n{}",
+                r.code.map(|c| c.to_string()).unwrap_or_else(|| "signal".into()),
+                clip(r.out.trim(), 2500)
+            ));
+        }
+        let dlls = recovered_dlls(&out);
+        if dlls.is_empty() {
+            return err(format!("Cpp2IL exited successfully but produced no DLLs. See {raw_out}/portcode-cpp2il.log; the target or output format may be unsupported."));
+        }
+        let mut text = format!(
+            "Cpp2IL {mode} recovered {} assemblies.\nOutput: {raw_out}\nLog: {raw_out}/portcode-cpp2il.log\n",
+            dlls.len()
+        );
+        for name in dlls
+            .iter()
+            .filter(|n| n.ends_with("Assembly-CSharp.dll"))
+            .take(4)
+        {
+            text.push_str(&format!("Game assembly: {raw_out}/{name}\nNext: dotnet {{\"file\":\"{raw_out}/{name}\",\"mode\":\"types\"}}\n"));
+        }
+        text.push_str("\nAssemblies:\n");
+        for name in dlls.iter().take(50) {
+            text.push_str(&format!("  {name}\n"));
+        }
+        if dlls.len() > 50 {
+            text.push_str(&format!("  … {} more\n", dlls.len() - 50));
+        }
+        Ok(Out::new(
+            format!("cpp2il {mode}"),
+            format!("{}{NOTE}", clip(&text, ctx.output_limit)),
+        ))
     }
 }
 
@@ -940,6 +1092,7 @@ mod tests {
             (Box::new(Hexdump), json!({"file":"x"})),
             (Box::new(Functions), json!({"file":"x"})),
             (Box::new(Unity), json!({"path":"x"})),
+            (Box::new(Cpp2Il), json!({"path":"x"})),
             (Box::new(Dotnet), json!({"file":"x","mode":"info"})),
             (Box::new(UnityAssets), json!({"file":"x","mode":"info"})),
         ] {
@@ -1021,7 +1174,7 @@ mod tests {
         );
         let i = Unity.run(&c, json!({"path":"Il_Game"})).await.unwrap().text;
         assert!(
-            i.contains("IL2CPP") && i.contains("Il2CppDumper") && i.contains("GameAssembly.dll"),
+            i.contains("IL2CPP") && i.contains("cpp2il") && i.contains("GameAssembly.dll"),
             "{i}"
         );
         std::fs::create_dir_all(d.path().join("empty")).unwrap();

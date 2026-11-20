@@ -42,6 +42,12 @@ pub struct Todo {
     pub status: String,
 }
 
+#[derive(Debug, Clone)]
+pub struct Proof {
+    pub roots: Vec<PathBuf>,
+    pub fingerprint: String,
+}
+
 #[derive(Default)]
 pub struct State {
     pub read: HashMap<PathBuf, SystemTime>,
@@ -49,8 +55,10 @@ pub struct State {
     pub loaded_skills: HashSet<String>,
     /// Last `parity` verdict (`None` = never run).
     pub parity: Option<bool>,
-    /// Port code changed since the last parity run.
-    pub dirty: bool,
+    pub parity_proof: Option<Proof>,
+    /// Last successful project build/test command.
+    pub project_check: Option<bool>,
+    pub check_proof: Option<Proof>,
     /// The agent needs a decision from the user and may stop.
     pub blocked: Option<String>,
 }

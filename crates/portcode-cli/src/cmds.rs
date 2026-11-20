@@ -847,7 +847,7 @@ pub async fn mcp(cfg: Config, deep: bool, print_config: bool) -> Result<i32, Str
     let reg = portcode_agent::tools::builtin(portcode_agent::skills::discover(&root));
     let ctx = Ctx::new(
         root,
-        Arc::new(portcode_agent::DenyAsk),
+        Arc::new(portcode_agent::mcpserve::CliGate),
         Rules::from_config(&cfg.permission),
     );
     ctx.deep.store(

@@ -49,21 +49,23 @@
 <ol><li><strong>Pin the original.</strong> Its exact build is hashed (sha256), so every later claim is about a known artifact.</li><li><strong>Write down facts, with their weight.</strong> Each fact goes into the ledger as one of three kinds:</li></ol>
 <p>| Kind | Meaning | |---|---| | <code>observation</code> | I saw or ran it. | | <code>inference</code> | I worked it out from observations. | | <code>unknown</code> | I do not know yet. |</p>
 <p>An unknown stays open until something resolves it. PortCode never claims parity without a passing <code>parity</code> run.</p>
-<ol><li><strong>Port one module at a time.</strong> Each module is compared with golden output captured from the <strong>original</strong>, not from your port.</li><li><strong>Check with parity.</strong> A differential run compares the port's output with the golden files, with tolerances for floating point.</li><li><strong>Show it.</strong> A screenshot per feature and a generated site for GitHub Pages.</li></ol>
+<ol><li><strong>Port one module at a time.</strong> Each module is compared with golden output captured from the <strong>original</strong>, not from your port.</li><li><strong>Build and test the delivered project.</strong> <code>project_check</code> runs its real build/test command in the port folder; a nonzero exit, cancellation or timeout is FAIL.</li><li><strong>Check with parity.</strong> A differential run compares the port's output with the golden files, with tolerances for floating point.</li><li><strong>Show it.</strong> A screenshot per feature and a generated site for GitHub Pages.</li></ol>
 <h2 id="start">Start<a class="anchor" href="#start" aria-label="Link to this section">#</a></h2>
 <p>Put the original in <code>original/</code> and run:</p>
 <pre><code class="lang-sh">portcode -a port</code></pre>
 <p>or type <code>/create</code> and answer the questions. The agent begins by reading the ledger and <code>docs/PORT.md</code> if they exist, and says which phase it is in.</p>
 <h2 id="the-finish-gate">The finish gate<a class="anchor" href="#the-finish-gate" aria-label="Link to this section">#</a></h2>
 <p><code>port</code> does not stop early. If any of these is true when it tries to finish, it is sent back to work and given more steps:</p>
-<ul><li>a behaviour of the original (an option, an output format, an exit code, an error message) is not in the todo list,</li><li>a todo is still open,</li><li>the last <code>parity</code> run did not pass on the final code.</li></ul>
-<p>The only exit is <code>blocked</code>: the agent stops and shows a <strong>Needs your decision</strong> card with its questions. Your answer resumes the run.</p>
+<ul><li>a behaviour of the original (an option, an output format, an exit code, an error message) is not in the todo list,</li><li>a todo is still open,</li><li><code>project_check</code> has not run the real build/test command successfully,</li><li>the last <code>parity</code> run did not pass against the original's goldens,</li><li>a source, golden or output file changed after either PASS.</li></ul>
+<p>Both proofs carry SHA-256 fingerprints. Changes made through <code>write</code>, <code>edit</code>, <code>bash</code>, Claude Code or Codex therefore invalidate stale verdicts. Run <code>project_check</code> and then <code>parity</code> again after the last edit. If the continuation limit is exhausted, PortCode reports the run as unfinished rather than done.</p>
+<p>The early exit is <code>blocked</code>: the agent stops and shows a <strong>Needs your decision</strong> card with its questions. Your answer resumes the run.</p>
 <h2 id="the-tools">The tools<a class="anchor" href="#the-tools" aria-label="Link to this section">#</a></h2>
 <div class="tw"><table><thead><tr><th>Tool</th><th>Does</th></tr></thead><tbody>
 <tr><td><code>survey</code></td><td>inventories a source tree: languages and size, build files, engine and graphics hints, assets, tests, risk hotspots</td></tr>
 <tr><td><code>pin</code></td><td>pins the original build (sha256, size, format, version) in <code>.portcode/reference.lock.json</code> and verifies it later</td></tr>
 <tr><td><code>evidence_add</code></td><td>adds an observation, inference or unknown to the ledger</td></tr>
 <tr><td><code>evidence_list</code></td><td>reads the ledger, by subject or only the unknowns</td></tr>
+<tr><td><code>project_check</code></td><td>runs the delivered project's real build/test command in its folder; records PASS only for exit 0 without timeout or cancellation</td></tr>
 <tr><td><code>parity</code></td><td>compares golden output recorded from the original with the port's (numbers within tolerance, PNG per channel); missing, extra or empty output is a failure</td></tr>
 <tr><td><code>screenshot</code></td><td>runs a command, saves its real output as an SVG terminal screenshot in <code>docs/screenshots/</code> and records it as an observation</td></tr>
 <tr><td><code>scaffold</code></td><td>creates a Rust workspace: <code>&lt;name&gt;-core</code> (headless) plus <code>&lt;name&gt;</code> (binary), <code>docs/PORT.md</code>, <code>tests/golden</code>, <code>docs/screenshots</code></td></tr>

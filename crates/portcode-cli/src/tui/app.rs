@@ -1753,7 +1753,7 @@ fn tools_text() -> String {
         ("files", "read  ls  glob  grep  write  edit"),
         ("run", "bash  venv  todowrite  webfetch  skill  task  team"),
         ("proof", "survey  pin  evidence_add  evidence_list  parity  screenshot  scaffold  site_build"),
-        ("deep", "re_status  re_install  disasm  emulate  decompile  functions  hexdump  unity  dotnet  unity_assets"),
+        ("deep", "re_status  re_install  disasm  emulate  decompile  functions  hexdump  unity  cpp2il  dotnet  unity_assets"),
         ("more", "tools from MCP servers in portcode.json"),
     ] {
         s += &format!("{k}\t{d}\n");
@@ -1773,7 +1773,14 @@ pub fn summarize(name: &str, args: &str) -> String {
     };
     if matches!(
         name,
-        "disasm" | "emulate" | "hexdump" | "decompile" | "dotnet" | "unity_assets" | "unity"
+        "disasm"
+            | "emulate"
+            | "hexdump"
+            | "decompile"
+            | "cpp2il"
+            | "dotnet"
+            | "unity_assets"
+            | "unity"
     ) {
         let what = pick("file").unwrap_or_else(|| "hex bytes".into());
         let how: Vec<String> = ["arch", "mode", "query"]

@@ -18,7 +18,7 @@ The everyday agent. It reads before it edits, makes small changes, runs your pro
 
 ### port
 
-`port` follows the rustport skill phase by phase and does not stop early. It has a **finish gate**: if a behaviour of the original is not in the todo list, a todo is open, or the last `parity` run did not pass on the final code, the run is sent back to work and given more steps. The only way out is `blocked`, when it needs a decision only you can give. See [The port workflow](port-workflow.html).
+`port` follows the rustport skill phase by phase and does not stop early. Its **finish gate** requires a completed behaviour checklist, a real `project_check` build/test PASS and a `parity` PASS on unchanged final files. Edits invalidate both fingerprints and send the agent back to work with more steps. The early exit is `blocked`, when it needs a decision only you can give. See [The port workflow](port-workflow.html).
 
 ### reverse
 

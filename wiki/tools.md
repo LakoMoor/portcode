@@ -21,8 +21,8 @@ The table is generated from the tool definitions (first sentence of each descrip
 |---|---|
 | Files | `read`, `ls`, `glob`, `grep`, `write`, `edit` |
 | Run | `bash`, `venv`, `todowrite`, `webfetch`, `skill`, `task`, `team`, `blocked` |
-| Proof | `survey`, `pin`, `evidence_add`, `evidence_list`, `parity`, `screenshot`, `scaffold`, `site_build` |
-| Deep | `re_status`, `re_install`, `disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `dotnet`, `unity_assets` |
+| Proof | `survey`, `pin`, `evidence_add`, `evidence_list`, `project_check`, `parity`, `screenshot`, `scaffold`, `site_build` |
+| Deep | `re_status`, `re_install`, `disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `cpp2il`, `dotnet`, `unity_assets` |
 | More | tools from MCP servers listed in `portcode.json` |
 
 The deep tools look inside the original and are available only in [deep mode](modes.html).

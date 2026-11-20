@@ -21,16 +21,16 @@ Before the first run, install the CLI and sign in once:
 | Claude Code | see claude.com/claude-code | run `claude` and log in |
 | Codex | `npm i -g @openai/codex` | `codex login` |
 
-`portcode doctor` shows whether each one was found.
+`portcode doctor` shows whether each one was found. `PORTCODE_CLAUDE_BIN` and `PORTCODE_CODEX_BIN` can point at an explicit CLI executable when it is not on PATH.
 
 What happens on a turn:
 - The CLI does the work with its own tools (reading files, editing, running commands) and its own agent loop.
-- PortCode gives it its extra tools over MCP: `survey`, `pin`, `evidence_add`, `evidence_list`, `parity`, `screenshot`, `scaffold`, `site_build`, and in `--deep` mode `disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `dotnet`, `unity_assets`.
+- PortCode gives it its extra tools over MCP: `todowrite`, `blocked`, `survey`, `pin`, `evidence_add`, `evidence_list`, `project_check`, `parity`, `screenshot`, `scaffold`, `site_build`, and in `--deep` mode `disasm`, `emulate`, `decompile`, `functions`, `hexdump`, `unity`, `cpp2il`, `dotnet`, `unity_assets`.
 - PortCode adds its rules to the CLI's system prompt: record every fact in the ledger as observation, inference or unknown, pin the original first, and never claim parity without a `parity` PASS. The `port`, `reverse` and `plan` agents each bring their own instructions.
 - Everything the CLI does shows up in the PortCode screen as tool blocks, and the evidence goes into the same `.portcode/evidence` ledger as always.
-- The next message in the same session continues the same CLI conversation (Claude Code only).
+- The next message in the same session continues the same CLI conversation for both Claude Code and Codex. Completed PortCode tool calls are read back from the JSON event stream, so their todo and proof results drive the same finish gate as the built-in loop.
 
-What does **not** apply to these models, because the CLI runs its own loop: the finish gate, the step limit, PortCode's permission prompts, `/style` and `/effort`, and context compaction (the CLI compacts by itself).
+The CLI keeps control of its own agent loop, step limits, permission interface and context compaction; `/style` and `/effort` do not apply. PortCode still enforces the `port` finish gate: it resumes the same CLI conversation with the missing checklist, build/test or parity items (up to six continuation turns), and reports an unfinished run instead of `Done` after that limit. Other agents get up to two continuations for open todo items. Source and comparison-file fingerprints are checked again before every finish, including edits made by the external CLI.
 
 Permissions. Claude Code cannot ask you anything in this mode, so it needs a rule up front. Set it in `portcode.json`:
 
@@ -55,5 +55,5 @@ Add `--deep` after `mcp` to also offer the reverse-engineering tools (only on so
 ## Good to know
 
 - These are your plan's usage limits, shared with whatever else you do in Claude or ChatGPT. A long port can use a lot of it.
-- The Claude Code path was tested end to end against the real CLI. The Codex path follows OpenAI's documented `codex exec --json` and MCP configuration, and is covered by tests on recorded-shape data, but it has not been run against a real Codex install yet. If something breaks, `portcode -m codex/default` prints the CLI's own error.
+- The JSON event parsing, tool-result tracking, finish gate and two-turn session resume are covered by recorded CLI streams and an executable fake-CLI integration test. A live model turn still needs a working login, network and supported region; PortCode surfaces the CLI's own authentication or network error instead of treating a launched process as a successful turn.
 - Use only the official CLIs and your own account. Check your provider's terms before running unattended jobs.

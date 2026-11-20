@@ -1,16 +1,34 @@
 //! PortCode as an MCP server over stdio, so Claude Code and Codex (on the user's own subscription) can use the
 //! evidence ledger, `survey`, `pin`, `parity`, `screenshot`, `scaffold`, `site_build` and, in deep mode, the
 //! reverse-engineering tools. Newline-delimited JSON-RPC 2.0.
+use crate::permission::{Gate, Reply, Request};
 use crate::tool::{Ctx, Registry};
+use async_trait::async_trait;
 use serde_json::{json, Value};
+
+/// The outer coding CLI has already approved its MCP tool call. Shell hard-deny rules still run first.
+pub struct CliGate;
+#[async_trait]
+impl Gate for CliGate {
+    async fn ask(&self, req: &Request) -> Reply {
+        if req.tool == "bash" {
+            Reply::Once
+        } else {
+            Reply::Reject
+        }
+    }
+}
 
 /// Tools offered to the outside CLI. File and shell tools are left out on purpose: the CLI has its own.
 pub const SHARED: &[&str] = &[
+    "todowrite",
+    "blocked",
     "survey",
     "pin",
     "evidence_add",
     "evidence_list",
     "parity",
+    "project_check",
     "screenshot",
     "scaffold",
     "site_build",
@@ -23,6 +41,7 @@ pub const DEEP: &[&str] = &[
     "functions",
     "hexdump",
     "unity",
+    "cpp2il",
     "dotnet",
     "unity_assets",
 ];
@@ -154,12 +173,16 @@ mod tests {
             .filter_map(|t| t["name"].as_str())
             .collect();
         assert!(names.contains(&"evidence_add") && names.contains(&"parity"));
+        assert!(names.contains(&"todowrite") && names.contains(&"blocked"));
+        assert!(names.contains(&"project_check"));
         assert!(
             !names.contains(&"bash") && !names.contains(&"write") && !names.contains(&"disasm")
         );
         ctx.deep.store(true, std::sync::atomic::Ordering::Relaxed);
         let r = handle(&reg, &ctx, &m).await.unwrap();
-        assert!(r["result"]["tools"].to_string().contains("\"disasm\""));
+        let deep_tools = r["result"]["tools"].to_string();
+        assert!(deep_tools.contains("\"disasm\""));
+        assert!(deep_tools.contains("\"cpp2il\""));
     }
 
     #[tokio::test]

@@ -15,8 +15,9 @@ PortCode's reason to exist: port a program and *prove* the port behaves the same
 
    An unknown stays open until something resolves it. PortCode never claims parity without a passing `parity` run.
 3. **Port one module at a time.** Each module is compared with golden output captured from the **original**, not from your port.
-4. **Check with parity.** A differential run compares the port's output with the golden files, with tolerances for floating point.
-5. **Show it.** A screenshot per feature and a generated site for GitHub Pages.
+4. **Build and test the delivered project.** `project_check` runs its real build/test command in the port folder; a nonzero exit, cancellation or timeout is FAIL.
+5. **Check with parity.** A differential run compares the port's output with the golden files, with tolerances for floating point.
+6. **Show it.** A screenshot per feature and a generated site for GitHub Pages.
 
 ## Start
 
@@ -34,9 +35,13 @@ or type `/create` and answer the questions. The agent begins by reading the ledg
 
 - a behaviour of the original (an option, an output format, an exit code, an error message) is not in the todo list,
 - a todo is still open,
-- the last `parity` run did not pass on the final code.
+- `project_check` has not run the real build/test command successfully,
+- the last `parity` run did not pass against the original's goldens,
+- a source, golden or output file changed after either PASS.
 
-The only exit is `blocked`: the agent stops and shows a **Needs your decision** card with its questions. Your answer resumes the run.
+Both proofs carry SHA-256 fingerprints. Changes made through `write`, `edit`, `bash`, Claude Code or Codex therefore invalidate stale verdicts. Run `project_check` and then `parity` again after the last edit. If the continuation limit is exhausted, PortCode reports the run as unfinished rather than done.
+
+The early exit is `blocked`: the agent stops and shows a **Needs your decision** card with its questions. Your answer resumes the run.
 
 ## The tools
 
@@ -46,6 +51,7 @@ The only exit is `blocked`: the agent stops and shows a **Needs your decision** 
 | `pin` | pins the original build (sha256, size, format, version) in `.portcode/reference.lock.json` and verifies it later |
 | `evidence_add` | adds an observation, inference or unknown to the ledger |
 | `evidence_list` | reads the ledger, by subject or only the unknowns |
+| `project_check` | runs the delivered project's real build/test command in its folder; records PASS only for exit 0 without timeout or cancellation |
 | `parity` | compares golden output recorded from the original with the port's (numbers within tolerance, PNG per channel); missing, extra or empty output is a failure |
 | `screenshot` | runs a command, saves its real output as an SVG terminal screenshot in `docs/screenshots/` and records it as an observation |
 | `scaffold` | creates a Rust workspace: `<name>-core` (headless) plus `<name>` (binary), `docs/PORT.md`, `tests/golden`, `docs/screenshots` |

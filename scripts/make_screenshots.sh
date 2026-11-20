@@ -8,7 +8,7 @@ OUT="$PWD/docs/screenshots"; mkdir -p "$OUT"
 export PORTCODE_FORCE_COLOR=1
 shot() { name="$1"; title="$2"; cmd="$3"; shift 3; "$@" 2>&1 | "$PC" port render "$OUT/$name.svg" --title "$title" --command "$cmd" >/dev/null; }
 
-W=$(mktemp -d); cp -R examples/wordstat/original examples/wordstat/inputs examples/wordstat/tests "$W/"; mkdir -p "$W/port"; cp -R examples/wordstat/port/target "$W/port/" 2>/dev/null || true
+W=$(mktemp -d); cp -R examples/wordstat/original examples/wordstat/inputs examples/wordstat/tests "$W/"; mkdir -p "$W/port"; cp -R examples/wordstat/port/Cargo.toml examples/wordstat/port/Cargo.lock examples/wordstat/port/crates "$W/port/"; cp -R examples/wordstat/port/target "$W/port/" 2>/dev/null || true
 "$MOCK" examples/wordstat/demo-session.json 18080 >/dev/null & MP=$!; sleep 1
 trap 'kill $MP 2>/dev/null; rm -rf "$W"' EXIT
 ( cd "$W" && PORTCODE_BASE_URL=http://127.0.0.1:18080/v1 "$PC" run -a port -m mock/mock-model -y "Port the wordstat CLI to Rust, following rustport." 2>&1 ) \

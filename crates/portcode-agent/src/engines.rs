@@ -17,6 +17,8 @@ pub enum How {
     Pip(&'static str, &'static str),
     /// Kuna decompiler: one self-contained binary from the project's GitHub releases.
     Kuna,
+    /// Unity IL2CPP metadata and method recovery, one self-contained binary.
+    Cpp2IL,
     ImHex,
     /// Found on PATH; installed by the user's package manager (`hint`).
     System(&'static str, &'static str),
@@ -51,6 +53,7 @@ pub const ENGINES: &[Engine] = &[
     Engine { id: "dnfile", what: ".NET / C# / Unity Mono assembly metadata: types, methods, strings, P/Invoke", license: "MIT", url: "https://github.com/malwarefrank/dnfile", how: How::Pip("dnfile", "dnfile"), core: false },
     Engine { id: "unitypy", what: "Unity asset files and bundles: objects, TextAssets, MonoBehaviour data", license: "MIT", url: "https://github.com/K0lb3/UnityPy", how: How::Pip("UnityPy", "UnityPy"), core: false },
     Engine { id: "ilspy", what: "ILSpy command line: decompile .NET / Unity Mono assemblies back to C#", license: "MIT", url: "https://github.com/icsharpcode/ILSpy", how: How::System("ilspycmd", "dotnet tool install -g ilspycmd   (needs the .NET SDK)"), core: false },
+    Engine { id: "cpp2il", what: "Unity IL2CPP: recover managed assemblies and method bodies from GameAssembly + global-metadata.dat — tool `cpp2il`", license: "MIT", url: "https://github.com/SamboyCoding/Cpp2IL", how: How::Cpp2IL, core: false },
     Engine { id: "il2cppdumper", what: "Unity IL2CPP: rebuild type and method names from global-metadata.dat", license: "MIT", url: "https://github.com/Perfare/Il2CppDumper", how: How::System("Il2CppDumper", "download a release from the project page and put it on PATH (needs .NET)"), core: false },
     Engine { id: "jadx", what: "Android DEX/APK → Java decompiler", license: "Apache-2.0", url: "https://github.com/skylot/jadx", how: How::System("jadx", "brew install jadx"), core: false },
     Engine { id: "wabt", what: "WebAssembly binary toolkit (wasm2wat, wasm-decompile)", license: "Apache-2.0", url: "https://github.com/WebAssembly/wabt", how: How::System("wasm2wat", "brew install wabt"), core: false },
@@ -126,6 +129,20 @@ pub fn kuna_bin() -> Option<PathBuf> {
         .or_else(|| which("kuna"))
 }
 
+/// The Cpp2IL binary: PortCode's own install under the engines folder, else one on PATH.
+pub fn cpp2il_bin() -> Option<PathBuf> {
+    let name = if cfg!(windows) {
+        "cpp2il.exe"
+    } else {
+        "cpp2il"
+    };
+    let own = dir().join("cpp2il").join(name);
+    own.is_file()
+        .then_some(own)
+        .or_else(|| which("Cpp2IL"))
+        .or_else(|| which("cpp2il"))
+}
+
 pub fn imhex_path() -> Option<PathBuf> {
     let d = dir().join("imhex");
     let mut cands = vec![
@@ -161,6 +178,7 @@ pub fn detect(e: &Engine) -> Option<String> {
     match e.how {
         How::Pip(_, imp) => py_has(imp).then(|| "portcode venv".into()),
         How::Kuna => kuna_bin().map(|p| p.display().to_string()),
+        How::Cpp2IL => cpp2il_bin().map(|p| p.display().to_string()),
         How::ImHex => imhex_path().map(|p| p.display().to_string()),
         How::System(bin, _) => which(bin).map(|p| p.display().to_string()),
     }
@@ -208,6 +226,45 @@ else:
     t = tarfile.open(fileobj=io.BytesIO(data), mode="r:gz"); member = next(m for m in t.getmembers() if m.isfile() and m.name.endswith("/" + exe)); body = t.extractfile(member).read()
 open(exe, "wb").write(body); os.chmod(exe, 0o755)
 print("sha256 verified; installed Kuna " + r.get("tag_name", "") + " under " + os.getcwd())
+PY"#
+        )),
+        How::Cpp2IL => Ok(format!(
+            r#"set -e
+mkdir -p {q}/cpp2il && cd {q}/cpp2il
+python3 - <<'PY'
+import hashlib, os, platform, sys, urllib.request, json, subprocess
+sysname, mach = platform.system(), platform.machine().lower()
+arm = mach in ("arm64", "aarch64")
+if sysname == "Windows":
+    suffix, exe = ("-Windows-ARM64.exe" if arm else "-Windows.exe"), "cpp2il.exe"
+elif sysname == "Darwin":
+    suffix, exe = ("-OSX-ARM64" if arm else "-OSX"), "cpp2il"
+elif sysname == "Linux":
+    suffix, exe = ("-Linux-ARM64" if arm else "-Linux"), "cpp2il"
+else:
+    sys.exit("no Cpp2IL build for " + sysname + " " + mach)
+releases = json.load(urllib.request.urlopen("https://api.github.com/repos/SamboyCoding/Cpp2IL/releases?per_page=30", timeout=30))
+release, asset = None, None
+for candidate in releases:
+    asset = next((a for a in candidate["assets"] if a["name"].startswith("Cpp2IL-") and a["name"].endswith(suffix) and (a.get("digest") or "").startswith("sha256:")), None)
+    if asset:
+        release = candidate
+        break
+if not asset:
+    sys.exit("no Cpp2IL release for this platform has a published sha256; refusing an unverified download")
+want = asset["digest"].removeprefix("sha256:")
+data = urllib.request.urlopen(asset["browser_download_url"], timeout=300).read()
+got = hashlib.sha256(data).hexdigest()
+if got != want:
+    sys.exit("sha256 mismatch - download discarded")
+tmp = exe + ".download"
+open(tmp, "wb").write(data)
+os.chmod(tmp, 0o755)
+os.replace(tmp, exe)
+if sysname == "Darwin":
+    subprocess.run(["codesign", "--force", "--sign", "-", exe], check=True)
+    print("ad-hoc signed the verified binary so macOS can execute it")
+print("sha256 verified; installed Cpp2IL " + release.get("tag_name", "") + " under " + os.getcwd())
 PY"#
         )),
         How::ImHex => {
@@ -297,5 +354,7 @@ mod tests {
         assert!(install_script(find("unicorn").unwrap())
             .unwrap()
             .contains("pip install"));
+        let cpp2il = install_script(find("cpp2il").unwrap()).unwrap();
+        assert!(cpp2il.contains("sha256") && cpp2il.contains("SamboyCoding/Cpp2IL"));
     }
 }

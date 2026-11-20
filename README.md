@@ -57,7 +57,7 @@ portcode completions zsh > ~/.zfunc/_portcode
 Prebuilt binaries: Linux, macOS and Windows (x86_64, aarch64). The Windows build is self-contained: no Rust, no Visual C++ runtime. The `bash` tool uses `sh` from Git for Windows when it is installed, otherwise `cmd.exe`.
 
 ## Finishing 1:1
-The `port` agent cannot stop early. When it tries to, PortCode checks three things: every behaviour of the original is a todo item, every todo is completed, and the last `parity` run passed on the final code (an edit after parity re-opens it). If not, the agent is sent back with the open items, and it gets extra steps when the budget runs out unfinished. The only way out is `blocked`, for a decision only you can make. Parity still compares against goldens captured from the original, so "done" means "proven", not "claimed".
+The `port` agent cannot stop early. When it tries to, PortCode requires a completed behaviour checklist, a real `project_check` build/test PASS, and a `parity` PASS against golden output captured from the original. Both proofs are tied to SHA-256 fingerprints of the source and comparison files: an edit through any tool, including Claude Code or Codex, re-opens the gate. The agent is sent back with the open items and gets extra steps when unfinished; `blocked` is the early exit for a decision only you can make. A passing build alone is not parity, and parity alone does not prove that the delivered project builds.
 
 ## Remote control
 `portcode serve` (or `/remote` in the UI) lets you drive the session from a browser or phone at [lakomoor.github.io/portcode/remote](https://lakomoor.github.io/portcode/remote/): watch, send prompts, answer permission asks, interrupt, switch agent or mode. GitHub Pages only hosts the static page; the browser connects **directly** to your machine through a tunnel you choose (Tailscale, cloudflared, SSH), authenticated with a key you create (`portcode remote new`). The secret never travels: the page answers a random challenge with an HMAC. No relay, nothing stored on GitHub. Details and the threat model: [docs/REMOTE.md](docs/REMOTE.md).
@@ -68,11 +68,11 @@ The `port` agent cannot stop early. When it tries to, PortCode checks three thin
 | looks at | the original from outside: run it, inputs, outputs, screenshots | also inside: disassembly, decompilation, emulation, raw bytes |
 | switch | `--clean-room` | `--deep`, `/deep`, `"mode":"deep"` |
 
-Deep mode drives real engines — **Capstone**, **Unicorn**, **Kuna** (decompiler), **ImHex**, plus Keystone, LIEF, YARA, angr, Frida, and system tools (rizin, radare2, binwalk, Detect It Easy, capa, jadx, wabt, upx). They install into an `engines/` folder next to the `portcode` binary, after asking, with sha256-verified downloads:
+Deep mode drives real engines — **Capstone**, **Unicorn**, **Kuna** (decompiler), **Cpp2IL** (Unity IL2CPP assembly and IL recovery), **ImHex**, plus Keystone, LIEF, YARA, angr, Frida, and system tools (rizin, radare2, binwalk, Detect It Easy, capa, jadx, wabt, upx). They install into an `engines/` folder next to the `portcode` binary, after asking, with sha256-verified downloads:
 ```sh
 portcode engines install core          # capstone + unicorn + lief
-portcode engines install kuna imhex
-portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump · unity · dotnet · unity_assets
+portcode engines install cpp2il kuna imhex
+portcode --deep -a reverse             # tools: functions · disasm · emulate · decompile · hexdump · unity · cpp2il · dotnet · unity_assets
 # in the UI: /workbench — functions, Pseudo-C, disassembly, hex and the evidence ledger side by side
 ```
 For the strictest separation, run `reverse --deep` to write `docs/SPEC.md` and ledger entries in your own words, then `port --clean-room` to build from those only. Details: [docs/ENGINES.md](docs/ENGINES.md).

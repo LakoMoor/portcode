@@ -57,7 +57,7 @@
 portcode --clean-room    # explicitly clean-room (the default)</code></pre>
 <p>In the app: <code>/deep</code> and <code>/clean</code>. You can also set <code>&quot;mode&quot;: &quot;deep&quot;</code> in <code>portcode.json</code>.</p>
 <h2 id="what-is-enforced">What is enforced<a class="anchor" href="#what-is-enforced" aria-label="Link to this section">#</a></h2>
-<p>The deep tools (<code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>dotnet</code>, <code>unity_assets</code>) refuse to run in clean-room mode and say how to switch. <code>bash</code> also refuses commands that look inside programs (disassemblers, decompilers, debuggers, and the like) in clean-room mode.</p>
+<p>The deep tools (<code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>cpp2il</code>, <code>dotnet</code>, <code>unity_assets</code>) refuse to run in clean-room mode and say how to switch. <code>bash</code> also refuses commands that look inside programs (disassemblers, decompilers, debuggers, and the like) in clean-room mode.</p>
 <aside class="callout note"><b>Note</b><p>The guard is a seatbelt, not a sandbox. Use deep mode only on software you own or may examine.</p></aside>
 <h2 id="the-deep-tools">The deep tools<a class="anchor" href="#the-deep-tools" aria-label="Link to this section">#</a></h2>
 <div class="tw"><table><thead><tr><th>Tool</th><th>For</th></tr></thead><tbody>
@@ -67,6 +67,7 @@ portcode --clean-room    # explicitly clean-room (the default)</code></pre>
 <tr><td><code>functions</code></td><td>list the functions of a binary</td></tr>
 <tr><td><code>hexdump</code></td><td>bytes at an address</td></tr>
 <tr><td><code>unity</code></td><td>a Unity project, Mono or IL2CPP</td></tr>
+<tr><td><code>cpp2il</code></td><td>managed assemblies and optional IL method-body recovery from Unity IL2CPP games</td></tr>
 <tr><td><code>dotnet</code></td><td>types, methods, strings and decompilation of C# and .NET (ILSpy)</td></tr>
 <tr><td><code>unity_assets</code></td><td>scenes, TextAssets and MonoBehaviour data</td></tr>
 </tbody></table></div>

@@ -88,6 +88,12 @@ pub struct Runner {
 
 const RECONNECT_TRIES: u32 = 12;
 
+fn tool_args(raw: &str) -> Value {
+    portcode_llm::repair_json(raw)
+        .and_then(|j| serde_json::from_str(&j).ok())
+        .unwrap_or(Value::Null)
+}
+
 /// Worth trying again: the server is unreachable, went silent, or answered "busy / bad gateway / timeout".
 fn is_transient(e: &portcode_llm::LlmError) -> bool {
     use portcode_llm::LlmError;
@@ -237,34 +243,82 @@ impl Runner {
     pub fn messages(&self) -> &[Message] {
         &self.messages
     }
-    /// Remember what the last tool calls mean for "is it finished".
-    fn track(&self, name: &str, result: &str) {
+    fn proof_path(&self, args: &Value, key: &str) -> std::path::PathBuf {
+        let raw = args.get(key).and_then(Value::as_str).unwrap_or(".");
+        let path = std::path::PathBuf::from(raw);
+        let joined = if path.is_absolute() {
+            path
+        } else {
+            self.ctx.root.join(path)
+        };
+        joined.canonicalize().unwrap_or(joined)
+    }
+
+    fn capture_proof(&self, args: &Value, keys: &[&str]) -> Option<Proof> {
+        let roots: Vec<std::path::PathBuf> =
+            keys.iter().map(|key| self.proof_path(args, key)).collect();
+        match crate::proof::fingerprint_set(&roots) {
+            Ok(fingerprint) => Some(Proof { roots, fingerprint }),
+            Err(e) => {
+                self.ui.event(UiEvent::Info(format!(
+                    "cannot bind the verdict to the final files: {e}"
+                )));
+                None
+            }
+        }
+    }
+
+    /// Remember what the last proof tools mean for "is it finished".
+    fn track(&self, name: &str, raw_args: &str, result: &str) {
+        let args = tool_args(raw_args);
         let mut st = lock(&self.ctx.state);
         match name {
             "parity" => {
-                st.parity = Some(result.contains("RESULT: PASS"));
-                st.dirty = false;
+                let pass = !result.starts_with("Error") && result.contains("RESULT: PASS");
+                st.parity = Some(pass);
+                st.parity_proof = if pass {
+                    self.capture_proof(&args, &["project", "golden", "port"])
+                } else {
+                    None
+                };
             }
-            "write" | "edit" | "scaffold" if !result.starts_with("Error") => st.dirty = true,
+            "project_check" => {
+                let pass = !result.starts_with("Error") && result.contains("PROJECT_CHECK: PASS");
+                st.project_check = Some(pass);
+                st.check_proof = if pass {
+                    self.capture_proof(&args, &["project"])
+                } else {
+                    None
+                };
+            }
             _ => {}
         }
     }
 
     /// What still stands between a gated agent (the `port` agent) and "done"; empty = finished.
-    /// 1:1 means every behaviour is on the todo list, every todo is done, and the last parity run passed on the final code.
+    /// Every behaviour is completed, and both parity and the real project check pass on unchanged files.
     pub fn gaps(&self) -> Vec<String> {
         if !self.agent.gate {
             return vec![];
         }
-        let st = lock(&self.ctx.state);
+        let (todos, parity, parity_proof, project_check, check_proof) = {
+            let st = lock(&self.ctx.state);
+            (
+                st.todos.clone(),
+                st.parity,
+                st.parity_proof.clone(),
+                st.project_check,
+                st.check_proof.clone(),
+            )
+        };
         let mut g = Vec::new();
-        if st.todos.is_empty() {
+        if todos.is_empty() {
             g.push("no todo list: call todowrite with one item per behaviour of the original (options, outputs, exit codes, errors) so nothing is skipped".to_string());
         }
-        for t in st.todos.iter().filter(|t| t.status != "completed") {
+        for t in todos.iter().filter(|t| t.status != "completed") {
             g.push(format!("todo not done: {}", t.content));
         }
-        match st.parity {
+        match parity {
             None => g.push(
                 "parity has not been run: capture goldens from the ORIGINAL and run `parity`"
                     .into(),
@@ -273,10 +327,26 @@ impl Runner {
                 "the last parity run FAILED: fix the port (never the goldens) and run parity again"
                     .into(),
             ),
-            Some(true) if st.dirty => {
-                g.push("code changed after the last parity run: run parity again".into())
-            }
-            Some(true) => {}
+            Some(true) => match &parity_proof {
+                None => g.push("the parity PASS is not tied to a file fingerprint: run parity again with `project` set to the port folder".into()),
+                Some(p) => match crate::proof::fingerprint_set(&p.roots) {
+                    Ok(now) if now == p.fingerprint => {}
+                    Ok(_) => g.push("source, golden or output files changed after the last parity run: run project_check and parity again".into()),
+                    Err(e) => g.push(format!("cannot verify the files from the last parity run: {e}")),
+                },
+            },
+        }
+        match project_check {
+            None => g.push("the final project has not been built/tested: run `project_check` with its real build/test command".into()),
+            Some(false) => g.push("the last project_check FAILED: fix the first build/test error and run it again".into()),
+            Some(true) => match &check_proof {
+                None => g.push("the project_check PASS is not tied to a file fingerprint: run project_check again".into()),
+                Some(p) => match crate::proof::fingerprint_set(&p.roots) {
+                    Ok(now) if now == p.fingerprint => {}
+                    Ok(_) => g.push("project files changed after the last build/test: run project_check and parity again".into()),
+                    Err(e) => g.push(format!("cannot verify the files from the last project_check: {e}")),
+                },
+            },
         }
         g
     }
@@ -299,6 +369,14 @@ impl Runner {
     pub fn clear(&mut self) {
         self.messages.clear();
         self.session_id = Store::new_id();
+        self.cli_session = None;
+        let mut st = lock(&self.ctx.state);
+        st.todos.clear();
+        st.parity = None;
+        st.parity_proof = None;
+        st.project_check = None;
+        st.check_proof = None;
+        st.blocked = None;
     }
 
     /// Load a session by id, unique prefix, number from [`Runner::sessions`] or `last`. Returns the id and message count.
@@ -718,6 +796,31 @@ impl Runner {
 
     /// Run one user turn to completion.
     /// One turn through the user's own `claude` / `codex` CLI (their subscription). See `backend`.
+    fn apply_cli_tool(&self, call: &crate::backend::ToolRecord) {
+        if !call.ok {
+            return;
+        }
+        match call.name.as_str() {
+            "todowrite" => {
+                let args = tool_args(&call.args);
+                if let Ok(todos) = serde_json::from_value::<Vec<Todo>>(
+                    args.get("todos").cloned().unwrap_or(Value::Null),
+                ) {
+                    lock(&self.ctx.state).todos = todos.clone();
+                    self.ui.event(UiEvent::Todos(todos));
+                }
+            }
+            "blocked" => {
+                let args = tool_args(&call.args);
+                if let Some(reason) = args.get("reason").and_then(Value::as_str) {
+                    lock(&self.ctx.state).blocked = Some(reason.to_string());
+                }
+            }
+            "parity" | "project_check" => self.track(&call.name, &call.args, &call.text),
+            _ => {}
+        }
+    }
+
     async fn send_cli(&mut self, cli: crate::backend::Cli, text: &str) -> Result<Outcome, String> {
         use crate::backend;
         let bin = backend::find_binary(cli).ok_or_else(|| {
@@ -729,6 +832,7 @@ impl Runner {
         })?;
         self.messages.push(Message::user(text));
         self.ctx.cancel.store(false, Ordering::Relaxed);
+        lock(&self.ctx.state).blocked = None;
         if let Some(n) = self.detect_context().await {
             self.ui.event(UiEvent::Info(format!(
                 "context window: {n} tokens, as the server reports"
@@ -742,39 +846,114 @@ impl Runner {
             .clone()
             .unwrap_or_else(|| "acceptEdits".into());
         let model = self.resolved.model.clone();
-        let req = backend::Request {
-            cli,
-            bin: &bin,
-            model: &model,
-            prompt: text,
-            brief: &brief,
-            root: &self.ctx.root,
-            session: self.cli_session.as_deref(),
-            deep,
-            readonly: self.agent.readonly,
-            permission: &permission,
-        };
-        let turn = backend::run(&req, self.ui.as_ref(), &self.ctx.cancel).await?;
-        if let Some(s) = &turn.session {
-            self.cli_session = Some(s.clone());
-        }
-        self.messages.push(Message::assistant_text(&turn.text));
-        self.usage.prompt_tokens += turn.usage.prompt_tokens;
-        self.usage.completion_tokens += turn.usage.completion_tokens;
-        self.ui.event(UiEvent::Usage(turn.usage));
-        let cancelled = self.ctx.cancelled();
-        match turn.error {
-            Some(e) if !cancelled => Err(e),
-            _ => Ok(Outcome {
-                text: turn.text,
-                steps: turn.steps,
-                usage: turn.usage,
-                status: if cancelled {
-                    Status::Cancelled
+        let mut prompt = text.to_string();
+        let mut total = Usage::default();
+        let mut steps = 0u32;
+        let mut last_text = String::new();
+        let mut gate_nudges = 0u32;
+        let mut todo_nudges = 0u32;
+        loop {
+            let req = backend::Request {
+                cli,
+                bin: &bin,
+                model: &model,
+                prompt: &prompt,
+                brief: &brief,
+                root: &self.ctx.root,
+                session: self.cli_session.as_deref(),
+                deep,
+                readonly: self.agent.readonly,
+                permission: &permission,
+            };
+            let turn = backend::run(&req, self.ui.as_ref(), &self.ctx.cancel).await?;
+            if let Some(s) = &turn.session {
+                self.cli_session = Some(s.clone());
+            }
+            for call in &turn.tools {
+                self.apply_cli_tool(call);
+            }
+            if !turn.text.is_empty() {
+                last_text = turn.text.clone();
+            }
+            self.messages.push(Message::assistant_text(&turn.text));
+            steps = steps.saturating_add(turn.steps.max(1));
+            total.prompt_tokens += turn.usage.prompt_tokens;
+            total.completion_tokens += turn.usage.completion_tokens;
+            self.usage.prompt_tokens += turn.usage.prompt_tokens;
+            self.usage.completion_tokens += turn.usage.completion_tokens;
+            self.ui.event(UiEvent::Usage(turn.usage));
+            let cancelled = self.ctx.cancelled();
+            if let Some(e) = turn.error.filter(|_| !cancelled) {
+                self.save();
+                return Err(e);
+            }
+            if cancelled {
+                self.save();
+                return Ok(Outcome {
+                    text: last_text,
+                    steps,
+                    usage: total,
+                    status: Status::Cancelled,
+                });
+            }
+            if let Some(why) = lock(&self.ctx.state).blocked.clone() {
+                self.save();
+                return Ok(Outcome {
+                    text: format!("Blocked, needs you: {why}"),
+                    steps,
+                    usage: total,
+                    status: Status::Done,
+                });
+            }
+            let gaps = self.gaps();
+            if self.agent.gate && !gaps.is_empty() && gate_nudges < 6 {
+                gate_nudges += 1;
+                self.ui.event(UiEvent::Info(format!(
+                    "not finished: {} ({} open)",
+                    gaps.first().cloned().unwrap_or_default(),
+                    gaps.len()
+                )));
+                prompt = format!(
+                    "Not finished. Open items:\n- {}\nContinue the same task now. Use the PortCode todowrite, parity and project_check tools for proof. If only the user can unblock you, call the PortCode blocked tool with the reason.",
+                    gaps.join("\n- ")
+                );
+                self.messages.push(Message::user(&prompt));
+                continue;
+            }
+            let open: Vec<String> = lock(&self.ctx.state)
+                .todos
+                .iter()
+                .filter(|t| t.status != "completed")
+                .map(|t| t.content.clone())
+                .collect();
+            if !self.agent.gate && !open.is_empty() && todo_nudges < 2 {
+                todo_nudges += 1;
+                prompt = format!(
+                    "You stopped with open todo items:\n- {}\nCarry out the next step now. If only the user can unblock you, call the PortCode blocked tool with the reason.",
+                    open.join("\n- ")
+                );
+                self.messages.push(Message::user(&prompt));
+                continue;
+            }
+            self.save();
+            let unfinished = self.agent.gate && !gaps.is_empty();
+            if unfinished {
+                self.ui.event(UiEvent::Info(format!(
+                    "stopped with {} open item(s): {}",
+                    gaps.len(),
+                    gaps.join("; ")
+                )));
+            }
+            return Ok(Outcome {
+                text: last_text,
+                steps,
+                usage: total,
+                status: if unfinished {
+                    Status::MaxSteps
                 } else {
                     Status::Done
                 },
-            }),
+            });
         }
     }
 
@@ -1081,11 +1260,16 @@ impl Runner {
                     }
                 }
                 self.save();
+                let unfinished = self.agent.gate && !self.gaps().is_empty();
                 return Ok(Outcome {
                     text: last_text,
                     steps: step + 1,
                     usage: total,
-                    status: Status::Done,
+                    status: if unfinished {
+                        Status::MaxSteps
+                    } else {
+                        Status::Done
+                    },
                 });
             }
             for call in calls {
@@ -1117,7 +1301,7 @@ impl Runner {
                     result
                 };
                 recent_results.push(key);
-                self.track(&call.function.name, &result);
+                self.track(&call.function.name, &call.function.arguments, &result);
                 self.messages.push(Message::tool(call.id.clone(), result));
                 if repeats >= 2
                     && !compacted_on_repeat
@@ -1277,6 +1461,7 @@ const BUILTIN_NAMES: &[&str] = &[
     "write",
     "edit",
     "bash",
+    "project_check",
     "todowrite",
     "webfetch",
     "skill",
@@ -1299,6 +1484,7 @@ const BUILTIN_NAMES: &[&str] = &[
     "decompile",
     "functions",
     "unity",
+    "cpp2il",
     "dotnet",
     "unity_assets",
     "hexdump",
@@ -1393,6 +1579,185 @@ mod todo_tests {
         assert_eq!(t.len(), 2);
         assert_eq!(t[0].status, "completed");
         assert!(last_todos(&[]).is_empty());
+    }
+}
+
+#[cfg(test)]
+mod gate_tests {
+    use super::*;
+    use crate::config::ProviderEntry;
+    use crate::permission::AutoGate;
+    use portcode_testkit::{ScriptedCall, Turn};
+
+    static CLI_ENV: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+    fn call(name: &str, arguments: Value) -> ScriptedCall {
+        ScriptedCall {
+            name: name.into(),
+            arguments,
+        }
+    }
+
+    fn turn(call: ScriptedCall) -> Turn {
+        Turn {
+            tool_calls: vec![call],
+            ..Default::default()
+        }
+    }
+
+    async fn runner(
+        root: std::path::PathBuf,
+        turns: Vec<Turn>,
+        model: &str,
+    ) -> (Runner, portcode_testkit::Mock) {
+        let mock = portcode_testkit::start(turns, 0).await.unwrap();
+        let mut cfg = Config {
+            max_steps: Some(30),
+            ..Default::default()
+        };
+        if model.starts_with("mock/") {
+            cfg.provider.insert(
+                "mock".into(),
+                ProviderEntry {
+                    base_url: Some(mock.url.clone()),
+                    ..Default::default()
+                },
+            );
+        }
+        let runner = Runner::new(
+            root,
+            cfg,
+            Some(model),
+            "port",
+            Arc::new(AutoGate(crate::permission::Reply::Once)),
+            Arc::new(NullUi),
+        )
+        .await
+        .unwrap();
+        (runner, mock)
+    }
+
+    #[tokio::test]
+    async fn edits_invalidate_both_proofs_before_a_gated_done() {
+        let d = tempfile::tempdir().unwrap();
+        for dir in ["golden", "out"] {
+            std::fs::create_dir(d.path().join(dir)).unwrap();
+            std::fs::write(d.path().join(dir).join("case.txt"), "same").unwrap();
+        }
+        std::fs::write(d.path().join("source.txt"), "before").unwrap();
+        let todos = call(
+            "todowrite",
+            serde_json::json!({"todos":[{"content":"all behaviour","status":"completed"}]}),
+        );
+        let check = call(
+            "project_check",
+            serde_json::json!({"project":".","command":"test -f source.txt"}),
+        );
+        let parity = call(
+            "parity",
+            serde_json::json!({"project":".","golden":"golden","port":"out"}),
+        );
+        let turns = vec![
+            turn(todos),
+            turn(check.clone()),
+            turn(parity.clone()),
+            turn(call(
+                "bash",
+                serde_json::json!({"command":"touch changed.txt"}),
+            )),
+            Turn {
+                text: "done".into(),
+                ..Default::default()
+            },
+            turn(check),
+            turn(parity),
+            Turn {
+                text: "really done".into(),
+                ..Default::default()
+            },
+        ];
+        let (mut runner, mock) = runner(d.path().to_path_buf(), turns, "mock/mock-model").await;
+        let out = runner.send("finish the port").await.unwrap();
+        assert_eq!(out.status, Status::Done);
+        assert!(runner.gaps().is_empty(), "{:?}", runner.gaps());
+        assert_eq!(mock.requests.lock().unwrap().len(), 8);
+        runner.clear();
+        assert!(runner.todos().is_empty());
+        assert_eq!(runner.gaps().len(), 3);
+    }
+
+    #[tokio::test]
+    async fn exhausted_gate_nudges_are_not_reported_as_done() {
+        let d = tempfile::tempdir().unwrap();
+        let turns = vec![
+            Turn {
+                text: "done".into(),
+                ..Default::default()
+            };
+            7
+        ];
+        let (mut runner, _) = runner(d.path().to_path_buf(), turns, "mock/mock-model").await;
+        let out = runner.send("finish the port").await.unwrap();
+        assert_eq!(out.status, Status::MaxSteps);
+        assert!(!runner.gaps().is_empty());
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn codex_gate_resumes_the_same_cli_session() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let _env = CLI_ENV.lock().await;
+        let d = tempfile::tempdir().unwrap();
+        for dir in ["golden", "out"] {
+            std::fs::create_dir(d.path().join(dir)).unwrap();
+            std::fs::write(d.path().join(dir).join("case.txt"), "same").unwrap();
+        }
+        let script = d.path().join("fake-codex");
+        std::fs::write(
+            &script,
+            r#"#!/bin/sh
+n=0
+if [ -f fake-count ]; then read n < fake-count; fi
+n=$((n+1))
+printf '%s\n' "$n" > fake-count
+printf '%s\n' "$*" >> fake-args
+if [ "$n" -eq 1 ]; then
+  printf '%s\n' '{"type":"thread.started","thread_id":"cli-1"}'
+  printf '%s\n' '{"type":"item.completed","item":{"id":"todo","type":"mcp_tool_call","tool":"todowrite","arguments":{"todos":[{"content":"all behaviour","status":"completed"}]},"result":{"content":[{"type":"text","text":"ok"}]},"status":"completed"}}'
+else
+  printf '%s\n' '{"type":"thread.started","thread_id":"cli-1"}'
+  printf '%s\n' '{"type":"item.completed","item":{"id":"check","type":"mcp_tool_call","tool":"project_check","arguments":{"project":".","command":"test -f source"},"result":{"content":[{"type":"text","text":"PROJECT_CHECK: PASS"}]},"status":"completed"}}'
+  printf '%s\n' '{"type":"item.completed","item":{"id":"parity","type":"mcp_tool_call","tool":"parity","arguments":{"project":".","golden":"golden","port":"out"},"result":{"content":[{"type":"text","text":"RESULT: PASS"}]},"status":"completed"}}'
+fi
+printf '%s\n' '{"type":"item.completed","item":{"id":"message","type":"agent_message","text":"finished"}}'
+printf '%s\n' '{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}'
+"#,
+        )
+        .unwrap();
+        let mut permissions = script.metadata().unwrap().permissions();
+        permissions.set_mode(0o700);
+        std::fs::set_permissions(&script, permissions).unwrap();
+        std::env::set_var("PORTCODE_CODEX_BIN", &script);
+        let (mut runner, _) = runner(d.path().to_path_buf(), vec![], "codex/default").await;
+        let out = runner.send("finish the port").await.unwrap();
+        std::env::remove_var("PORTCODE_CODEX_BIN");
+        assert_eq!(out.status, Status::Done);
+        assert!(runner.gaps().is_empty(), "{:?}", runner.gaps());
+        assert_eq!(
+            std::fs::read_to_string(d.path().join("fake-count")).unwrap(),
+            "2\n"
+        );
+        let args = std::fs::read_to_string(d.path().join("fake-args")).unwrap();
+        assert!(args.contains("resume cli-1"), "{args}");
+        assert!(args.contains("Not finished. Open items:"), "{args}");
+    }
+
+    #[test]
+    fn proof_tracking_uses_the_same_json_repair_as_execution() {
+        let args = tool_args(r#"{"project":"port","golden":"golden",}"#);
+        assert_eq!(args["project"], "port");
+        assert_eq!(args["golden"], "golden");
     }
 }
 

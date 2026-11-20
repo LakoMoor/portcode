@@ -92,7 +92,7 @@ pub fn agent_color(name: &str) -> Color {
 pub fn tool_color(name: &str) -> Color {
     match name {
         "disasm" | "emulate" | "decompile" | "hexdump" | "functions" | "unity" | "dotnet"
-        | "unity_assets" | "re_install" | "re_status" => c_yellow(),
+        | "unity_assets" | "cpp2il" | "re_install" | "re_status" => c_yellow(),
         "evidence_add" | "evidence_list" | "pin" | "parity" => c_green(),
         "write" | "edit" | "scaffold" => c_accent(),
         _ => c_text(),

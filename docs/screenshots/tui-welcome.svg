@@ -62,7 +62,7 @@
 <text x="1026.30" y="314.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
 <text x="111.96" y="333.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">│ </text>
 <text x="139.95" y="333.00" fill="#fab283" textLength="429.18" lengthAdjust="spacingAndGlyphs">   what you see. Running it, its output.      </text>
-<text x="578.46" y="333.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   tool: Ghidra, Capstone. Private use.       </text>
+<text x="578.46" y="333.00" fill="#808080" textLength="429.18" lengthAdjust="spacingAndGlyphs">   tool: Kuna, Capstone. Private use.         </text>
 <text x="1026.30" y="333.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs"> │</text>
 <text x="111.96" y="352.00" fill="#484848" textLength="933.00" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
 <text x="111.96" y="371.00" fill="#484848" textLength="18.66" lengthAdjust="spacingAndGlyphs">╭─</text>

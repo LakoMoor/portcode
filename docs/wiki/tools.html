@@ -71,7 +71,7 @@ portcode tool venv &#x27;{&quot;action&quot;: &quot;status&quot;}&#x27;</code></
 <tr><td><code>site_build</code></td><td>Generate the GitHub Pages site (docs/site/) from docs/PORT.md, the evidence ledger and docs/screenshots/.</td></tr>
 <tr><td><code>scaffold</code></td><td>Create a Rust workspace for a port: &lt;name&gt;-core (headless) + &lt;name&gt; (binary), docs/PORT.md, tests/golden, docs/screenshots.</td></tr>
 <tr><td><code>re_status</code></td><td>List the reverse-engineering engines (Capstone, Unicorn, Kuna, ImHex, rizin…), whether each is installed, and the current mode (clean-room or deep).</td></tr>
-<tr><td><code>re_install</code></td><td>Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Kuna and ImHex from their official releases, sha256-verified).</td></tr>
+<tr><td><code>re_install</code></td><td>Install a reverse-engineering engine into PortCode's engines folder (pip packages into a private venv; Kuna, Cpp2IL and ImHex from their official releases, sha256-verified).</td></tr>
 <tr><td><code>disasm</code></td><td>Deep mode.</td></tr>
 <tr><td><code>emulate</code></td><td>Deep mode.</td></tr>
 <tr><td><code>decompile</code></td><td>Deep mode.</td></tr>
@@ -80,6 +80,7 @@ portcode tool venv &#x27;{&quot;action&quot;: &quot;status&quot;}&#x27;</code></
 <tr><td><code>dotnet</code></td><td>Deep mode.</td></tr>
 <tr><td><code>unity_assets</code></td><td>Deep mode.</td></tr>
 <tr><td><code>hexdump</code></td><td>Deep mode.</td></tr>
+<tr><td><code>project_check</code></td><td>Run the port's real build and test command in its project folder and record whether the final files pass.</td></tr>
 <tr><td><code>team</code></td><td>Run team members at the same time and get every answer back.</td></tr>
 <tr><td><code>venv</code></td><td>Python virtual environment in .venv.</td></tr>
 </tbody></table></div>
@@ -87,8 +88,8 @@ portcode tool venv &#x27;{&quot;action&quot;: &quot;status&quot;}&#x27;</code></
 <div class="tw"><table><thead><tr><th>Group</th><th>Tools</th></tr></thead><tbody>
 <tr><td>Files</td><td><code>read</code>, <code>ls</code>, <code>glob</code>, <code>grep</code>, <code>write</code>, <code>edit</code></td></tr>
 <tr><td>Run</td><td><code>bash</code>, <code>venv</code>, <code>todowrite</code>, <code>webfetch</code>, <code>skill</code>, <code>task</code>, <code>team</code>, <code>blocked</code></td></tr>
-<tr><td>Proof</td><td><code>survey</code>, <code>pin</code>, <code>evidence_add</code>, <code>evidence_list</code>, <code>parity</code>, <code>screenshot</code>, <code>scaffold</code>, <code>site_build</code></td></tr>
-<tr><td>Deep</td><td><code>re_status</code>, <code>re_install</code>, <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>dotnet</code>, <code>unity_assets</code></td></tr>
+<tr><td>Proof</td><td><code>survey</code>, <code>pin</code>, <code>evidence_add</code>, <code>evidence_list</code>, <code>project_check</code>, <code>parity</code>, <code>screenshot</code>, <code>scaffold</code>, <code>site_build</code></td></tr>
+<tr><td>Deep</td><td><code>re_status</code>, <code>re_install</code>, <code>disasm</code>, <code>emulate</code>, <code>decompile</code>, <code>functions</code>, <code>hexdump</code>, <code>unity</code>, <code>cpp2il</code>, <code>dotnet</code>, <code>unity_assets</code></td></tr>
 <tr><td>More</td><td>tools from MCP servers listed in <code>portcode.json</code></td></tr>
 </tbody></table></div>
 <p>The deep tools look inside the original and are available only in <a href="modes.html">deep mode</a>.</p>

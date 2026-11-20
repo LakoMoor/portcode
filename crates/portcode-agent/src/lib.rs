@@ -11,6 +11,7 @@ pub mod engines;
 pub mod mcp;
 pub mod mcpserve;
 pub mod permission;
+mod proof;
 pub mod run;
 pub mod session;
 pub mod skills;

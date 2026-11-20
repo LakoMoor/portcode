@@ -118,8 +118,18 @@ pub async fn run_command_with(
     timeout: Duration,
     color: bool,
 ) -> Result<Ran, ToolError> {
+    run_command_at(ctx, cmd, timeout, color, &ctx.root).await
+}
+
+pub async fn run_command_at(
+    ctx: &Ctx,
+    cmd: &str,
+    timeout: Duration,
+    color: bool,
+    cwd: &std::path::Path,
+) -> Result<Ran, ToolError> {
     let mut c = shell_command(cmd);
-    c.current_dir(&ctx.root)
+    c.current_dir(cwd)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -209,6 +219,80 @@ pub async fn run_command_with(
         timed_out,
         cancelled,
     })
+}
+
+pub struct ProjectCheck;
+#[async_trait]
+impl Tool for ProjectCheck {
+    fn name(&self) -> String {
+        "project_check".into()
+    }
+    fn description(&self) -> String {
+        "Run the port's real build and test command in its project folder and record whether the final files pass. Use a command such as `cargo test --workspace` (or the project's own build + test command), after generating outputs for parity. A timeout, cancellation or nonzero exit is FAIL. This complements parity; it never replaces golden comparison.".into()
+    }
+    fn example(&self) -> String {
+        r#"{"project":"mygame-rs","command":"cargo test --workspace","timeout_ms":600000}"#.into()
+    }
+    fn schema(&self) -> Value {
+        obj(
+            json!({"project":{"type":"string","description":"port project folder, default ."},"command":{"type":"string"},"timeout_ms":{"type":"integer","description":"1000..600000, default 600000"}}),
+            &["command"],
+        )
+    }
+    async fn run(&self, ctx: &Ctx, args: Value) -> ToolResult {
+        let a = Args {
+            v: &args,
+            tool: "project_check",
+            example: &self.example(),
+        };
+        let command = a.str("command")?;
+        if command.trim().is_empty() {
+            return err("command is empty; use the project's real build/test command");
+        }
+        let raw_project = a.opt_str("project").unwrap_or_else(|| ".".into());
+        let project = ctx.path(&raw_project, false).await?;
+        if !project.is_dir() {
+            return err(format!("project is not a folder: {raw_project}"));
+        }
+        let timeout = Duration::from_millis(
+            a.opt_u64("timeout_ms")
+                .unwrap_or(600_000)
+                .clamp(1_000, 600_000),
+        );
+        ctx.permit(
+            "bash",
+            command.trim(),
+            Decision::Ask,
+            "run the final project build and tests",
+        )
+        .await?;
+        let r = run_command_at(ctx, &command, timeout, false, &project).await?;
+        let pass = r.code == Some(0) && !r.timed_out && !r.cancelled;
+        let status = if r.timed_out {
+            "timed out".into()
+        } else if r.cancelled {
+            "cancelled".into()
+        } else {
+            format!(
+                "exit {}",
+                r.code
+                    .map(|c| c.to_string())
+                    .unwrap_or_else(|| "signal".into())
+            )
+        };
+        Ok(Out::new(
+            if pass {
+                "project_check PASS"
+            } else {
+                "project_check FAIL"
+            },
+            format!(
+                "project: {raw_project}\ncommand: {command}\n{status}\n{}\nPROJECT_CHECK: {}",
+                clip(r.out.trim_end(), ctx.output_limit),
+                if pass { "PASS" } else { "FAIL" }
+            ),
+        ))
+    }
 }
 
 pub struct Bash;
@@ -350,6 +434,28 @@ mod tests {
         // read-only commands skip the prompt entirely
         assert!(Bash.run(&c, json!({"command":"ls"})).await.is_ok());
     }
+    #[tokio::test]
+    async fn project_check_reports_real_success_failure_and_denial() {
+        let d = tempfile::tempdir().unwrap();
+        std::fs::write(d.path().join("source.txt"), "port").unwrap();
+        let c = ctx(d.path());
+        let pass = ProjectCheck
+            .run(&c, json!({"command":"test -f source.txt"}))
+            .await
+            .unwrap();
+        assert!(pass.text.contains("PROJECT_CHECK: PASS"));
+        let fail = ProjectCheck
+            .run(&c, json!({"command":"exit 7"}))
+            .await
+            .unwrap();
+        assert!(fail.text.contains("exit 7"));
+        assert!(fail.text.contains("PROJECT_CHECK: FAIL"));
+        assert!(ProjectCheck
+            .run(&c, json!({"command":"sudo ls"}))
+            .await
+            .is_err());
+    }
+
     #[tokio::test]
     async fn output_is_clipped() {
         let d = tempfile::tempdir().unwrap();
